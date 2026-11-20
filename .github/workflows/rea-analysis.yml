@@ -14,9 +14,9 @@ on:
         required: true
         default: 're-targets'
       target_apk:
-        description: 'APK file name to stage for analysis'
-        required: true
-        default: 'GameAssist.apk'
+        description: 'APK file name to stage, or "all" for every asset in the release'
+        required: false
+        default: 'all'
 
 permissions:
   contents: write
@@ -24,7 +24,7 @@ permissions:
 jobs:
   rea:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
 
@@ -68,23 +68,40 @@ jobs:
           done
           wc -l android-commands.txt
 
-      - name: Stage the target APK (verified, retried)
+      - name: Stage the target APK(s) (verified, retried)
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.release_tag }}
           APK: ${{ inputs.target_apk }}
         run: |
           mkdir -p targets
-          for attempt in 1 2 3; do
-            rm -f "targets/$APK"
-            if gh release download "$TAG" --repo "${{ github.repository }}" \
-                 --pattern "$APK" --dir targets --clobber \
-               && python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "targets/$APK"; then
-              echo "ok: $APK"
-              break
-            fi
-            echo "attempt $attempt failed for $APK"
-            sleep $((attempt * 5))
+          stage() {
+            local apk="$1"
+            for attempt in 1 2 3; do
+              rm -f "targets/$apk"
+              if gh release download "$TAG" --repo "${{ github.repository }}" \
+                   --pattern "$apk" --dir targets --clobber \
+                 && python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "targets/$apk"; then
+                echo "ok: $apk"; return 0
+              fi
+              echo "attempt $attempt failed for $apk"; sleep $((attempt * 5))
+            done
+            return 1
+          }
+          if [ "${APK:-all}" = all ]; then
+            # The release is the only channel the runner can read; whatever is uploaded is
+            # what gets measured, and the count is printed so a partial release is visible.
+            for attempt in 1 2 3; do
+              gh release download "$TAG" --repo "${{ github.repository }}" \
+                --pattern '*.apk' --dir targets --clobber && break
+              echo "bulk attempt $attempt failed"; sleep $((attempt * 5))
+            done
+            echo "assets staged: $(ls targets/*.apk 2>/dev/null | wc -l)"
+          else
+            stage "$APK" || { echo "could not stage $APK"; exit 1; }
+          fi
+          for f in targets/*.apk; do
+            python3 -c "import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); sys.exit(0 if z.testzip() is None else 1)" "$f" || echo "CORRUPT: $f"
           done
           ls -l targets
           sha256sum targets/*.apk | tee targets.sha256
@@ -112,31 +129,40 @@ jobs:
       # piece shows up as a named limitation instead of an empty file. The trace targets
       # are derived from the declaration we just read: the first run proved that guessed
       # class names do not exist.
-      - name: Collect package evidence (recorded, self-derived targets)
+      # Phase 2 evidence, one directory per staged APK. Every command is recorded even
+      # when it fails, so a missing piece is a named limitation rather than an empty file.
+      # Trace targets are derived from the declaration just read: run 44653559556 proved
+      # that guessed class names do not exist.
+      - name: Collect evidence for every staged APK
         run: |
-          ev=docs/audit/rea/evidence
-          mkdir -p "$ev"
-          log="$ev/run.txt"; : > "$log"
-          apk="targets/${{ inputs.target_apk }}"
-          collect() {  # label outfile cmd...
-            label="$1"; out="$2"; shift 2
-            echo "===== $label -> ${out#$ev/}" >> "$log"
-            if "$@" > "$out" 2>"$out.err"; then
-              echo "status: ok ($(wc -c < "$out") bytes)" >> "$log"; rm -f "$out.err"
-            else
-              echo "status: FAILED" >> "$log"; head -c 4000 "$out.err" >> "$log"; rm -f "$out.err"
-            fi
-            echo >> "$log"
-          }
-          collect "package declaration" "$ev/package.json" rea inspect-android-package "$apk" --format json
-          collect "signature" "$ev/signature.json" rea inspect-apk-signature "$apk" --format json
-          collect "class inventory" "$ev/class-inventory.json" rea search-android-classes "$apk" "" --format json
+          root=docs/audit/rea/evidence
+          mkdir -p "$root"
 
-          # Shrink the raw dumps to what Phase 2 reads, then drop the dumps: a 1 MB list
-          # of the same facts rewritten every run is history bloat, not evidence.
-          python3 - "$ev" <<'PY'
+          evidence_for() {  # apk outdir
+            local apk="$1" ev="$2"
+            mkdir -p "$ev"
+            local log="$ev/run.txt"; : > "$log"
+            collect() {  # label outfile cmd...
+              local label="$1" out="$2"; shift 2
+              echo "===== $label -> $(basename "$out")" >> "$log"
+              if "$@" > "$out" 2>"$out.err"; then
+                echo "status: ok ($(wc -c < "$out") bytes)" >> "$log"; rm -f "$out.err"
+              else
+                echo "status: FAILED" >> "$log"; head -c 4000 "$out.err" >> "$log"; rm -f "$out.err"
+              fi
+              echo >> "$log"
+            }
+            collect "package declaration" "$ev/package.json" rea inspect-android-package "$apk" --format json
+            collect "signature" "$ev/signature.json" rea inspect-apk-signature "$apk" --format json
+            collect "class inventory" "$ev/class-inventory.json" rea search-android-classes "$apk" "" --format json
+
+            # Shrink the raw dumps to what Phase 2 reads, then drop them: a 1 MB file of the
+            # same facts rewritten on every run is history bloat, not evidence.
+            python3 - "$ev" <<'PY'
           import json, pathlib, sys
           ev = pathlib.Path(sys.argv[1])
+          meta = {}
+
           def load(name):
               p = ev / name
               if not p.exists() or not p.stat().st_size: return None
@@ -147,14 +173,18 @@ jobs:
           lines, targets = [], []
           if pkg:
               nr = pkg.get('normalized_result') or {}
-              comp = (nr.get('components') or {})
+              comp = nr.get('components') or {}
               items = comp.get('items') or []
+              eng = nr.get('engine') or {}
+              meta.update(package=nr.get('package_name'), min_sdk=nr.get('min_sdk'),
+                          target_sdk=nr.get('target_sdk'), classes=nr.get('class_count'),
+                          components=len(items))
               lines += [
                   '# REA package declaration', '',
                   f"- package: `{nr.get('package_name')}`",
                   f"- version: `{nr.get('version_name')}` ({nr.get('version_code')})",
                   f"- sdk: min {nr.get('min_sdk')} / target {nr.get('target_sdk')}",
-                  f"- engine: {((nr.get('engine') or {}).get('name'))} {((nr.get('engine') or {}).get('version'))}",
+                  f"- engine: {eng.get('name')} {eng.get('version')} (sha256 `{eng.get('artifact_sha256')}`)",
                   f"- classes {nr.get('class_count')} · resources {nr.get('resource_count')} · permissions {len(nr.get('permissions') or [])}",
                   f"- components: {len(items)} declared ({comp.get('status')})", '',
                   '| kind | name | exported | permission | filters |', '| --- | --- | --- | --- | --- |',
@@ -163,13 +193,13 @@ jobs:
                   lines.append('| {} | `{}` | {} | {} | {} |'.format(
                       it.get('kind'), it.get('name'), it.get('exported'),
                       it.get('permission') or '—', it.get('intent_filter_count')))
-              # Exported, permission-guarded entry points are the surfaces other apps bind to.
-              ordered = sorted(items, key=lambda i: (i.get('kind') not in ('activity','service'),
+              # Exported activities/services are the surfaces other apps actually bind to.
+              ordered = sorted(items, key=lambda i: (i.get('kind') not in ('activity', 'service'),
                                                      not i.get('exported'), i.get('name') or ''))
               seen = set()
               for it in ordered:
                   n = it.get('name')
-                  if not n or n in seen or it.get('kind') not in ('activity','service'): continue
+                  if not n or n in seen or it.get('kind') not in ('activity', 'service'): continue
                   seen.add(n); targets.append(n)
                   if len(targets) >= 4: break
               (ev / 'PACKAGE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
@@ -178,23 +208,26 @@ jobs:
           inv = load('class-inventory.json')
           if inv:
               nr = inv.get('normalized_result') or {}
-              names = nr.get('matches') or []
-              (ev / 'classes.txt').write_text('\n'.join(names) + ('\n' if names else ''), encoding='utf-8')
-              note = [f"# {len(names)} classes (engine reports total_classes={nr.get('total_classes')})"]
+              note = [f"# {len(names0 := (nr.get('matches') or []))} classes "
+                      f"(engine reports total_classes={nr.get('total_classes')})"]
               cov = nr.get('coverage')
-              # coverage is a free-form provider note: a string today. Read both shapes,
-              # never assume one — the assumption is what failed run 44660115361.
+              # coverage arrives as a free-form string today and was wrongly assumed to be a
+              # mapping in run 44660115361: record whatever shape arrives.
               if isinstance(cov, dict):
                   note += [f"- coverage.{k}: {v}" for k, v in cov.items()]
               elif cov:
                   note.append(f"- coverage: {cov}")
-              (ev / 'classes.txt').write_text('\n'.join(note) + '\n\n' + '\n'.join(names) + '\n', encoding='utf-8')
+              (ev / 'classes.txt').write_text('\n'.join(note) + '\n\n' + '\n'.join(names0) + '\n',
+                                              encoding='utf-8')
 
           sig = load('signature.json')
           if sig:
               nr = sig.get('normalized_result') or {}
-              cert = next((s.get('certificate') for s in ((nr.get('schemes') or {}).get('v1') or {}).get('signers') or [] if s.get('certificate')), None)
+              v1 = ((nr.get('schemes') or {}).get('v1') or {})
+              cert = next((x.get('certificate') for x in (v1.get('signers') or []) if x.get('certificate')), None)
               posture = nr.get('posture') or {}
+              meta['scheme'] = posture.get('strongest_scheme')
+              meta['cert'] = (cert or {}).get('sha256_fingerprint')
               (ev / 'SIGNATURE.md').write_text('\n'.join([
                   '# REA signature read', '',
                   f"- strongest scheme: `{posture.get('strongest_scheme')}`",
@@ -204,23 +237,68 @@ jobs:
                   f"- certificate sha256: `{(cert or {}).get('sha256_fingerprint')}`",
                   f"- subject: `{((cert or {}).get('subject') or '').replace(chr(10), ' / ')}`",
                   f"- runtime_execution: `{nr.get('runtime_execution')}`", '',
-                  '> Static structural read only: signatures are not cryptographically verified.',
+                  '> Static structural read only: no signature is cryptographically verified.',
               ]) + '\n', encoding='utf-8')
 
           for raw in ('package.json', 'class-inventory.json', 'signature.json'):
               (ev / raw).unlink(missing_ok=True)
+          (ev / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
           print('derived:', ', '.join(sorted(x.name for x in ev.iterdir())))
           PY
 
-          if [ -s "$ev/trace-targets.txt" ]; then
-            while read -r cls; do
-              slug=$(printf '%s' "$cls" | tr -c 'A-Za-z0-9._' '_')
-              collect "xrefs: $cls" "$ev/xref-$slug.json" rea trace-android-references "$apk" "$cls" --format json
-            done < "$ev/trace-targets.txt"
-          else
-            echo "===== xrefs: no exported activity/service found in the declaration" >> "$log"
-          fi
-          cat "$log"
+            if [ -s "$ev/trace-targets.txt" ]; then
+              while read -r cls; do
+                [ -n "$cls" ] || continue
+                slug=$(printf '%s' "$cls" | tr -c 'A-Za-z0-9._' '_')
+                collect "xrefs: $cls" "$ev/xref-$slug.json" rea trace-android-references "$apk" "$cls" --format json
+              done < "$ev/trace-targets.txt"
+            else
+              echo "===== xrefs: no exported activity/service declared" >> "$log"
+            fi
+          }
+
+          total=$(ls targets/*.apk 2>/dev/null | wc -l)
+          echo "APKs staged: $total"
+          for apk in targets/*.apk; do
+            [ -e "$apk" ] || continue
+            app=$(basename "$apk" .apk)
+            echo "::group::$app"
+            evidence_for "$apk" "$root/$app"
+            echo "::endgroup::"
+          done
+
+          # One index over every measured APK, so the next phase reads counts, not logs.
+          python3 - "$root" <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(sys.argv[1])
+          rows, skipped = [], []
+          for d in sorted(p for p in root.iterdir() if p.is_dir()):
+              m = {}
+              mp = d / 'meta.json'
+              if mp.exists():
+                  try: m = json.loads(mp.read_text(encoding='utf-8'))
+                  except Exception: m = {}
+              run = (d / 'run.txt')
+              text = run.read_text(encoding='utf-8') if run.exists() else ''
+              ok = text.count('status: ok'); bad = text.count('status: FAILED')
+              xrefs = len(list(d.glob('xref-*.json')))
+              if not m.get('package'):
+                  skipped.append(d.name); continue
+              rows.append('| {} | `{}` | {} / {} | {} | {} | {} ({}) | {} ok / {} failed |'.format(
+                  d.name, m.get('package'), m.get('min_sdk'), m.get('target_sdk'),
+                  m.get('classes'), m.get('components'), xrefs, ok, bad))
+          out = ['# REA evidence index', '',
+                 'One row per APK measured by the `rea-analysis` workflow. Counts are read from the',
+                 'declaration REA returned, not from this document.', '',
+                 '| app | package | sdk min/target | classes | components | xref traces | commands |',
+                 '| --- | --- | --- | --- | --- | --- | --- |'] + rows + ['']
+          if skipped:
+              out += ['Measured without a readable declaration: ' + ', '.join(skipped), '']
+          out += ['Signature reads are structural only; no signature is cryptographically verified.',
+                  'Trace targets are exported activities/services taken from the declaration.']
+          (root / 'INDEX.md').write_text('\n'.join(out) + '\n', encoding='utf-8')
+          print((root / 'INDEX.md').read_text(encoding='utf-8'))
+          PY
 
       - uses: actions/upload-artifact@v4
         with:
