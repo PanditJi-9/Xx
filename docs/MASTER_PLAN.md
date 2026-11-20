@@ -99,7 +99,7 @@
 | `MASTER_PLAN.md` | ✅ هذا الملف |
 | `REA_AUDIT.md` | ✅ مقيس (بما فيه: لا توجد نسخة REA محلية لمنظومة RedMagic) |
 | `APK_INVENTORY.md` · `COMPONENT_CATALOG.md` · `APP_DEPENDENCY_GRAPH.md` · `IPC_AND_INTEGRATION.md` | ✅ مولّدة من APK |
-| `FEATURE_CATALOG.md` | ⏳ يُبنى فوق كتالوج المكوّنات بقراءة سلوك (المرحلة 2) |
+| `FEATURE_CATALOG.md` | ✅ مولّد من دليل REA المخزّن (`tools/feature_catalog.py`) — 24 تطبيقًا، 579 مكوّنًا: 270 `DECLARED` · 56 `TRACED` · 253 `UNVERIFIED`. السلوك نفسه لم يُقس: `UNVERIFIED` تعني «البيان يذكره فقط» |
 | `SCREEN_INVENTORY` · `ICON_CATALOG` · `ANIMATION_CATALOG` · `INTERACTION_SPEC` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` | ⏳ المرحلة 3 (تحتاج لقطات ومقاطع من الجهاز) |
 | `ARCHITECTURE` · `MODULES` · `CAPABILITIES` · `GAME_SESSION_SPEC` · `OVERLAY_SPEC` · `HARDWARE_CONTROL_SAFETY` | ⏳ المرحلة 4 |
 | `DEVICE_MATRIX` · `TEST_STRATEGY` · `PERFORMANCE_PLAN` · `LICENSES` · `MIGRATION_PLAN` · `IMPLEMENTATION_ROADMAP` | ⏳ قبل المرحلة 5 |

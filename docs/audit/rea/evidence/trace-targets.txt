@@ -1,4 +1,0 @@
-cn.nubia.gameassist.meditationmode.CustomNotificationListener
-cn.nubia.gameassist.service.GameAssistService
-cn.nubia.gameassist.service.GameScreenSaverService
-cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity
