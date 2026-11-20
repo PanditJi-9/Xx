@@ -162,6 +162,7 @@ internal fun LegendaryHomeDashboard(
             accessLevel = accessLevel,
             moduleInstalled = ui.moduleInstalled,
             daemonHealth = ui.daemonHealth,
+            moduleUpdatePending = ui.moduleUpdatePending,
             onReboot = onReboot,
             onShowGuide = onShowGuide,
         )
@@ -256,6 +257,7 @@ private fun HomeHeader(
     accessLevel: PrivilegeLevel,
     moduleInstalled: Boolean,
     daemonHealth: DaemonHealth,
+    moduleUpdatePending: Boolean,
     onReboot: () -> Unit,
     onShowGuide: () -> Unit,
 ) {
@@ -306,6 +308,7 @@ private fun HomeHeader(
             accessLevel = accessLevel,
             moduleInstalled = moduleInstalled,
             daemonHealth = daemonHealth,
+            moduleUpdatePending = moduleUpdatePending,
             onClose = { reasonOpen = false },
         )
     }
@@ -701,6 +704,7 @@ private fun HomeStatusReasonDialog(
     accessLevel: PrivilegeLevel,
     moduleInstalled: Boolean,
     daemonHealth: DaemonHealth,
+    moduleUpdatePending: Boolean,
     onClose: () -> Unit,
 ) {
     val p = neuralPalette()
@@ -729,6 +733,14 @@ private fun HomeStatusReasonDialog(
                 // سطر الخادم: لا يظهر قبل أوّل قياس (`UNKNOWN`)، ولا يقول «لا يجيب» عن خادم لم يُسأل.
                 HomeStatusCopy.daemonRowRes(daemonHealth)?.let { labelRes ->
                     HomeStatusReasonRow(labelRes, HomeStatusCopy.daemonSatisfied(daemonHealth))
+                }
+                // سببٌ يُقرأ: تحديث وحدة معلّق يُوقف الخادم حتى الإقلاع، فلا يُترك «لا يجيب» بلا تفسير.
+                HomeStatusCopy.daemonUpdateNoticeRes(moduleUpdatePending, daemonHealth)?.let { noticeRes ->
+                    Text(
+                        stringResource(noticeRes),
+                        color = p.text,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
                 outcome?.let { line ->
                     Text(line, color = p.text, style = MaterialTheme.typography.bodySmall)

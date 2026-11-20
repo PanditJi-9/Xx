@@ -180,9 +180,39 @@ class HomeActivityRulesTest {
             "وسطر الخادم من الحالة المقيسة",
             source.contains("HomeStatusCopy.daemonRowRes(daemonHealth)"),
         )
+        assertTrue(
+            "وسبب التوقف يُعرض من نفس القاعدة لا من نصّ في الشاشة",
+            source.contains("HomeStatusCopy.daemonUpdateNoticeRes(moduleUpdatePending, daemonHealth)"),
+        )
         assertFalse(
             "ولا يبقى العنوان الثابت في النافذة",
             source.contains("stringResource(R.string.home_status_reason_title)"),
+        )
+    }
+
+    @Test
+    fun `a pending module update explains an unreachable daemon`() {
+        assertEquals(
+            "علامة التحديث المعلّق + خادم لا يجيب ⇒ سببٌ يُعرض",
+            R.string.home_status_row_daemon_update_pending,
+            HomeStatusCopy.daemonUpdateNoticeRes(
+                updatePending = true,
+                health = DaemonHealth.UNREACHABLE,
+            ),
+        )
+        assertNull(
+            "بلا تحديث معلّق لا تُنسب حقيقة غير مقيسة",
+            HomeStatusCopy.daemonUpdateNoticeRes(
+                updatePending = false,
+                health = DaemonHealth.UNREACHABLE,
+            ),
+        )
+        assertNull(
+            "خادم يعمل لا يُفسَّر بتحديث معلّق",
+            HomeStatusCopy.daemonUpdateNoticeRes(
+                updatePending = true,
+                health = DaemonHealth.RUNNING,
+            ),
         )
     }
 

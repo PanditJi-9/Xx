@@ -83,4 +83,19 @@ internal object HomeStatusCopy {
      * و«يردّ رافضًا هويّة التطبيق» عطبُ هويّة لا فشلُ خادم، ولا «لا يجيب» — ولكلٍّ سطره.
      */
     fun daemonSatisfied(health: DaemonHealth): Boolean = health == DaemonHealth.RUNNING
+
+    /**
+     * سببُ توقّف الخادم حين يكون التحديث المعلَّق هو السبب — أو `null` حين لا يُعرف سبب.
+     *
+     * الحارس (`DaemonSupervisor.blockReason`) يرفض تشغيل الخادم ما دامت علامة `update` موجودة،
+     * ويُطبَّق التحديث بالإقلاع. فحينها فقط يُشرح للمستخدم: «متوقّف لأن تحديث الوحدة معلّق»، بدل
+     * أن يقرأ «لا يجيب» بلا سبب. ولا تُضاف الجملة إن كان الخادم يعمل أصلًا (`RUNNING`)، لأنها
+     * ستكون كذبًا جديدًا.
+     */
+    fun daemonUpdateNoticeRes(updatePending: Boolean, health: DaemonHealth): Int? =
+        if (updatePending && health == DaemonHealth.UNREACHABLE) {
+            R.string.home_status_row_daemon_update_pending
+        } else {
+            null
+        }
 }

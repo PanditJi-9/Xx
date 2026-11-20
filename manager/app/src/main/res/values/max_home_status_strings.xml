@@ -14,6 +14,8 @@
     <string name="home_status_row_daemon_denied">Daemon runs but refuses this app\'s identity</string>
     <string name="home_status_row_daemon_unreachable">Daemon does not answer; the app works on its direct path</string>
     <string name="home_status_row_daemon_stopped">Daemon answers but does not report itself as running</string>
+    <!-- سببٌ مقيس: تحديث وحدة معلّق يوقف الخادم حتى الإقلاع (قياس جهاز المالك ٢٠٢٦-١١-٢٠) -->
+    <string name="home_status_row_daemon_update_pending">A module update is pending, so the daemon stays stopped until you reboot. Reboot to start it; until then the app works on its direct path.</string>
     <string name="home_status_close">Close</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
     <string name="home_status_enable_module">Enable the module (offline)</string>

@@ -101,6 +101,13 @@ data class HomeUiState(
      * و`UNKNOWN` قبل أوّل قياس، فلا تُدَّعى حالة لم تُقَس.
      */
     val daemonHealth: DaemonHealth = DaemonHealth.UNKNOWN,
+    /**
+     * تحديث الوحدة معلّق على إعادة التشغيل (`/data/adb/modules/MaxManager/update`).
+     *
+     * يُقرأ ليُفسَّر توقّف الخادم بسببه: الحارس لا يُشغّل الخادم قبل الإقلاع، فيرى المستخدم
+     * «الخادم لا يجيب» بلا سبب فيظنّه عطبًا (قياس جهاز المالك ٢٠٢٦-١١-٢٠).
+     */
+    val moduleUpdatePending: Boolean = false,
     val serviceStatusRes: Int = R.string.status_suspended,
     val servicePid: String = "",
     val currentProfileRes: Int = R.string.status_initializing,
@@ -203,7 +210,8 @@ class HomeViewModel @Inject constructor(
     private fun probeDaemonHealth() {
         viewModelScope.launch(Dispatchers.IO) {
             val health = DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
-            _uiState.update { it.copy(daemonHealth = health) }
+            val updatePending = RootUtils.isModuleUpdatePendingReboot()
+            _uiState.update { it.copy(daemonHealth = health, moduleUpdatePending = updatePending) }
         }
     }
 
@@ -229,11 +237,13 @@ class HomeViewModel @Inject constructor(
                 val isModuleInstalled = RootUtils.isModuleInstalled()
                 val daemonHealth =
                     DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+                val updatePending = RootUtils.isModuleUpdatePendingReboot()
                 nd.max.core.privilege.PrivilegeManager.refresh()
                 _uiState.update {
                     it.copy(
                         rootStatus = isRooted,
                         daemonHealth = daemonHealth,
+                        moduleUpdatePending = updatePending,
                         moduleInstalled = isModuleInstalled,
                     )
                 }
@@ -255,6 +265,7 @@ class HomeViewModel @Inject constructor(
                 val isModuleInstalled = RootUtils.isModuleInstalled()
                 val daemonHealth =
                     DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+                val updatePending = RootUtils.isModuleUpdatePendingReboot()
                 // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
                 // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
                 val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
@@ -262,6 +273,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.update { it.copy(
                     rootStatus = isRooted,
                     daemonHealth = daemonHealth,
+                    moduleUpdatePending = updatePending,
                     moduleInstalled = isModuleInstalled,
                     autoMode = mode
                 ) }
