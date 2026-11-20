@@ -1,0 +1,44 @@
+[
+ {
+  "kind": "provider",
+  "name": "com.zte.beautifyadapter.provider.FileProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.beautifyadapter.ThemeApplyService",
+  "exported": true,
+  "permission": "com.zte.beautifyadapter.applytheme",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.beautifyadapter.tryuse.TryResourceJobService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.beautifyadapter.tryuse.ResetResourceJobService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.beautifyadapter.helper.SerialWallpaperSetService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautifyadapter.BootCompletedReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]

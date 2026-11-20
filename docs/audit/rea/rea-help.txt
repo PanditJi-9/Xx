@@ -1,4 +1,4 @@
-rea@6.9.0 — Reverse engineer anything from your terminal or agent.
+rea@6.10.1 — Reverse engineer anything from your terminal or agent.
 
 Usage: rea <command>
 
@@ -55,6 +55,7 @@ Commands:
   export-web-scripts                      Export retained website scripts into an absent directory for static JavaScript analysis
   extract-artifact                        Extract all or selected regular artifact contents safely; DMG extraction is unavailable
   extract-firmware                        Extract selected firmware bytes and return verified files and provenance
+  extract-uefi-firmware                   Extract selected UEFI firmware bytes with provenance and decode gaps
   function                                Analyze one complete function with evidence. Supply at least one of the positional address or --procedure. Equal values are accepted; conflicts fail.
   guidance                                Search or read the installed REA workflow guidance
   guided-workflows                        List or render REA's existing guided workflows
@@ -85,8 +86,11 @@ Commands:
   inspect-desktop-application             Identify desktop runtime candidates from bounded directory and header observations
   inspect-desktop-application-state       Read a desktop application capture folder into the application's state: roles, typed JSON views of each version and kinds of change
   inspect-devicetree                      Inspect a flattened devicetree blob without executing it
+  inspect-dwarf-units                     Inspect DWARF compile units without executing the image
   inspect-electron-fuses                  Inspect packaged Electron fuse bytes without launching the application
   inspect-electron-page                   Passively inspect one Electron file page
+  inspect-elf-debug-link                  Inspect ELF separate debug-file linkage without executing the image
+  inspect-elf-dependencies                Inspect ELF needed libraries and required symbol versions without executing the image
   inspect-elf-notes                       Inspect ELF PT_NOTE and SHT_NOTE identities without executing the image
   inspect-elf-unwind-ranges               Inspect ELF unwind function ranges without executing the image
   inspect-erlang-beam                     Inspect Erlang BEAM atoms, exports, imports and Code header without executing bytecode
@@ -104,6 +108,7 @@ Commands:
   inspect-managed-artifact                Inspect PE/CLI identity without loading target code
   inspect-managed-members                 Inspect PE/CLI metadata members, signatures, CIL anchors, and ldstr string literals without loading target code
   inspect-managed-native-boundaries       Inspect PE/CLI PInvoke and native implementation boundary declarations without loading target code
+  inspect-maven-gradle-metadata           Inspect a Maven POM or Gradle module-metadata document without running Maven or Gradle
   inspect-model-artifact                  Inspect GGUF or safetensors headers without loading model weights
   inspect-native-api                      Reconstruct one native function API boundary with evidence. Supply at least one of the positional address or --procedure. Equal values are accepted; conflicts fail.
   inspect-native-data-type                Inspect one recovered database type or typed data object. Supply exactly one of --type or --address.
@@ -113,6 +118,7 @@ Commands:
   inspect-native-instruction              Inspect a code or data address, its containing Ghidra listing object, and typed incoming references where supported
   inspect-native-load-image               Inspect native load observations and supported snapshot verification
   inspect-ntfs-journal                    Inspect paired offline NTFS MFT and USN journal acquisitions
+  inspect-nuget-nupkg                     Inspect NuGet .nupkg identity, dependency groups and ZIP contents without restore or network
   inspect-packet-capture                  Inspect an existing packet capture with caller-supplied TShark
   inspect-packet-fields                   Search installed TShark protocol and field definitions
   inspect-pcap-capture                    Inspect one pcap/pcapng capture: endpoints, DNS, TLS SNI, and protocol distribution
@@ -123,12 +129,14 @@ Commands:
   inspect-pe-resources                    Inspect PE resource identities, payload ranges, hashes and icon-group relationships
   inspect-playwright-trace                Inventory local saved Playwright v10 trace ZIP events offline without launching a browser
   inspect-plist                           Parse app plist metadata without launching Hopper
-  inspect-python-pyc                      Inspect a supported CPython 3.7–3.13 pyc header and marshal code objects without executing bytecode
+  inspect-python-pyc                      Inspect a supported CPython 3.7–3.15 pyc header and marshal code objects without executing bytecode
   inspect-recorded-crash                  Inspect supplied core registers/signals and optional debugger mapping evidence
   inspect-rust-binary                     Inspect an embedded cargo-auditable Rust dependency list without target execution
   inspect-signal-decoders                 Search installed sigrok decoders or selected decoder help
   inspect-signature                       Run inspect_signature without launching Hopper
   inspect-sqlite-database                 Inspect SQLite schema and optional ordinary-table rows from a local snapshot
+  inspect-uefi-firmware                   Map UEFI firmware volumes, FFS files and sections of a flash image
+  inspect-uefi-nvram                      Map AMI NVRAM variable stores (for example StdDefaults) of a flash image
   inspect-v8-code-cache                   Inspect a V8 code cache header and its embedded printable byte patterns without executing it
   inspect-wasm-artifact                   Inspect an explicit local WASM artifact with WABT
   inspect-web-event-listeners             Inspect native listener source locations on the first main-document CSS match
@@ -208,15 +216,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --mcp                               Start as MCP stdio server
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
-  --update                            Update to latest version
-  --version                           Show version
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --mcp                                       Start as MCP stdio server
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
+  --update                                    Update to latest version
+  --version                                   Show version

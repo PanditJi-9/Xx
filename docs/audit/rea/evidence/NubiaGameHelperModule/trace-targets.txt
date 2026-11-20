@@ -1,0 +1,3 @@
+cn.nubia.gamehelper.CoreService
+cn.nubia.gamehelper.export.ImportService
+cn.nubia.gamehelper.sync.SyncService

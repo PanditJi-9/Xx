@@ -1,0 +1,128 @@
+[
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamehighlights.Activity.MainActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamehighlights.Activity.PreviewActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadCjzcZhTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadCjzcEngTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadWZTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadLOLTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadCFTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ReadHighLightsTextService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ScreenRecordService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ScreenClipService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.TopService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.GameHighLightsViewServices",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.ScreenFloatingButtonServices",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.pip.PIPPlayer",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.Service.GameHighLightsArkService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehighlights.autoclip.service.GameHighLightsClipService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamehighlights.provider.PluginRecordProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamehighlights.autoclip.receiver.HighLightsReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]

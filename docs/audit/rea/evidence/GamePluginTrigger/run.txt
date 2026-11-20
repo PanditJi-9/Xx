@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (20705 bytes)
+
+===== signature -> signature.json
+status: ok (5963 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (306156 bytes)
+
+===== xrefs: com.zte.game.plugintrigger.plugins.MultiPluginService -> xref-com.zte.game.plugintrigger.plugins.MultiPluginService.json
+status: ok (11767 bytes)
+
+===== xrefs: com.zte.game.plugintrigger.service.PluginTriggerService -> xref-com.zte.game.plugintrigger.service.PluginTriggerService.json
+status: ok (31860 bytes)
+
+===== xrefs: com.theartofdev.edmodo.cropper.CropImageActivity -> xref-com.theartofdev.edmodo.cropper.CropImageActivity.json
+status: ok (10276 bytes)
+
+===== xrefs: com.zte.game.plugintrigger.client.PermissionActivity -> xref-com.zte.game.plugintrigger.client.PermissionActivity.json
+status: ok (7064 bytes)
+

@@ -1,0 +1,184 @@
+[
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.BeautifyActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.preview.BeautyPreviewActivity",
+  "exported": false,
+  "permission": "zte.permission.PUSH_MESSAGE_3e4f5a41",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.preview.FullscreenPreviewActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.gallerypreivew.GalleryPreivewActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.BeautifyWallpaperActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.StyleActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.IconChooseActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.FontSettingActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.NewStyleWallpaperActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.OnlineInnerActivity",
+  "exported": false,
+  "permission": "zte.permission.PUSH_MESSAGE_3e4f5a41",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.tools.NFCSettingActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.beauty.AIWallpaper.AIWallpaperActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.beauty.AIWallpaper.AIWallpaperResultDisplayActivity",
+  "exported": null,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.beauty.AIWallpaper.AIWallpaperSplashActivity",
+  "exported": true,
+  "permission": "theme.permission.LOCAL_RESOURCE",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.tools.TransLiveWallpaperActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautify.view.common.set.KeySlideReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.beautify.service.ZteThemeSearchIndexablesProvider",
+  "exported": true,
+  "permission": "android.permission.READ_SEARCH_INDEXABLES",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.beauty.AIWallpaper.PadAbroadAIWallpaperActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.beautify.view.common.tools.NullActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautify.view.common.set.SetWallPaperBroadcastReceiver",
+  "exported": true,
+  "permission": "theme.permission.receivechange",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautify.model.local.utils.CommonActionReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautify.service.AlarmManagerReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.beautify.service.GpsChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.beautify.view.common.preview.tryuse.RealResetResourceJobService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.beautify.model.download.DldThemeResProvider",
+  "exported": true,
+  "permission": "theme.permission.READ_DOWNLOADED_RESOURCE",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.beautify.model.FileProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ }
+]

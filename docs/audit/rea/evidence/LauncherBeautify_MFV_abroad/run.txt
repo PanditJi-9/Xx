@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (82903 bytes)
+
+===== signature -> signature.json
+status: ok (4818 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (829941 bytes)
+
+===== xrefs: com.zte.beautify.BeautifyActivity -> xref-com.zte.beautify.BeautifyActivity.json
+status: ok (16482 bytes)
+
+===== xrefs: com.zte.beautify.BeautifyWallpaperActivity -> xref-com.zte.beautify.BeautifyWallpaperActivity.json
+status: ok (15523 bytes)
+
+===== xrefs: com.zte.beautify.FontSettingActivity -> xref-com.zte.beautify.FontSettingActivity.json
+status: ok (4851 bytes)
+
+===== xrefs: com.zte.beautify.IconChooseActivity -> xref-com.zte.beautify.IconChooseActivity.json
+status: ok (9976 bytes)
+

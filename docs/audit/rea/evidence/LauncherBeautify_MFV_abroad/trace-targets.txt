@@ -1,0 +1,4 @@
+com.zte.beautify.BeautifyActivity
+com.zte.beautify.BeautifyWallpaperActivity
+com.zte.beautify.FontSettingActivity
+com.zte.beautify.IconChooseActivity

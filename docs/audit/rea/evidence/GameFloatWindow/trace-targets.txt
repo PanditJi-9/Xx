@@ -1,0 +1,4 @@
+cn.zte.gamefloat.aitip.AiTipService
+cn.zte.gamefloat.chatassistant.ChatAssistantService
+cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity
+cn.zte.gamefloat.equalizer.EqualizerService

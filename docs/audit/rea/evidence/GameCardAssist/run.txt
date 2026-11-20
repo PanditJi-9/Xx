@@ -1,0 +1,15 @@
+===== package declaration -> package.json
+status: ok (11411 bytes)
+
+===== signature -> signature.json
+status: ok (5944 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (129004 bytes)
+
+===== xrefs: com.zte.gamecardassist.DrawCardService -> xref-com.zte.gamecardassist.DrawCardService.json
+status: ok (24067 bytes)
+
+===== xrefs: com.zte.gamecardassist.view.CardAssistTestActivity -> xref-com.zte.gamecardassist.view.CardAssistTestActivity.json
+status: ok (4930 bytes)
+

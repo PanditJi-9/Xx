@@ -1,0 +1,9 @@
+===== package declaration -> package.json
+status: ok (5546 bytes)
+
+===== signature -> signature.json
+status: ok (4817 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (3683 bytes)
+

@@ -1,0 +1,9 @@
+{
+ "package": "com.zte.beautify",
+ "min_sdk": "33",
+ "target_sdk": "36",
+ "classes": 7849,
+ "components": 26,
+ "scheme": "v2",
+ "cert": "d7bb72ea42adfcadf52c3d641b2b40181d6a36932a81c93207db172811ca46b7"
+}

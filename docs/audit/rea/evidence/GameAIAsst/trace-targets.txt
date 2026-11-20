@@ -1,0 +1,2 @@
+cn.zte.gameaiasst.GameAiAsstService
+cn.zte.gameaiasst.activity.PermissionActivity

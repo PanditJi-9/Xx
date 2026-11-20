@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (17683 bytes)
+
+===== signature -> signature.json
+status: ok (5997 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (7195 bytes)
+
+===== xrefs: com.zte.beautifyadapter.ThemeApplyService -> xref-com.zte.beautifyadapter.ThemeApplyService.json
+status: ok (25279 bytes)
+
+===== xrefs: com.zte.beautifyadapter.helper.SerialWallpaperSetService -> xref-com.zte.beautifyadapter.helper.SerialWallpaperSetService.json
+status: ok (5833 bytes)
+
+===== xrefs: com.zte.beautifyadapter.tryuse.ResetResourceJobService -> xref-com.zte.beautifyadapter.tryuse.ResetResourceJobService.json
+status: ok (6216 bytes)
+
+===== xrefs: com.zte.beautifyadapter.tryuse.TryResourceJobService -> xref-com.zte.beautifyadapter.tryuse.TryResourceJobService.json
+status: ok (6201 bytes)
+

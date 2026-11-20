@@ -1,0 +1,254 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.precisionctl.PrecisionCtlService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.report.GameReportService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.aitip.AiTipService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.imgsearch.ImageSearchService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.zte.gamefloat.chatassistant.db.ChatAssistantContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gamefloat.chatassistant.ui.DeleteDialog",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gamefloat.chatassistant.ui.AddRecorderActivityDialog",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gamefloat.chatassistant.ui.AddVoicePackActivityDialog",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gamefloat.chatassistant.ui.UploadTextActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.chatassistant.ChatAssistantService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.powerpanel.PowerPanelService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.gamekeys.GameKeysService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.equalizer.EqualizerService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.gamecounter.GameCounterService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.zte.gamefloat.equalizer.DtsStateReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.zte.gamefloat.receiver.GameModeReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.dts.dtssdk.DtsBroadcastManager",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.dts.dtssdk.util.BluetoothConnectionManager$BluetoothConnectionReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.dts.dtssdk.util.UsbConnectionManager$RouteChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.dts.dtssdk.DtsCore$ServiceBroadcastReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.zte.gamefloat.equalizer.data.EqualizerProvider",
+  "exported": true,
+  "permission": "cn.zte.gamefloat.permission.READ_EQUALIZER",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.zte.gamefloat.equalizer.data.PriviewFileProvider",
+  "exported": true,
+  "permission": "cn.zte.gamefloat.permission.READ_EQUALIZER",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.zte.gamefloat.wrp.WinRatePredictionService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.zte.gamefloat.wrp.db.WinRateContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.dts.dtssdk.util.NotificationService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "androidx.room.MultiInstanceInvalidationService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.ToolsReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.CardContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ }
+]

@@ -1,0 +1,4 @@
+cn.nubia.gamecenter.settings.GameCarrerActivity
+cn.nubia.gamecenter.settings.GameCenterActivity
+cn.nubia.gamecenter.settings.basic.GameChickenModeActivity
+cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity

@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (31288 bytes)
+
+===== signature -> signature.json
+status: ok (5987 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (56594 bytes)
+
+===== xrefs: cn.nubia.gamehighlights.Activity.MainActivity -> xref-cn.nubia.gamehighlights.Activity.MainActivity.json
+status: ok (80113 bytes)
+
+===== xrefs: cn.nubia.gamehighlights.Service.GameHighLightsArkService -> xref-cn.nubia.gamehighlights.Service.GameHighLightsArkService.json
+status: ok (12628 bytes)
+
+===== xrefs: cn.nubia.gamehighlights.Service.GameHighLightsViewServices -> xref-cn.nubia.gamehighlights.Service.GameHighLightsViewServices.json
+status: ok (10052 bytes)
+
+===== xrefs: cn.nubia.gamehighlights.Service.ScreenClipService -> xref-cn.nubia.gamehighlights.Service.ScreenClipService.json
+status: ok (17870 bytes)
+

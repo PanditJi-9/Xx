@@ -1,0 +1,380 @@
+[
+ {
+  "kind": "service",
+  "name": "com.android.quickstep.TouchInteractionService",
+  "exported": true,
+  "permission": "android.permission.STATUS_BAR_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.quickstep.RecentsActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.quickstep.LauncherSearchIndexablesProvider",
+  "exported": true,
+  "permission": "android.permission.READ_SEARCH_INDEXABLES",
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.proxy.ProxyActivityStarter",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.quickstep.interaction.GestureSandboxActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.quickstep.interaction.AllSetActivity",
+  "exported": true,
+  "permission": "android.permission.REBOOT",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.WidgetPickerActivity",
+  "exported": true,
+  "permission": "com.zte.mifavor.launcher.permission.START_WIDGET_PICKER_ACTIVITY",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.uioverrides.QuickstepLauncher",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.quickstep.SplitActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SPLITSELECT",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.ChooseLockHelperExt",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.android.launcher3.SessionCommitReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.android.launcher3.AppWidgetsRestoredReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.android.launcher3.notification.NotificationListener",
+  "exported": true,
+  "permission": "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.dragndrop.AddItemActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.LauncherProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.graphics.LauncherCustomizationProvider",
+  "exported": true,
+  "permission": "android.permission.BIND_WALLPAPER",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.testing.TestInformationProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.secondarydisplay.SecondaryDisplayLauncher",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.SettingsActivityMFV",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.SubscriptActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SET_SUBSCRIPT",
+  "filters": 2
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.DesktopGridActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SET_SUBSCRIPT",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.HomeScreenLayoutActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SET_SUBSCRIPT",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.RecentAppStyleActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SET_SUBSCRIPT",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.CustomPageSelectionLayoutActivity",
+  "exported": true,
+  "permission": "launchermfv.permission.SET_SUBSCRIPT",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.settings.desktopclock.DesktopClockSettingsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.mfvUtil.DefaultErrorActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.mfvUtil.PermissionGrantDialog",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.android.launcher3.FoldHelpTipAty",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.ResourceDatabaseProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.backup.BackupProvider",
+  "exported": true,
+  "permission": "launchermfv.permission.USE_BACKUP_RESTORE",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.TaskProvider",
+  "exported": true,
+  "permission": "launchermfv.permission.READ_TASK",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.DynamicShowHiddenAppsProvider",
+  "exported": true,
+  "permission": "launchermfv.permission.DYNAMIC_SHOW_HIDDEN_APPS",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.ShareFileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.UnReadInfoProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.WechatUnreadProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.resource.OtherUnreadProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.widget.MFVWidgetProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.android.launcher3.backup.BackupWeShareService",
+  "exported": true,
+  "permission": "launchermfv.permission.USE_BACKUP_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.android.launcher3.ZBackupService",
+  "exported": true,
+  "permission": "launchermfv.permission.Z_BACKUP_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.android.launcher3.ZRecoverService",
+  "exported": true,
+  "permission": "launchermfv.permission.Z_RECOVER_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.android.launcher3.resource.ResourceOnline",
+  "exported": true,
+  "permission": "launchermfv.permission.USE_ONLINE_RECEIVER",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.android.launcher3.InstallShortcutReceiver",
+  "exported": true,
+  "permission": "com.android.launcher.permission.INSTALL_SHORTCUT",
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.nubia.NubiaUnreadMarkProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.UnlockAnimationProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.android.launcher3.stk.SimCardLoadReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "provider",
+  "name": "com.android.launcher3.globalsearch.GSOuterProvider",
+  "exported": true,
+  "permission": "launchermfv.permission.GS_LAUNCHER_DATA",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "androidx.slice.compat.SlicePermissionActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.ToolsReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.CardContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ }
+]

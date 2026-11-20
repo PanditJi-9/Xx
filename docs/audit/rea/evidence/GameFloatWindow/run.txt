@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (74113 bytes)
+
+===== signature -> signature.json
+status: ok (5951 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (446979 bytes)
+
+===== xrefs: cn.zte.gamefloat.aitip.AiTipService -> xref-cn.zte.gamefloat.aitip.AiTipService.json
+status: ok (15782 bytes)
+
+===== xrefs: cn.zte.gamefloat.chatassistant.ChatAssistantService -> xref-cn.zte.gamefloat.chatassistant.ChatAssistantService.json
+status: ok (26047 bytes)
+
+===== xrefs: cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity -> xref-cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity.json
+status: ok (18717 bytes)
+
+===== xrefs: cn.zte.gamefloat.equalizer.EqualizerService -> xref-cn.zte.gamefloat.equalizer.EqualizerService.json
+status: ok (32592 bytes)
+

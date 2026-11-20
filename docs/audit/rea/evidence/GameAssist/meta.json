@@ -1,0 +1,9 @@
+{
+ "package": "cn.nubia.gameassist",
+ "min_sdk": "33",
+ "target_sdk": "37",
+ "classes": 9166,
+ "components": 46,
+ "scheme": "v3",
+ "cert": "b8d7a192798225d729378c636622eb7e25257437bde51c0787d2a1319672bb8e"
+}

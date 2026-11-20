@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (129515 bytes)
+
+===== signature -> signature.json
+status: ok (4770 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (252192 bytes)
+
+===== xrefs: com.android.launcher3.WidgetPickerActivity -> xref-com.android.launcher3.WidgetPickerActivity.json
+status: ok (16153 bytes)
+
+===== xrefs: com.android.launcher3.ZBackupService -> xref-com.android.launcher3.ZBackupService.json
+status: ok (6890 bytes)
+
+===== xrefs: com.android.launcher3.ZRecoverService -> xref-com.android.launcher3.ZRecoverService.json
+status: ok (6887 bytes)
+
+===== xrefs: com.android.launcher3.backup.BackupWeShareService -> xref-com.android.launcher3.backup.BackupWeShareService.json
+status: ok (8825 bytes)
+

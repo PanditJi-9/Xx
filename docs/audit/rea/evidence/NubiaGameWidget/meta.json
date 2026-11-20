@@ -1,0 +1,9 @@
+{
+ "package": "cn.nubia.gamewidget",
+ "min_sdk": "30",
+ "target_sdk": "35",
+ "classes": 3091,
+ "components": 11,
+ "scheme": "v3",
+ "cert": "db4e3ab7c2f3c77e236eb1ced7f808158c7426013f6622094bee0e820ca051ce"
+}

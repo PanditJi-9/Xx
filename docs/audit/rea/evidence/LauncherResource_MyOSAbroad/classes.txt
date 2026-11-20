@@ -1,0 +1,5 @@
+# 2 classes (engine reports total_classes=2)
+- coverage: complete
+
+com.zte.mifavor.launcher.resource.BuildConfig
+com.zte.mifavor.launcher.resource.R

@@ -1,0 +1,4 @@
+cn.nubia.gallerylockscreen.service.SDKHelperService
+cn.nubia.gallerylockscreen.settings.CustomActivity
+cn.nubia.gallerylockscreen.settings.CustomOtherSettingsActivity
+cn.nubia.gallerylockscreen.settings.GalleryDetailActivity

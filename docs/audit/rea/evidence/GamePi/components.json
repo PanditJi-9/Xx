@@ -1,0 +1,16 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepi.GamePerformanceService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamepi.DebugLagReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]

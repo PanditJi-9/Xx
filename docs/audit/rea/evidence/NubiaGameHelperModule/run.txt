@@ -1,0 +1,18 @@
+===== package declaration -> package.json
+status: ok (22430 bytes)
+
+===== signature -> signature.json
+status: ok (5987 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (60712 bytes)
+
+===== xrefs: cn.nubia.gamehelper.CoreService -> xref-cn.nubia.gamehelper.CoreService.json
+status: ok (34993 bytes)
+
+===== xrefs: cn.nubia.gamehelper.export.ImportService -> xref-cn.nubia.gamehelper.export.ImportService.json
+status: ok (6837 bytes)
+
+===== xrefs: cn.nubia.gamehelper.sync.SyncService -> xref-cn.nubia.gamehelper.sync.SyncService.json
+status: ok (7932 bytes)
+

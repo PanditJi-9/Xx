@@ -1,0 +1,9 @@
+{
+ "package": "com.zte.gallerylockscreen",
+ "min_sdk": "32",
+ "target_sdk": "35",
+ "classes": 4986,
+ "components": 22,
+ "scheme": "v2",
+ "cert": null
+}

@@ -8,27 +8,28 @@ Arguments:
 
 Options:
   --detail <complete|summary>  Deliver complete Evidence, or a summary with --evidence_output (default: complete)
-  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
   --view <string>              JSON android manifest/components/component-summary view; requires --detail summary and --evidence_output
+  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
 
 Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea search-android-classes --help =====
 rea search-android-classes — Search APK class names; empty query inventories all classes
 
-Usage: rea search-android-classes <path> <query>
+Usage: rea search-android-classes <path> <query> [options]
 
 Arguments:
   path   Local APK path; the target is never executed
@@ -38,15 +39,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea trace-android-references --help =====
 rea trace-android-references — Trace APK using nodes for a defined class/method or an externally invoked DEX method
@@ -55,7 +57,7 @@ Usage: rea trace-android-references <path> <className> [options]
 
 Arguments:
   path       Local APK path; the target is never executed
-  className  Exact fully qualified class name
+  className  Exact APK-defined class, or an externally referenced DEX class when method_name is selected
 
 Options:
   --method-name <string>    Omit for class references; select ambiguous methods with overload_index
@@ -65,15 +67,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea inspect-android-class --help =====
 rea inspect-android-class — Inspect one exact APK class's member inventory
@@ -93,15 +96,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea inspect-android-method --help =====
 rea inspect-android-method — Decompile one APK method with explicit overload selection
@@ -114,8 +118,8 @@ Arguments:
   methodName  Exact declared method name
 
 Options:
-  --overload-index <value>     Explicit zero-based index among same-name methods; required when ambiguous
   --mapping-path <string>      Absolute local R8/ProGuard mapping.txt; names are annotated, never replaced
+  --overload-index <value>     Explicit zero-based index among same-name methods; required when ambiguous
   --detail <complete|summary>  Deliver complete Evidence, or a summary with --evidence_output (default: complete)
   --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
 
@@ -123,15 +127,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea inspect-apk-signature --help =====
 rea inspect-apk-signature — Inspect declared APK signing schemes, signers and content digests
@@ -143,22 +148,23 @@ Arguments:
 
 Options:
   --detail <complete|summary>  Deliver complete Evidence, or a summary with --evidence_output (default: complete)
-  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
   --view <string>              JSON signer/digest/lineage selection; requires --detail summary and --evidence_output
+  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
 
 Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea decode-android-resources --help =====
 rea decode-android-resources — Decode one APK's manifest, metadata, and string resources with apktool
@@ -169,30 +175,31 @@ Arguments:
   path  Local APK file to decode
 
 Options:
-  --locale <string>                       Project strings from res/values-<locale>/strings.xml instead of the default table
-  --string-tables-only                    Return selected strings only in string_tables, leaving top-level strings empty. Omit to preserve the primary strings field.
-  --locales <array>                       Repeat to project multiple localized string tables, e.g. --locales de --locales pt-BR
-  --decode-timeout-ms <value>             Decode wall-clock budget in milliseconds (default 600000), from apktool d start through process exit. Omitted means 600000. Applies on the next decode. Does not raise the fixed output capture allowance or the version probe.
+  --strings                               Include string resources; use --no-strings to skip projecting them (default: true)
   --string-offset <value>                 Zero-based offset into valid parsed strings in each selected table, default 0. Retry the same APK and locale with the returned page.next_offset to retrieve later strings; verify target.sha256 across calls.
   --string-limit <value>                  Maximum strings returned per selected table, default 2000. Applies on this decode; no restart. Independent of XML read and aggregate output budgets.
   --max-total-strings <value>             Aggregate returned string copies, default 10000. The legacy multi-locale shape charges the primary strings twice; string_tables_only avoids that copy. Raise this or select fewer locales when exhausted.
   --max-string-table-bytes <value>        UTF-8 source byte admission for each strings.xml, default 8388608. Raise this and, when necessary, max_total_string_table_bytes to retry an oversized table. Applies on the next decode; no restart.
   --max-total-string-table-bytes <value>  Aggregate XML bytes read across distinct physical string tables, default 33554432. Raise this or select fewer locales. Does not raise per-table admission or string output budgets.
-  --strings                               Include string resources; use --no-strings to skip projecting them (default: true)
+  --string-tables-only                    Return selected strings only in string_tables, leaving top-level strings empty. Omit to preserve the primary strings field.
+  --locale <string>                       Project strings from res/values-<locale>/strings.xml instead of the default table
+  --locales <array>                       Repeat to project multiple localized string tables, e.g. --locales de --locales pt-BR
+  --decode-timeout-ms <value>             Decode wall-clock budget in milliseconds (default 600000), from apktool d start through process exit. Omitted means 600000. Applies on the next decode. Does not raise the fixed output capture allowance or the version probe.
 
 Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea project-android-application-graph --help =====
 rea project-android-application-graph — Project authenticated APK inventory Evidence into an Android application graph
@@ -209,15 +216,16 @@ Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea inspect-android-jni-bindings --help =====
 rea inspect-android-jni-bindings — Link raw DEX native declarations to static JNI export/table candidates without executing the APK
@@ -229,23 +237,24 @@ Arguments:
 
 Options:
   --detail <complete|summary>  Deliver complete Evidence, or a summary with --evidence_output (default: complete)
-  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
-  --query <string>             JSON selection: class_name, method_names, descriptors, abis, library_paths; arrays preserve exact names
   --view <string>              JSON android-jni collection page; requires --detail summary and --evidence_output
+  --query <string>             JSON selection: class_name, method_names, descriptors, abis, library_paths; arrays preserve exact names
+  --evidence_output <string>   Save complete Evidence as a bundle; required for summary delivery. Never overwrites.
 
 Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 
 ===== rea capture-adb-screen --help =====
 rea capture-adb-screen — Capture one screen frame as a digested PNG
@@ -256,19 +265,20 @@ Arguments:
   serial  Device serial exactly as `adb devices` reports it
 
 Options:
-  --output-directory <string>  Local directory for screen.png
+  --output-directory <string>  Local directory for the captured PNG; must not already contain it
 
 Custom Global Options:
   --timings  Write measured command timing to stderr.
 
 Global Options:
-  --filter-output <keys>              Filter output by key paths (e.g. foo,bar.baz,a[0,3])
-  --format <toon|json|yaml|md|jsonl>  Output format
-  --full-output                       Show full output envelope
-  --help                              Show help
-  --llms, --llms-full                 Print LLM-readable manifest
-  --schema                            Show JSON Schema for command
-  --token-count                       Print token count of output (instead of output)
-  --token-limit <n>                   Limit output to n tokens
-  --token-offset <n>                  Skip first n tokens of output
+  --filter-output <keys>                      Filter output by key paths (e.g. foo,bar.baz,a[0,3])
+  --format <toon|json|yaml|md|jsonl|csv|tsv>  Output format
+  --full-output                               Show full output envelope
+  --help                                      Show help
+  --json                                      Shorthand for --format json
+  --llms, --llms-full                         Print LLM-readable manifest
+  --schema                                    Show JSON Schema for command
+  --token-count                               Print token count of output (instead of output)
+  --token-limit <n>                           Limit output to n tokens
+  --token-offset <n>                          Skip first n tokens of output
 

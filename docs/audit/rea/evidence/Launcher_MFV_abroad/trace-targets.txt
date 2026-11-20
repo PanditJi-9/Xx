@@ -1,0 +1,4 @@
+com.android.launcher3.WidgetPickerActivity
+com.android.launcher3.ZBackupService
+com.android.launcher3.ZRecoverService
+com.android.launcher3.backup.BackupWeShareService

@@ -1,0 +1,15 @@
+===== package declaration -> package.json
+status: ok (14740 bytes)
+
+===== signature -> signature.json
+status: ok (5974 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (38018 bytes)
+
+===== xrefs: com.zte.mifavor.launcher.adapter.BatchUninstallService -> xref-com.zte.mifavor.launcher.adapter.BatchUninstallService.json
+status: ok (9773 bytes)
+
+===== xrefs: com.zte.mifavor.launcher.adapter.LauncherAdapterService -> xref-com.zte.mifavor.launcher.adapter.LauncherAdapterService.json
+status: ok (7180 bytes)
+

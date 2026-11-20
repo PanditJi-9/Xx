@@ -1,0 +1,2 @@
+com.zte.mifavor.launcher.adapter.BatchUninstallService
+com.zte.mifavor.launcher.adapter.LauncherAdapterService

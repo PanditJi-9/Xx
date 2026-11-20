@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (203244 bytes)
+
+===== signature -> signature.json
+status: ok (4798 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (653874 bytes)
+
+===== xrefs: cn.nubia.neopush.sdk.MessageHandleService -> xref-cn.nubia.neopush.sdk.MessageHandleService.json
+status: FAILED
+
+===== xrefs: cn.nubia.neopush.sdk.PushMessageHandler -> xref-cn.nubia.neopush.sdk.PushMessageHandler.json
+status: FAILED
+
+===== xrefs: cn.nubia.neostore.AppDetailActivity -> xref-cn.nubia.neostore.AppDetailActivity.json
+status: ok (6835 bytes)
+
+===== xrefs: cn.nubia.neostore.deeplink.DeeplinkDelegate -> xref-cn.nubia.neostore.deeplink.DeeplinkDelegate.json
+status: ok (13388 bytes)
+

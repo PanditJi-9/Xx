@@ -1,0 +1,15 @@
+===== package declaration -> package.json
+status: ok (18172 bytes)
+
+===== signature -> signature.json
+status: ok (5921 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (316521 bytes)
+
+===== xrefs: cn.zte.gameaiasst.GameAiAsstService -> xref-cn.zte.gameaiasst.GameAiAsstService.json
+status: ok (31130 bytes)
+
+===== xrefs: cn.zte.gameaiasst.activity.PermissionActivity -> xref-cn.zte.gameaiasst.activity.PermissionActivity.json
+status: ok (13222 bytes)
+

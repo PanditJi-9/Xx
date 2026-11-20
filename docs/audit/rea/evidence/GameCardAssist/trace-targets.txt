@@ -1,0 +1,2 @@
+com.zte.gamecardassist.DrawCardService
+com.zte.gamecardassist.view.CardAssistTestActivity

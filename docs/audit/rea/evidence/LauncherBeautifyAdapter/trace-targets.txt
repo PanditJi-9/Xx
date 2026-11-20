@@ -1,0 +1,4 @@
+com.zte.beautifyadapter.ThemeApplyService
+com.zte.beautifyadapter.helper.SerialWallpaperSetService
+com.zte.beautifyadapter.tryuse.ResetResourceJobService
+com.zte.beautifyadapter.tryuse.TryResourceJobService

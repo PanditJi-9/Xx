@@ -1,0 +1,324 @@
+[
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gameassist.test.GameAssistTestActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gameassist.test.ScreenSaverTestActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gameassist.service.GameAssistService",
+  "exported": true,
+  "permission": "cn.nubia.gameassist.permission.ACCESS",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gameassist.service.GameScreenSaverService",
+  "exported": true,
+  "permission": "cn.nubia.gameassist.permission.ACCESS",
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gameassist.test.Game3DTestActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.plugin.investigation.InvestigationModeService",
+  "exported": true,
+  "permission": "cn.nubia.gameassist.permission.ACCESS",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gameassist.plugin.config.UpdatePluginConfigService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gameassist.provider.FunctionCallProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gameassist.search.GlobalSearchProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gameassist.meditationmode.CustomNotificationListener",
+  "exported": true,
+  "permission": "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.multisubscreen.receiver.MultiSubScreenBroadcastReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 3
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.multisubscreen.ui.BaseAlertActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.multisubscreen.ui.CombinedAlertAty",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.multisubscreen.ui.ChooseDeviceAlertAty",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.gameassist.lowsugar.provider.LowSugarProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.gameassist.lowsugar.provider.LowSugarOcrProvider",
+  "exported": true,
+  "permission": "cn.nubia.gameassist.permission.gameocr",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.gameassist.aiagent.GameAgentService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.aiassistant.subagent.GameSubAgentService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.gameassist.subagent.GameSubAgentProvider",
+  "exported": true,
+  "permission": "cn.nubia.gameassist.permission.ACCESS",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.plugin.reminder.GameReminderProvider",
+  "exported": true,
+  "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.plugin.reminder.AlarmReceiver",
+  "exported": true,
+  "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+  "filters": 6
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.plugin.reminder.AlarmService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.plugin.reminder.permission.RequestPermissionActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.plugin.reminder.permission.RequestPermissionActivityBase",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.plugin.reminder.widget.GameReminderWidget",
+  "exported": true,
+  "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.plugin.reminder.widget.GameReminderWidgetService",
+  "exported": false,
+  "permission": "android.permission.BIND_REMOTEVIEWS",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.projection.ProjectionPanelService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.performanceindicator.widget.PerformanceIndicatorWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.performanceindicator.provider.PerformanceIndicatorProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.gameassist.permission.PermissionApplyActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.distbus.receiver.DistBusReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.mlkit.common.internal.MlKitComponentDiscoveryService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.google.mlkit.common.internal.MlKitInitProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.google.android.gms.common.api.GoogleApiActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.ToolsReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.consumer.CardContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ }
+]

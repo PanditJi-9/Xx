@@ -1,0 +1,12 @@
+===== package declaration -> package.json
+status: ok (40676 bytes)
+
+===== signature -> signature.json
+status: ok (5951 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (300474 bytes)
+
+===== xrefs: cn.nubia.gamewidget.projection.ProjectionWidgetIntentService -> xref-cn.nubia.gamewidget.projection.ProjectionWidgetIntentService.json
+status: ok (6445 bytes)
+

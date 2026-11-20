@@ -1,0 +1,23 @@
+[
+ {
+  "kind": "service",
+  "name": "com.zte.mifavor.launcher.adapter.BatchUninstallService",
+  "exported": true,
+  "permission": "launcheradapter.permission.BatchUninstallService",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.mifavor.launcher.adapter.LauncherAdapterService",
+  "exported": true,
+  "permission": "launcheradapter.permission.USE_ADAPTER_SERVICE",
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.mifavor.launcher.adapter.DoubleTapToPowerOffProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ }
+]

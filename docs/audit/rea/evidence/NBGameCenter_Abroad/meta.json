@@ -1,0 +1,9 @@
+{
+ "package": "com.nubia.gamecenter",
+ "min_sdk": "21",
+ "target_sdk": "35",
+ "classes": 8304,
+ "components": 149,
+ "scheme": "v2",
+ "cert": "c2de9d066ef96be02e61acbe477eeed7e0b6f205ba02b59177c48be52778ed55"
+}

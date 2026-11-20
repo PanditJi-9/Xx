@@ -1,0 +1,79 @@
+[
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamenotes.provider.GameNotesProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamenotes.service.FloatWindowService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamenotes.PermissionActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamenotes.FiberCatcherDialog",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamenotes.LocalChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.game.strategystation.db.StrategyStationProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.game.strategystation.account.LandScapeLoginTransitActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.game.strategystation.account.AccountReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.game.strategystation.account.AccountService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ }
+]

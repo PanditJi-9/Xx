@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (136667 bytes)
+
+===== signature -> signature.json
+status: ok (5916 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (604292 bytes)
+
+===== xrefs: cn.nubia.gamecenter.settings.GameCarrerActivity -> xref-cn.nubia.gamecenter.settings.GameCarrerActivity.json
+status: ok (10033 bytes)
+
+===== xrefs: cn.nubia.gamecenter.settings.GameCenterActivity -> xref-cn.nubia.gamecenter.settings.GameCenterActivity.json
+status: ok (9440 bytes)
+
+===== xrefs: cn.nubia.gamecenter.settings.basic.GameChickenModeActivity -> xref-cn.nubia.gamecenter.settings.basic.GameChickenModeActivity.json
+status: ok (5286 bytes)
+
+===== xrefs: cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity -> xref-cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity.json
+status: ok (5126 bytes)
+

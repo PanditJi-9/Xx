@@ -1,0 +1,9 @@
+{
+ "package": "cn.nubia.gamelauncher",
+ "min_sdk": "33",
+ "target_sdk": "36",
+ "classes": 5696,
+ "components": 61,
+ "scheme": "v3",
+ "cert": "db4e3ab7c2f3c77e236eb1ced7f808158c7426013f6622094bee0e820ca051ce"
+}

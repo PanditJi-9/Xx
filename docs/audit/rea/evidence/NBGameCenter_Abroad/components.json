@@ -1,0 +1,1045 @@
+[
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.neostore.widget.ForceTouchWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "zte.com.market.LoginActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.start.AppStartActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.AppDetailActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.forbidden_mode.ForbiddenHomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.neostore.db.DownloadTaskProvider",
+  "exported": true,
+  "permission": "com.nubia.gamecenter.permission.READ_DOWNLOADS",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.push.PushFirebaseMessagingService",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.deeplink.DeeplinkDelegate",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neopush.sdk.MessageHandleService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neopush.sdk.PushMessageHandler",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.start.GuidePageActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.sina.weibo.sdk.component.WeiboSdkBrowser",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.AppOrGameClassifyActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.AppOrGameSonClassifyActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.SubjectDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.deeplink.SubjectDetailActivityForDeeplink",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.everyday.EverydayBestBeautyActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.skyaward.SkyAwardActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.skyaward.SkyAwardMonthActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.newstart.NewStartActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.everyday.EverydayBestBeautyDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.LabelAppListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.InvalidCouponActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.AppListFromCouponActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.SubjectDetailActivityImage",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.deeplink.SubjectDetailActivityImageForDeeplink",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.NeoSubjectDetailCategory",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.deeplink.NeoSubjectDetailCategoryForDeeplink",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ActivitySubjectDetailCategory",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.HeadNameModifyActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.TopicListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.ReportActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.directaccess.DirectAccessActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.search.SearchActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.rank.RankActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.rank.MultiRankActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.push.RedirectActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.SettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.WebViewActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appoint.AppointmentListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.WifiLimitActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.IllegalUpdateActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.GuessYouLikeListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.InstallAgainMoreActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.RelevantRecommendActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.SameDeveloperActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.DeveloperActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.CommentActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ScreenShotPreviewActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.PermissionDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.AccountInstructionActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.LoginActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.InitActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.FindPwdBySmsActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.SmsVerifyActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.account.SmsRegistActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.upgrade.service.UpgradeService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.upgrade.service.UpgradeJobService",
+  "exported": true,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.InitDataService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.MonitorService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.DownloadService",
+  "exported": true,
+  "permission": "cn.nubia.neostore.downloadService",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.ReportInstallSuccessService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.CheckUpdateService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.DeleteService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.neostore.db.AppStoreProvider",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.neostore.db.RunningStatusProvider",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.neostore.receiver.BootReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.gift.GiftCenterActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.gift.GiftListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.gift.GiftDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.gift.MyGiftActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.MyAppointmentActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.MyCouponActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.ScoreMarketActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.ScoreSignActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.DeleteFileService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.start.NewPhoneNecessaryActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.UpgradeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.nubia.gamecenter.wxapi.WXEntryActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.activity.CampaignListActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.activity.CampaignApplicationActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.activity.CampaignDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.HomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.basic_mode.BasicModeHomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.minors_mode.MinorsModeHomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.cnp_mode.CloudNotebookPCHomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.unicom_mode.UniComHomeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.basic_mode.InitialSelectModeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.basic_mode.SelectModeActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.HistoryRecordActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.ScoreZoneActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.FavoriteActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.UserCenterActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.manage.ManageActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.manage.update.UpdateSoftActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.manage.AllLocalAppActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.manage.update.IgnoreUpdateActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.IntentSenderService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.NoAppActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.view.CtaActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.recommend.UserRecommendActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.EventZoneActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.AutoUpdateSettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.SignActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appdetail.GameCommentActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.MyWelfareActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.MyMessageActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.ScoreGetActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.DeepLinkScoreGetActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.AboutAppActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.main.HomeCategoryActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.appoint.AppointmentDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.FullStorageActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.baidu.mobads.sdk.api.AppActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.start.SplashActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.start.BrandPromotionActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.UserCenterPermissionCheckActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.PermissionCheckActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.ContentSettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.PrivacyPermissionSettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.SystemPermissionSettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.usercenter.WelfareSettingActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.SimpleWebViewActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.widget.rec.RecAppsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.HalfAppDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.DialogAppDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.neostore.ui.DesktopShortcutActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.neostore.receiver.AutoUpdateReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "receiver",
+  "name": "zte.com.market.receiver.WakeUpReceiver",
+  "exported": true,
+  "permission": "zte.com.market.permission.WAKEUP_MESSAGE",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.neostore.service.AutoUpdateJobService",
+  "exported": true,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.neostore.utils.InstallUtil$InstallResultReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.neostore.receiver.DownloadClickReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.neostore.db.AppQueryProvider",
+  "exported": true,
+  "permission": "nubia.permission.neostore.query.drainage",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.neostore.db.RelatedAppQueryProvider",
+  "exported": true,
+  "permission": "nubia.permission.neostore.query.drainage",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "androidx.room.MultiInstanceInvalidationService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.firebase.components.ComponentDiscoveryService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.google.firebase.iid.FirebaseInstanceIdReceiver",
+  "exported": true,
+  "permission": "com.google.android.c2dm.permission.SEND",
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "com.google.firebase.messaging.FirebaseMessagingService",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "com.google.android.gms.common.api.GoogleApiActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.google.android.gms.measurement.AppMeasurementReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.gms.measurement.AppMeasurementService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.gms.measurement.AppMeasurementJobService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.google.firebase.provider.FirebaseInitProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ }
+]

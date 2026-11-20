@@ -1,0 +1,156 @@
+[
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gallerylockscreen.provider.NBWallpaperProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.GalleryPosterActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.GameListActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.GalleryDetailActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.SettingsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.CustomActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.ShareActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.UserFavouriteDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.LocalAlbumSelectorActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.UserFavouriteSelectorActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.PhotoPreviewActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.LocalDetailActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gallerylockscreen.settings.CustomOtherSettingsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gallerylockscreen.service.SDKHelperService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "com.google.android.gms.measurement.AppMeasurementReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.gms.measurement.AppMeasurementService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.android.gms.measurement.AppMeasurementJobService",
+  "exported": false,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.google.firebase.components.ComponentDiscoveryService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "com.google.firebase.provider.FirebaseInitProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ }
+]

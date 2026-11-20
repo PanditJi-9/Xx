@@ -1,0 +1,429 @@
+[
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.GameSpaceActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.HostModeGameSpace",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.ExperienceHostMode",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.AppAddActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.LargeGameActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.fragment.SplashScreen",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.UninstallActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.AtmosphereActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.activity.UpgradeDialogActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamelauncher.db.AppAddProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.receiver.BuryReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamelauncher.aimhelper.AimService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.aimhelper.StartSightAssistReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.upgrade.service.UpgradeService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.upgrade.service.UpgradeJobService",
+  "exported": true,
+  "permission": "android.permission.BIND_JOB_SERVICE",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamelauncher.upgrade.UpgradeFileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.aimhelper.AimHelperPermissionDialogActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.broadcast.GameEventReceiver",
+  "exported": true,
+  "permission": "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamelauncher.broadcast.GameLifeCycleChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamelauncher.broadcast.GameEventService$GameBroadcastService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamelauncher.broadcast.GameEventService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.plug.PlugUnitActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepanel.PowerPanelService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamepanel.GameForegroundChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.studio.TouPingActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.globalsearch.GlobalSearchProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.resourcelibrary.ResourceLibraryActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.tgk.TgkService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.tgk.data.FileProvider",
+  "exported": true,
+  "permission": "cn.nubia.tgk.permission.FILE_PROVIDER",
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.GamepadService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.tgk.data.TgkDataProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.tgk.TgkFilePickActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.resourcelibrary.ResourceLibProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamelauncher.service.GameFeatureService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamelauncher.gamecontrolpanel.EnergyCubeProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.studio.TouPingGravitationActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.xgravitation.XGravitationActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.redmagicplanet.ui.BehaviorLearnedActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamelauncher.redmagicplanet.ui.GameAgentActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.GameCenterActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.GameCarrerActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.recordSettings.GameRecordActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.records.activity.RecordsActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.recordSettings.GameManualActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.net.ManagerAcceleratedAppActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.barrageMessage.BarrageMessageSourceActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.basic.GameChickenModeActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.wallpaper.WallpaperCropActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.settings.owlsysaciton.OwlSysCvReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamecenter.settings.OwlSettingsProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamecenter.settings.GameCenterFileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamecenter.settings.recordsdb.RedMagicTimeProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.settings.owlsysaciton.OwlSysCvInitService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamecenter.settings.applearning.AppTimeLockService",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 2
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ }
+]

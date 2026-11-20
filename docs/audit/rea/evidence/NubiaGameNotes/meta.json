@@ -1,0 +1,9 @@
+{
+ "package": "cn.nubia.gamenotes",
+ "min_sdk": "30",
+ "target_sdk": "35",
+ "classes": 3112,
+ "components": 11,
+ "scheme": "v3",
+ "cert": "b8d7a192798225d729378c636622eb7e25257437bde51c0787d2a1319672bb8e"
+}

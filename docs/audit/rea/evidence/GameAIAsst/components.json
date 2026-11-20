@@ -1,0 +1,30 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.zte.gameaiasst.GameAiAsstService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.zte.gameaiasst.activity.PermissionActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.zte.gameaiasst.provider.GameAIAsstProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ }
+]

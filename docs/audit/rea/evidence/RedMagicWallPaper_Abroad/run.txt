@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (46124 bytes)
+
+===== signature -> signature.json
+status: ok (3908 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (485198 bytes)
+
+===== xrefs: cn.nubia.gallerylockscreen.service.SDKHelperService -> xref-cn.nubia.gallerylockscreen.service.SDKHelperService.json
+status: ok (5324 bytes)
+
+===== xrefs: cn.nubia.gallerylockscreen.settings.CustomActivity -> xref-cn.nubia.gallerylockscreen.settings.CustomActivity.json
+status: ok (11036 bytes)
+
+===== xrefs: cn.nubia.gallerylockscreen.settings.CustomOtherSettingsActivity -> xref-cn.nubia.gallerylockscreen.settings.CustomOtherSettingsActivity.json
+status: ok (9389 bytes)
+
+===== xrefs: cn.nubia.gallerylockscreen.settings.GalleryDetailActivity -> xref-cn.nubia.gallerylockscreen.settings.GalleryDetailActivity.json
+status: ok (15739 bytes)
+

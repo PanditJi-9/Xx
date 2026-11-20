@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (105466 bytes)
+
+===== signature -> signature.json
+status: ok (5922 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (994246 bytes)
+
+===== xrefs: cn.nubia.gameassist.meditationmode.CustomNotificationListener -> xref-cn.nubia.gameassist.meditationmode.CustomNotificationListener.json
+status: ok (8770 bytes)
+
+===== xrefs: cn.nubia.gameassist.service.GameAssistService -> xref-cn.nubia.gameassist.service.GameAssistService.json
+status: ok (7018 bytes)
+
+===== xrefs: cn.nubia.gameassist.service.GameScreenSaverService -> xref-cn.nubia.gameassist.service.GameScreenSaverService.json
+status: ok (5219 bytes)
+
+===== xrefs: cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity -> xref-cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity.json
+status: ok (13324 bytes)
+

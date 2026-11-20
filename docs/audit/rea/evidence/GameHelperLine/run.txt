@@ -1,0 +1,18 @@
+===== package declaration -> package.json
+status: ok (28001 bytes)
+
+===== signature -> signature.json
+status: ok (5944 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (62066 bytes)
+
+===== xrefs: cn.nubia.aimhelper.AimService -> xref-cn.nubia.aimhelper.AimService.json
+status: ok (13758 bytes)
+
+===== xrefs: cn.nubia.gamehelperline.LineService -> xref-cn.nubia.gamehelperline.LineService.json
+status: ok (21383 bytes)
+
+===== xrefs: cn.nubia.aimhelper.AimHelperPermissionDialogActivity -> xref-cn.nubia.aimhelper.AimHelperPermissionDialogActivity.json
+status: ok (6101 bytes)
+

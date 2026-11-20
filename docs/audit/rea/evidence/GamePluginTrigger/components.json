@@ -1,0 +1,51 @@
+[
+ {
+  "kind": "activity",
+  "name": "com.theartofdev.edmodo.cropper.CropImageActivity",
+  "exported": null,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "com.zte.game.plugintrigger.client.PermissionActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.game.plugintrigger.plugins.MultiPluginService",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.game.plugintrigger.service.PluginTriggerService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "com.zte.game.plugintrigger.provider.PluginTriggerProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.plugintrigger.FileProvider",
+  "exported": true,
+  "permission": "com.zte.game.plugintrigger.permission.FILE_PROVIDER",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ }
+]

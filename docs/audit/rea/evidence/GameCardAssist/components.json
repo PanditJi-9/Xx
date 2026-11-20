@@ -1,0 +1,23 @@
+[
+ {
+  "kind": "activity",
+  "name": "com.zte.gamecardassist.view.CardAssistTestActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "com.zte.gamecardassist.DrawCardService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "com.zte.gamecardassist.receiver.ForegroundGameReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]

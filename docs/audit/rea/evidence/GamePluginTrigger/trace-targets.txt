@@ -1,0 +1,4 @@
+com.zte.game.plugintrigger.plugins.MultiPluginService
+com.zte.game.plugintrigger.service.PluginTriggerService
+com.theartofdev.edmodo.cropper.CropImageActivity
+com.zte.game.plugintrigger.client.PermissionActivity

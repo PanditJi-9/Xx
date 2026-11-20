@@ -1,0 +1,4 @@
+cn.nubia.gamehighlights.Activity.MainActivity
+cn.nubia.gamehighlights.Service.GameHighLightsArkService
+cn.nubia.gamehighlights.Service.GameHighLightsViewServices
+cn.nubia.gamehighlights.Service.ScreenClipService

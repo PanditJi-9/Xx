@@ -1,0 +1,79 @@
+[
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.fan.FanWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.fan.FanSmallWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.fps.BigFpsWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.fps.SmallFpswidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.projection.ui.ProjectionAppWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamewidget.projection.ProjectionWidgetIntentService",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamewidget.fan.FanProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamewidget.health.GameHealthTimeWidget",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.startup.InitializationProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "androidx.profileinstaller.ProfileInstallReceiver",
+  "exported": true,
+  "permission": "android.permission.DUMP",
+  "filters": 4
+ }
+]

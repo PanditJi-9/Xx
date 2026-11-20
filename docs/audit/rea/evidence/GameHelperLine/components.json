@@ -1,0 +1,79 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamehelperline.LineService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamehelperline.db.LineProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamehelperline.HelperLinReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamehelperline.ForeGroundReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.gamehelperline.GameModeReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "androidx.core.content.FileProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.aimhelper.AimService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.aimhelper.receiver.StartSightAssistReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.aimhelper.AimHelperPermissionDialogActivity",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.aimhelper.receiver.GameModeReceiver",
+  "exported": false,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "receiver",
+  "name": "cn.nubia.aimhelper.receiver.TopGameReceiver",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]
