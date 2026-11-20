@@ -140,34 +140,9 @@ internal fun HomeVitalsGrid(
             .background(Brush.verticalGradient(listOf(p.panelTop.copy(alpha = .92f), p.panel)))
             .border(MaxSize.hairlineBorder, p.border, shape),
     ) {
-        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            VitalCell(
-                label = stringResource(R.string.devinfo_battery_voltage),
-                value = voltageV?.let { String.format(Locale.US, "%.2f", it) } ?: unknown,
-                unit = voltageV?.let { "V" },
-                accent = p.accent,
-                fraction = voltageV?.let { ((it - 3.2f) / (4.4f - 3.2f)).coerceIn(0f, 1f) },
-                detail = voltageDetail(voltageV, voltageTrend),
-                detailColor = trendTone(voltageTrend, p),
-                trend = voltageTrend,
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                onClick = { onNavigate(MaxDestination.Charging.route) },
-            )
-            VitalDividerVertical()
-            VitalCell(
-                label = stringResource(R.string.devinfo_cpu_cores_online),
-                value = onlineCores?.toString() ?: unknown,
-                unit = totalCores?.let { "/ $it" },
-                accent = p.accentAlt,
-                fraction = coresFraction,
-                detail = stringResource(R.string.devinfo_cpu_cores),
-                detailColor = p.muted,
-                trend = null,
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                onClick = { onNavigate(MaxDestination.CpuCoreControl.route) },
-            )
-        }
-        VitalDividerHorizontal()
+        // **ترتيب المالك (2026-11-20):** المعالج والرسوم جنبًا إلى جنب ← الضغط الحراري ←
+        // امتلاء المساحة ← النشاط الحالي ← الباقي. فهامش الخنق يفتح لوح القراءات (أول صفّ)،
+        // لا جهد البطارية، ليقرأ المستخدم ما أمر به المالك مباشرةً بعد المقياسين.
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
             VitalCell(
                 label = stringResource(R.string.home_vital_headroom),
@@ -193,6 +168,34 @@ internal fun HomeVitalsGrid(
                 trend = null,
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 onClick = { onNavigate(MaxDestination.MemoryHub.route) },
+            )
+        }
+        VitalDividerHorizontal()
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            VitalCell(
+                label = stringResource(R.string.devinfo_battery_voltage),
+                value = voltageV?.let { String.format(Locale.US, "%.2f", it) } ?: unknown,
+                unit = voltageV?.let { "V" },
+                accent = p.accent,
+                fraction = voltageV?.let { ((it - 3.2f) / (4.4f - 3.2f)).coerceIn(0f, 1f) },
+                detail = voltageDetail(voltageV, voltageTrend),
+                detailColor = trendTone(voltageTrend, p),
+                trend = voltageTrend,
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                onClick = { onNavigate(MaxDestination.Charging.route) },
+            )
+            VitalDividerVertical()
+            VitalCell(
+                label = stringResource(R.string.devinfo_cpu_cores_online),
+                value = onlineCores?.toString() ?: unknown,
+                unit = totalCores?.let { "/ $it" },
+                accent = p.accentAlt,
+                fraction = coresFraction,
+                detail = stringResource(R.string.devinfo_cpu_cores),
+                detailColor = p.muted,
+                trend = null,
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                onClick = { onNavigate(MaxDestination.CpuCoreControl.route) },
             )
         }
         VitalDividerHorizontal()
