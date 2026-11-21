@@ -93,8 +93,12 @@ jobs:
             # silently here, which is why the log is kept and printed on failure.
             JAVA_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g" /opt/jadx/bin/jadx \
               -d "work/port/$app/sources" --no-res --no-imports --threads-count 2 \
-              "$apk" > "work/port-$app-jadx.log" 2>&1 || \
-              { echo "jadx failed for $app"; tail -20 "work/port-$app-jadx.log"; exit 1; }
+              "$apk" > "work/port-$app-jadx.log" 2>&1 || true
+            # jadx returns 1 when a handful of methods fail to decompile, while still writing the
+            # tree. "Finished with errors, count: 4" is not a failed extraction; an empty tree is.
+            count=$(find "work/port/$app/sources" -name '*.java' 2>/dev/null | wc -l)
+            echo "$app: $count source files"
+            if [ "$count" -lt 100 ]; then echo "jadx produced nothing usable for $app"; tail -20 "work/port-$app-jadx.log"; exit 1; fi
             pkg=$(python3 -c "import sys,zipfile,re;d=zipfile.ZipFile(sys.argv[1]).read('AndroidManifest.xml');m=re.search(rb'(?:cn|com)\\.(?:nubia|zte)[a-z0-9_.]*',d);print(m.group(0).decode() if m else '')" "$apk")
             echo "package guess: $pkg"
             python3 tools/port_triage.py \
