@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rl_app_name">GameAssist</string>
+    <string name="rl_port_title">Port status</string>
+    <string name="rl_label_package">Original package</string>
+    <string name="rl_label_materials">Staged materials</string>
+    <string name="rl_label_components">Declared components</string>
+    <string name="rl_label_triage">Code triage</string>
+    <string name="rl_materials_missing">The original materials are not staged in this build.</string>
+    <string name="rl_build_note">This screen reports what the port measured. It goes away once the original lobby builds.</string>
+</resources>

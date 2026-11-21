@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rl_app_name">GameAssist</string>
+    <string name="rl_port_title">حالة البورت</string>
+    <string name="rl_label_package">حزمة الأصل</string>
+    <string name="rl_label_materials">المواد المحضَّرة</string>
+    <string name="rl_label_components">المكوّنات المعلنة</string>
+    <string name="rl_label_triage">تصنيف الكود</string>
+    <string name="rl_materials_missing">مواد الأصل غير محضَّرة في هذا البناء.</string>
+    <string name="rl_build_note">هذه الشاشة تعرض ما قاسه البورت. تزول حين تُبنى شاشة الأصل.</string>
+</resources>
