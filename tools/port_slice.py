@@ -32,23 +32,12 @@ PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.",
 # produced 218 syntax errors in 12 files (gson, guava), the licence is theirs, and a real dependency
 # is smaller and correct. So its files are excluded and its imports are reported as a dependency to
 # add — never silently treated as available.
-LIBRARY_PATHS = (
-    "kotlin/",       # the Kotlin runtime, decompiled: `??` expressions are not Java
-    "com/google/",
-    "androidx/",
-    "org/apache/",
-    "okhttp3/",
-    "com/squareup/",
-    "kotlinx/",
-    "org/jetbrains/",
-    "com/facebook/",
-    "bolts/",
-    "org/intellij/",
-    "com/bumptech/",
-    "io/reactivex/",
-    "org/greenrobot/",
-    "com/android/",
-)
+# The app's own code lives under its vendor roots (measured in APK_INVENTORY: cn.nubia.*,
+# com.zte.*, com.nubia.*). Everything else in the corpus is somebody else's library that jadx
+# decompiled along with the app — porting it would be wrong three times over: it does not compile
+# as Java (measured: 218 syntax errors in gson/guava, then lottie), the licence is theirs, and a
+# real dependency is smaller and correct.
+APP_ROOTS = ("cn/nubia/", "com/zte/", "com/nubia/", "com/redmagic/", "cn/zte/")
 PACKAGE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.M)
 IMPORT = re.compile(r"^\s*import\s+(static\s+)?([\w.]+)\s*;", re.M)
 
@@ -87,7 +76,7 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
     keep = set(corpus.values())
     reasons: dict[str, str] = {}
 
-    libraries = {relative for relative in keep if normalized(relative).startswith(LIBRARY_PATHS)}
+    libraries = {relative for relative in keep if not normalized(relative).startswith(APP_ROOTS)}
     for relative in libraries:
         reasons[relative] = "library code: use the real dependency instead of decompiled source"
     keep -= libraries
