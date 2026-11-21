@@ -35,16 +35,23 @@ def normalized(relative: str) -> str:
 GENERATED = ("R.java", "BuildConfig.java")
 
 
-def generated(path: Path) -> bool:
-    """aapt and AGP write these; sealing them shadows the R of our own package."""
-    return path.name in GENERATED or path.name.startswith("R$")
+def generated(path: Path, rewritten: str) -> bool:
+    """The R/BuildConfig of the rewritten package land in our package and shadow ours.
+
+    Other packages' R files are real classes the app calls by name, so they are sealed like any
+    other unit (measured: removing them left four units with `cannot find symbol`).
+    """
+    name = path.name
+    if name not in GENERATED and not name.startswith("R$"):
+        return False
+    return path.as_posix().startswith(rewritten.rstrip("/") + "/")
 
 
-def collect(sources: Path) -> dict[str, Path]:
+def collect(sources: Path, rewritten: str) -> dict[str, Path]:
     """`relative -> file` for every `.java` unit, nested prefix removed, collisions refused."""
     found: dict[str, Path] = {}
     for path in sorted(sources.rglob("*.java")):
-        if generated(path):
+        if generated(Path(normalized(path.relative_to(sources).as_posix())), rewritten):
             continue
         relative = normalized(path.relative_to(sources).as_posix())
         if relative in found:
@@ -94,8 +101,10 @@ def render(app: str, units: list[str], slice_info: dict) -> str:
     )
 
 
-def seal(sources: Path, target: Path, app: str, slice_info: dict, prune_stale: bool) -> dict:
-    units = collect(sources)
+def seal(
+    sources: Path, target: Path, app: str, slice_info: dict, prune_stale: bool, rewritten: str
+) -> dict:
+    units = collect(sources, rewritten)
     index = target / "SEALED.json"
     owned = set(json.loads(index.read_text(encoding="utf-8")).get("units", [])) if index.is_file() else set()
     target.mkdir(parents=True, exist_ok=True)
@@ -121,6 +130,10 @@ def self_test() -> int:
         (sources / "sources" / "cn" / "nubia" / "a").mkdir(parents=True)
         (sources / "sources" / "cn" / "nubia" / "a" / "A.java").write_text("class A {}\n")
         (sources / "sources" / "cn" / "nubia" / "B.java").write_text("class B {}\n")
+        (sources / "sources" / "cn" / "nubia" / "common").mkdir()
+        (sources / "sources" / "cn" / "nubia" / "common" / "R.java").write_text("package cn.nubia.common;\n")
+        (sources / "sources" / "cn" / "nubia" / "gamelauncher").mkdir()
+        (sources / "sources" / "cn" / "nubia" / "gamelauncher" / "R.java").write_text("package dev.redlab.gamespace;\n")
         target = root / "apps" / "demo" / "src" / "ported" / "java"
         (target / "cn" / "nubia").mkdir(parents=True)
         (target / "cn" / "nubia" / "Gone.java").write_text("class Gone {}\n")
@@ -135,18 +148,23 @@ def self_test() -> int:
                 "cn/nubia/D.java": "vendor framework: cn.nubia.Y",
             },
         }
-        result = seal(sources, target, "Demo", slice_info, prune_stale=True)
+        result = seal(sources, target, "Demo", slice_info, prune_stale=True, rewritten="cn/nubia/gamelauncher")
 
         checks.append(("the nested prefix is stripped", (target / "cn/nubia/a/A.java").is_file()))
+        checks.append(("another package's R is sealed", (target / "cn/nubia/common/R.java").is_file()))
+        checks.append(("the rewritten package's R is not", not (target / "cn/nubia/gamelauncher/R.java").exists()))
         checks.append(("no duplicate nesting is created", not (target / "sources").exists()))
         checks.append(("a stale sealed unit is pruned", result["removed"] == ["cn/nubia/Gone.java"]))
         checks.append(("a hand-added file is left alone", (target / "cn/nubia/HandEdited.java").is_file()))
         index = json.loads((target / "SEALED.json").read_text())
         checks.append(
-            ("the index lists what was sealed", index["units"] == ["cn/nubia/B.java", "cn/nubia/a/A.java"])
+            (
+                "the index lists what was sealed",
+                index["units"] == ["cn/nubia/B.java", "cn/nubia/a/A.java", "cn/nubia/common/R.java"],
+            )
         )
         report = (root / "apps" / "demo" / "PORTED.md").read_text()
-        checks.append(("the report counts the units", "**2**" in report))
+        checks.append(("the report counts the units", "**3**" in report))
         checks.append(("the report separates the reasons", "library code 1" in report))
 
     failed = [name for name, ok in checks if not ok]
@@ -166,6 +184,8 @@ def main() -> int:
     parser.add_argument("--to", dest="target", type=Path)
     parser.add_argument("--app")
     parser.add_argument("--slice", dest="slice_path", type=Path)
+    parser.add_argument("--rewritten", default="cn/nubia/gamelauncher",
+                        help="package path the staging step rewrites into ours")
     parser.add_argument("--no-prune", action="store_true")
     args = parser.parse_args()
     if args.self_test:
@@ -173,7 +193,10 @@ def main() -> int:
     if not (args.sources and args.target and args.app):
         parser.error("--from, --to and --app are required")
     slice_info = json.loads(args.slice_path.read_text(encoding="utf-8")) if args.slice_path else {}
-    result = seal(args.sources, args.target, args.app, slice_info, prune_stale=not args.no_prune)
+    result = seal(
+        args.sources, args.target, args.app, slice_info,
+        prune_stale=not args.no_prune, rewritten=args.rewritten,
+    )
     print(f"sealed: {result['written']} units, pruned: {len(result['removed'])}")
     return 0
 
