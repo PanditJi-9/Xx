@@ -25,6 +25,11 @@ android {
     sourceSets["main"].res.srcDir("materials/res")
     sourceSets["main"].assets.srcDir("materials/assets")
     sourceSets["main"].jniLibs.srcDir("materials/jniLibs")
+    // Units ported from the original, staged by port_materials.py. Absent until the port stages
+    // them, so a plain checkout still builds the app instead of failing on a missing directory.
+    if (file("materials/sources").isDirectory) {
+        sourceSets["main"].java.srcDir("materials/sources")
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

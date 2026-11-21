@@ -210,6 +210,53 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
     return counts
 
 
+def our_classes(module: Path) -> dict[str, str]:
+    """Classes this module already owns, so a ported file cannot silently replace one."""
+    found: dict[str, str] = {}
+    sources = module / "src" / "main" / "java"
+    if not sources.is_dir():
+        return found
+    for path in sources.rglob("*.java"):
+        text = path.read_text(encoding="utf-8", errors="replace")[:2000]
+        package = re.search(r"^\s*package\s+([\w.]+)\s*;", text, re.M)
+        if package:
+            found[f"{package.group(1)}.{path.stem}"] = str(path)
+    return found
+
+
+def stage_sources(
+    sources: Path, selection: Path, package: str, new_package: str, module: Path
+) -> dict:
+    """Copy the units the corpus can compile today, rewriting only the package name.
+
+    The rewrite is mechanical and total: `cn.nubia.gamelauncher` becomes `dev.redlab.gamespace`
+    everywhere in the file, which is what makes the original's `R` and its own classes resolve to
+    ours. A file whose name would replace one of ours is skipped — source order is not a way to
+    decide who wins.
+    """
+    selected = json.loads(selection.read_text(encoding="utf-8"))["selected"]
+    owned = our_classes(module)
+    target = module / "materials" / "sources"
+    copied: list[str] = []
+    skipped: dict[str, str] = {}
+    for relative in selected:
+        path = sources / relative
+        if not path.is_file():
+            skipped[relative] = "not found in the extracted sources"
+            continue
+        text = path.read_text(encoding="utf-8", errors="surrogateescape")
+        rewritten = text.replace(package, new_package)
+        fqn = new_package + "." + path.stem
+        if fqn in owned:
+            skipped[relative] = f"would replace {owned[fqn]}"
+            continue
+        destination = target / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(rewritten, encoding="utf-8", errors="surrogateescape")
+        copied.append(relative)
+    return {"copied": copied, "skipped": skipped}
+
+
 def render(app: str, inventory: dict) -> str:
     staged = inventory["staged"]
     rows = [
@@ -360,6 +407,10 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--module")
     parser.add_argument("--app", default="")
     parser.add_argument("--triage", help="docs/port/<app>.json written by port_triage.py")
+    parser.add_argument("--sources", help="jadx output; with --slice, stage the compilable units")
+    parser.add_argument("--slice", help="slice.json written by port_slice.py")
+    parser.add_argument("--package", help="package of the original, to rewrite")
+    parser.add_argument("--new-package", help="package of this module")
     parser.add_argument("--assert", dest="assert_on_fail", action="store_true")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
@@ -375,6 +426,16 @@ def main(argv: list[str]) -> int:
         return 2
     app = args.app or module.name
     counts = stage(Path(args.extract), module, app, Path(args.triage) if args.triage else None)
+    if args.sources and args.slice:
+        if not args.package or not args.new_package:
+            print("--package and --new-package are required with --sources/--slice", file=sys.stderr)
+            return 2
+        staged = stage_sources(
+            Path(args.sources), Path(args.slice), args.package, args.new_package, module
+        )
+        counts["sources"] = len(staged["copied"])
+        counts["rejected_sources"] = staged["skipped"]
+        print(f"  sources staged: {len(staged['copied'])} (skipped {len(staged['skipped'])})")
     print(
         f"{app}: staged res={counts['res']} assets={counts['assets']} abis={len(counts['abis'])} "
         f"renamed={len(counts['renamed'])} skipped={len(counts['skipped'])}"

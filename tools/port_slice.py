@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""Compute the compilation frontier of a decompiled app.
+
+The triage says which units *could* be ported; it does not say which ones compile together. The
+gap is imports: a file whose every import is either the Android platform, the app's own package,
+or another file in the corpus can be compiled on its own, while a file that reaches
+`cn.nubia.gamepanel.*` needs that contract first.
+
+So this tool starts from the files that stand alone and shrinks the set to a fixpoint — a file
+only stays if everything it imports stays — then reports exactly why each rejected file was
+rejected. That number is the real starting point of the code port, and it is measured, not
+estimated.
+
+Usage:
+    python3 tools/port_slice.py --sources work/port/GameSpace/sources \\
+        --package cn.nubia.gamelauncher --json work/port/GameSpace/slice.json --app GameSpace
+    python3 tools/port_slice.py --self-test
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+# Imports answered by the platform or by the compiler itself; nothing to port.
+PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.")
+PACKAGE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.M)
+IMPORT = re.compile(r"^\s*import\s+(static\s+)?([\w.]+)\s*;", re.M)
+
+
+def index_corpus(root: Path) -> dict[str, str]:
+    """Fully-qualified class name → file. jadx writes one top-level class per file."""
+    corpus: dict[str, str] = {}
+    for path in sorted(root.rglob("*.java")):
+        text = path.read_text(encoding="utf-8", errors="replace")[:4000]
+        found = PACKAGE.search(text)
+        if not found:
+            continue
+        corpus[f"{found.group(1)}.{path.stem}"] = str(path.relative_to(root))
+    return corpus
+
+
+def imports_of(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return [m.group(2) for m in IMPORT.finditer(text)]
+
+
+def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
+    """Shrink to a fixpoint and bucket every rejection with its reason."""
+    own_r = package + ".R"
+    keep = set(corpus.values())
+    reasons: dict[str, str] = {}
+
+    while True:
+        removed: dict[str, str] = {}
+        for relative in sorted(keep):
+            for imported in imports_of(root / relative):
+                if imported.startswith(PLATFORM):
+                    continue
+                if imported == own_r or imported.startswith(own_r + "$"):
+                    continue  # R is regenerated with the same names by our build
+                target = corpus.get(imported)
+                if target is None:
+                    # A nested class is indexed under its own name only; accept the outer class.
+                    target = corpus.get(imported.rsplit(".", 1)[0])
+                if target is None:
+                    vendor = imported.startswith(("cn.nubia.", "com.zte.", "com.nubia."))
+                    removed[relative] = ("vendor framework" if vendor else "missing library") + f": {imported}"
+                    break
+                if target not in keep:
+                    removed[relative] = f"depends on an excluded unit: {target}"
+                    break
+        if not removed:
+            break
+        for relative, reason in removed.items():
+            reasons[relative] = reason
+        keep -= set(removed)
+
+    buckets: dict[str, int] = {}
+    for reason in reasons.values():
+        key = reason.split(":")[0]
+        buckets[key] = buckets.get(key, 0) + 1
+
+    return {
+        "total": len(corpus),
+        "selected": sorted(keep),
+        "rejected": dict(sorted(reasons.items())),
+        "buckets": dict(sorted(buckets.items())),
+    }
+
+
+def self_test() -> int:
+    import tempfile
+
+    checks: list[tuple[str, bool]] = []
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        (root / "cn/nubia/app").mkdir(parents=True)
+        (root / "androidx/core").mkdir(parents=True)
+
+        def write(name: str, text: str) -> None:
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+
+        write("cn/nubia/app/Leaf.java", "package cn.nubia.app;\nimport android.os.Bundle;\nclass Leaf {}\n")
+        write("cn/nubia/app/UsesLeaf.java",
+              "package cn.nubia.app;\nimport cn.nubia.app.Leaf;\nclass UsesLeaf {}\n")
+        write("cn/nubia/app/UsesVendor.java",
+              "package cn.nubia.app;\nimport cn.nubia.panel.Power;\nclass UsesVendor {}\n")
+        write("cn/nubia/app/UsesLib.java",
+              "package cn.nubia.app;\nimport com.google.gson.Gson;\nclass UsesLib {}\n")
+        write("cn/nubia/app/UsesLayout.java",
+              "package cn.nubia.app;\nimport cn.nubia.app.R;\nclass UsesLayout { int x = R.layout.main; }\n")
+        write("cn/nubia/app/UsesExcluded.java",
+              "package cn.nubia.app;\nimport cn.nubia.app.UsesVendor;\nclass UsesExcluded {}\n")
+        write("cn/nubia/app/NeedsAndroidx.java",
+              "package cn.nubia.app;\nimport androidx.core.ViewKt;\nclass NeedsAndroidx {}\n")
+        write("androidx/core/ViewKt.java", "package androidx.core;\nclass ViewKt {}\n")
+        write("cn/nubia/app/Chained.java",
+              "package cn.nubia.app;\nimport cn.nubia.app.NeedsAndroidx;\nclass Chained {}\n")
+
+        corpus = index_corpus(root)
+        result = frontier(root, "cn.nubia.app", corpus)
+        selected = set(result["selected"])
+        checks.append(("a self-contained file is selected", "cn/nubia/app/Leaf.java" in selected))
+        checks.append(("its dependent is selected too", "cn/nubia/app/UsesLeaf.java" in selected))
+        checks.append(("R users are selected", "cn/nubia/app/UsesLayout.java" in selected))
+        checks.append(("vendor imports are rejected", "cn/nubia/app/UsesVendor.java" not in selected))
+        checks.append(("missing libraries are rejected", "cn/nubia/app/UsesLib.java" not in selected))
+        checks.append(("a file importing a rejected file is rejected", "cn/nubia/app/UsesExcluded.java" not in selected))
+        checks.append(("a library present in the corpus is enough", "androidx/core/ViewKt.java" in selected))
+        checks.append(("androidx classes come with the corpus", "cn/nubia/app/NeedsAndroidx.java" in selected))
+        checks.append(("the chain follows the corpus", "cn/nubia/app/Chained.java" in selected))
+        checks.append(("every rejection carries a reason", len(result["rejected"]) > 0))
+        checks.append(("the vendor reason names the class",
+                       "cn.nubia.panel.Power" in result["rejected"].get("cn/nubia/app/UsesVendor.java", "")))
+
+    failed = [name for name, ok in checks if not ok]
+    for name, ok in checks:
+        print(("ok   " if ok else "FAIL ") + name)
+    if failed:
+        return 1
+    print(f"self-test OK: {len(checks)} cases")
+    return 0
+
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sources")
+    parser.add_argument("--package", required=False, default="")
+    parser.add_argument("--app", default="")
+    parser.add_argument("--json")
+    parser.add_argument("--self-test", action="store_true")
+    args = parser.parse_args(argv)
+    if args.self_test:
+        return self_test()
+    if not args.sources or not args.package:
+        print("--sources and --package are required", file=sys.stderr)
+        return 2
+
+    root = Path(args.sources)
+    corpus = index_corpus(root)
+    result = frontier(root, args.package, corpus)
+    print(
+        f"{args.app or args.package}: corpus={result['total']} compilable_now={len(result['selected'])} "
+        f"rejected={len(result['rejected'])}"
+    )
+    for key, value in result["buckets"].items():
+        print(f"  {key}: {value}")
+    if args.json:
+        Path(args.json).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json).write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
