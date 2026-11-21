@@ -1,0 +1,115 @@
+name: RedLab port (extract + triage the originals)
+
+# Implements docs/MASTER_PLAN.md §3: the original APK is the material, not the reference.
+# apktool brings resources/manifest/assets, jadx brings sources, then port_triage.py splits every
+# unit into PORT_AS_IS / ADAPT / REIMPLEMENT. Nothing here rewrites code; it only reports what the
+# port needs, which is what the ledger gates on.
+
+on:
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: 'APK asset names, space separated'
+        required: true
+        default: 'GameSpace.apk GameAssist.apk'
+      tag:
+        description: 'Release tag holding the APKs'
+        required: true
+        default: 're-targets'
+
+permissions:
+  contents: read
+
+jobs:
+  port:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Fetch the APKs (verified, retried)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p work/apps
+          for name in ${{ inputs.apps }}; do
+            for attempt in 1 2 3; do
+              rm -f "work/apps/$name"
+              if gh release download "${{ inputs.tag }}" -R "${{ github.repository }}" \
+                   --pattern "$name" --dir work/apps --clobber; then
+                if python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "work/apps/$name" 2>/dev/null; then
+                  echo "ok: $name $(stat -c%s work/apps/$name)"; break
+                fi
+                echo "corrupt zip: $name"
+              fi
+              sleep $((attempt * 5))
+            done
+          done
+          ls -l work/apps
+
+      - name: Install apktool and jadx
+        run: |
+          set -e
+          curl -sSL -o /usr/local/bin/apktool.jar \
+            https://github.com/iBotPeaches/Apktool/releases/download/v2.11.1/apktool_2.11.1.jar
+          printf '#!/bin/sh\nexec java -jar /usr/local/bin/apktool.jar "$@"\n' > /usr/local/bin/apktool
+          chmod +x /usr/local/bin/apktool
+          curl -sSL -o /tmp/jadx.zip \
+            https://github.com/skylot/jadx/releases/download/v1.5.1/jadx-1.5.1.zip
+          unzip -q /tmp/jadx.zip -d /opt/jadx
+          chmod +x /opt/jadx/bin/jadx
+          /opt/jadx/bin/jadx --version
+
+      - name: Extract resources and sources
+        run: |
+          set -e
+          mkdir -p docs/port
+          for apk in work/apps/*.apk; do
+            app=$(basename "$apk" .apk)
+            echo "== $app"
+            # -s: skip dex decoding here; jadx produces the sources in the next step.
+            apktool d -f -s "$apk" -o "work/port/$app/res-out" > "work/port-$app-apktool.log" 2>&1 || \
+              { echo "apktool failed for $app"; tail -30 "work/port-$app-apktool.log"; exit 1; }
+            /opt/jadx/bin/jadx -d "work/port/$app/sources" --no-res --no-imports -q "$apk" || \
+              { echo "jadx failed for $app"; exit 1; }
+            pkg=$(python3 - "$apk" <<'PY'
+import sys, zipfile, re
+with zipfile.ZipFile(sys.argv[1]) as z:
+    data = z.read('AndroidManifest.xml')
+m = re.search(rb'(?:cn|com)\.(?:nubia|zte)[a-z0-9_.]*', data)
+print(m.group(0).decode() if m else '')
+PY
+)
+            echo "package guess: $pkg"
+            python3 tools/port_triage.py \
+              --sources "work/port/$app/sources" \
+              --res "work/port/$app/res-out/res" \
+              --app "$app" --package "$pkg" \
+              --out "docs/port/${app}_TRIAGE.md" \
+              --json "docs/port/${app}.json"
+          done
+
+      - name: Keep the measured triage in the build
+        uses: actions/upload-artifact@v4
+        with:
+          name: port-triage
+          path: |
+            docs/port/*.md
+            docs/port/*.json
+          if-no-files-found: error
+
+      - name: Show the summary
+        run: |
+          for f in docs/port/*_TRIAGE.md; do
+            echo "== $f"
+            sed -n '1,14p' "$f"
+          done
