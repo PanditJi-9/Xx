@@ -78,6 +78,38 @@ def is_valid_res_name(path: Path) -> bool:
     return bool(RES_NAME.match(path.name))
 
 
+def safe_res_name(name: str) -> str:
+    """A name aapt2 accepts, derived from one it refuses.
+
+    apktool decodes AnimatedVectorDrawable internals as `$avd_name__0.xml`, and their container
+    refers to them by that name. Dropping them leaves the container pointing at nothing, which
+    fails `packageDebugResources` just as loudly. So the `$` is replaced by a prefix, the
+    container's reference is rewritten with it, and the pair is listed in MATERIALS.md.
+    """
+    return "rl_" + re.sub(r"[^a-z0-9_]", "_", name.lstrip("$").lower())
+
+
+def rename_plan(res: Path) -> tuple[dict[Path, Path], list[str]]:
+    """Which files must be renamed to be a resource, and which cannot be a resource at all."""
+    rename: dict[Path, Path] = {}
+    skipped: list[str] = []
+    for path in sorted(res.rglob("*")):
+        if not path.is_file() or is_valid_res_name(path):
+            continue
+        stem = path.name.rsplit(".", 1)[0]
+        if stem.startswith("$"):
+            candidate = safe_res_name(stem) + path.suffix
+            if RES_NAME.match(candidate):
+                rename[path] = path.with_name(candidate)
+                continue
+        skipped.append(str(path.relative_to(res)))
+    return rename, skipped
+
+
+# Only a resource reference can be rewritten: `@drawable/$x`, not a `$` in a string or a style.
+REF_TO_DOLLAR = re.compile(r"(@(?:drawable|anim|xml|mipmap|color|raw|interpolator)/)\$")
+
+
 def copy_tree(source: Path, target: Path) -> int:
     """Copy files without deleting anything already staged. Returns the number of files written."""
     written = 0
@@ -113,20 +145,28 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
         "skipped": [],
     }
 
-    # Resources are copied file by file so a name aapt2 cannot accept is reported by name instead
-    # of stopping the build with nothing but a Gradle stack trace. Nothing is renamed: a renamed
-    # resource is a resource the original references and cannot find.
+    # Resources are copied file by file: a name aapt2 cannot take is either renamed (with its
+    # references rewritten) or listed by name, never passed through and never dropped silently.
+    rename, skipped = rename_plan(res)
+    counts["skipped"] = skipped
+    counts["renamed"] = sorted(str(source.relative_to(res)) for source in rename)
     for path in sorted(res.rglob("*")):
         if not path.is_file():
             continue
-        relative = path.relative_to(res)
-        if not is_valid_res_name(path):
-            counts["skipped"].append(str(relative))
-            continue
-        destination = main / "res" / relative
+        destination = main / "res" / path.relative_to(res)
+        if path in rename:
+            destination = main / "res" / rename[path].relative_to(res)
+            # rewrite_after is filled once the whole tree is in place
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, destination)
         counts["res"] += 1
+
+    if rename:
+        for path in sorted((main / "res").rglob("*.xml")):
+            text = path.read_text(encoding="utf-8", errors="surrogateescape")
+            rewritten = REF_TO_DOLLAR.sub(r"\1rl_", text)
+            if rewritten != text:
+                path.write_text(rewritten, encoding="utf-8", errors="surrogateescape")
 
     lib = extract / "lib"
     if lib.is_dir():
@@ -146,6 +186,7 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
         "staged": {"res": counts["res"], "assets": counts["assets"], "abis": counts["abis"]},
         "resDirs": dict(sorted(res_dirs.items())),
         "skipped": counts["skipped"],
+        "renamed": counts["renamed"],
         "components": {key: value for key, value in components.items() if key != "package"},
     }
 
@@ -185,6 +226,17 @@ def render(app: str, inventory: dict) -> str:
     ]
     for abi in staged["abis"]:
         rows.append(f"| `jniLibs/{abi['abi']}` | {abi['libs']} |")
+    renamed = inventory.get("renamed", [])
+    if renamed:
+        rows += [
+            "",
+            f"### Renamed: {len(renamed)} entries apktool decoded with a name aapt2 refuses",
+            "",
+            "The `$` prefix became `rl_` and every `@drawable/$…` reference was rewritten to match.",
+            "Nothing else about them changed; the list is here so the rename is visible, not implied.",
+            "",
+        ]
+        rows += [f"- `{item}`" for item in renamed[:40]]
     skipped = inventory.get("skipped", [])
     if skipped:
         rows += [
@@ -245,17 +297,30 @@ def self_test() -> int:
         checks.append(("permissions are listed", inventory["components"]["permissions"] == ["android.permission.INTERNET"]))
         checks.append(("materials doc is written", (module / "MATERIALS.md").is_file()))
 
-        # An apktool name aapt2 refuses must be skipped and listed, not passed to the build.
+        # An apktool `$` name is renamed together with the reference that points at it; a name
+        # that cannot be salvaged at all is skipped and listed. Both are measured, not asserted.
         (extract / "res" / "drawable").mkdir()
-        (extract / "res" / "drawable" / "$avd_internal.xml").write_text("<x/>", encoding="utf-8")
-        skipped = stage(extract, module, "GameSpace")
-        checks.append(("a name aapt2 refuses is skipped", skipped["skipped"] == ["drawable/$avd_internal.xml"]))
-        checks.append(("and it is not staged", not (module / "materials/res/drawable/$avd_internal.xml").exists()))
-        checks.append(("the refusal is recorded", "Skipped: 1" in (module / "MATERIALS.md").read_text(encoding="utf-8")))
-        (extract / "res" / "drawable" / "$avd_internal.xml").unlink()
+        (extract / "res" / "drawable" / "$avd_internal__0.xml").write_text("<vector/>", encoding="utf-8")
+        (extract / "res" / "drawable" / "avd_container.xml").write_text(
+            '<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
+            '    android:drawable="@drawable/$avd_internal__0">\n'
+            "    <target android:name=\"a\" android:animation=\"@anim/anim\"/>\n"
+            "</animated-vector>\n",
+            encoding="utf-8",
+        )
+        (extract / "res" / "drawable" / "Bad Name.xml").write_text("<x/>", encoding="utf-8")
+        staged = stage(extract, module, "GameSpace")
+        checks.append(("a `$` name is renamed", (module / "materials/res/drawable/rl_avd_internal__0.xml").is_file()))
+        checks.append(("the old name is gone", not (module / "materials/res/drawable/$avd_internal__0.xml").exists()))
+        container = (module / "materials/res/drawable/avd_container.xml").read_text(encoding="utf-8")
+        checks.append(("its references follow the rename", "@drawable/rl_avd_internal__0" in container))
+        checks.append(("a name beyond repair is skipped", staged["skipped"] == ["drawable/Bad Name.xml"]))
+        doc = (module / "MATERIALS.md").read_text(encoding="utf-8")
+        checks.append(("the rename is recorded", "Renamed: 1" in doc))
+        checks.append(("the skip is recorded", "Skipped: 1" in doc))
+        for leftover in ("drawable/$avd_internal__0.xml", "drawable/avd_container.xml", "drawable/Bad Name.xml"):
+            (extract / "res" / leftover).unlink()
 
-        # Re-staging must be idempotent: the run repeats on every build, and a second copy that
-        # duplicates or drops files would make two runs disagree for no reason.
         triage = root / "docs" / "port" / "GameSpace.json"
         triage.parent.mkdir(parents=True)
         triage.write_text(
@@ -310,7 +375,10 @@ def main(argv: list[str]) -> int:
         return 2
     app = args.app or module.name
     counts = stage(Path(args.extract), module, app, Path(args.triage) if args.triage else None)
-    print(f"{app}: staged res={counts['res']} assets={counts['assets']} abis={len(counts['abis'])}")
+    print(
+        f"{app}: staged res={counts['res']} assets={counts['assets']} abis={len(counts['abis'])} "
+        f"renamed={len(counts['renamed'])} skipped={len(counts['skipped'])}"
+    )
     for title, names in counts["components"].items():
         if isinstance(names, list):
             print(f"  {title}: {len(names)}")
