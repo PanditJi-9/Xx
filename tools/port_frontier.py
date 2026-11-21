@@ -28,6 +28,18 @@ from collections import Counter
 from pathlib import Path
 
 FILE_ERROR = re.compile(r"materials/sources/(.+?\.java):\d+: error: (.*)")
+ROUND_NAME = re.compile(r"javac-round-(\d+)\.log$")
+
+
+def log_order(path: Path) -> tuple[int, int | str]:
+    """Sort round 2 before round 10, not after it.
+
+    `sorted()` on the file names is lexicographic: `javac-round-10.log` sorts before
+    `javac-round-9.log`, so the "last" log was read from the wrong round. Run 44874120151
+    was clean after round 15 while this tool reported BUILD FAILED from round 9.
+    """
+    found = ROUND_NAME.search(path.name)
+    return (0, int(found.group(1))) if found else (1, path.name)
 
 
 def parse_log(path: Path) -> tuple[dict[str, str], int]:
@@ -67,6 +79,7 @@ def group_gap(reason: str, available: list[str]) -> str:
 
 
 def render(app: str, run: str, slice_data: dict, logs: list[Path], removed: list[str]) -> str:
+    logs = sorted(logs, key=log_order)
     total = slice_data.get("total", 0)
     selected = slice_data.get("selected", [])
     rejected = slice_data.get("rejected", {})
@@ -121,11 +134,12 @@ def render(app: str, run: str, slice_data: dict, logs: list[Path], removed: list
     else:
         all_errors: dict[str, str] = {}
         rows += ["| round | units with errors | error lines |", "| ---: | ---: | ---: |"]
-        for round_number, log in enumerate(logs, 1):
+        for position, log in enumerate(logs, 1):
             errors, count = parse_log(log)
             for unit, message in errors.items():
                 all_errors.setdefault(unit, message)
-            rows.append(f"| {round_number} | {len(errors)} | {count} |")
+            label = ROUND_NAME.search(log.name)
+            rows.append(f"| {label.group(1) if label else position} | {len(errors)} | {count} |")
         rows += [
             "",
             f"The compiler removed {len(removed)} unit(s) across these rounds"
@@ -147,7 +161,7 @@ def render(app: str, run: str, slice_data: dict, logs: list[Path], removed: list
                 "",
             ]
         if all_errors:
-            rows += ["Units with a first error:", "", "| unit | first error |", "| --- | --- |"]
+            rows += ["Units the compiler refused (first error seen in any round):", "", "| unit | first error |", "| --- | --- |"]
             for unit in sorted(all_errors):
                 message = all_errors[unit].replace("|", "\\|")
                 rows.append(f"| `{unit}` | `{message}` |")
@@ -209,7 +223,7 @@ def self_test() -> int:
             ),
             encoding="utf-8",
         )
-        log = root / "javac-round-1.log"
+        log = root / "javac-round-2.log"
         log.write_text(
             "apps/gamespace/materials/sources/cn/nubia/c.java:12: error: cannot find symbol\n"
             "  symbol:   class MediaItem\n"
@@ -237,6 +251,21 @@ def self_test() -> int:
         checks.append(("removed units are listed", "- `cn/nubia/g.java`" in report))
         checks.append(("declared dependencies are not called runtime-ready", "not in the APK yet" in report))
         checks.append(("a failed final round forbids sealing", "Final javac state: **not clean**" in report))
+        clean_log = root / "javac-round-10.log"
+        clean_log.write_text("BUILD SUCCESSFUL\n", encoding="utf-8")
+        ordered = render("GameSpace", "1", data, [clean_log, log], read_removed(removed_path))
+        checks.append(
+            (
+                "round 2 is printed before round 10",
+                ordered.index("\n| 2 | 2 | 3 |") < ordered.index("\n| 10 | 0 | 0 |"),
+            )
+        )
+        checks.append(
+            (
+                "the final state is read from the highest round",
+                "Final javac state: **clean**" in ordered,
+            )
+        )
         empty = render("GameSpace", "", {}, [], [])
         checks.append(("a missing slice does not invent numbers", "| 0 | 0 | 0 | 0 |" in empty))
         checks.append(("a missing log is stated", "No per-round javac log" in empty))

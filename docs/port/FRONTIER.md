@@ -80,27 +80,26 @@ Rejection buckets:
 | round | units with errors | error lines |
 | ---: | ---: | ---: |
 | 1 | 47 | 200 |
-| 2 | 1 | 8 |
-| 3 | 1 | 2 |
-| 4 | 2 | 16 |
-| 5 | 6 | 60 |
-| 6 | 4 | 48 |
-| 7 | 0 | 0 |
-| 8 | 34 | 200 |
-| 9 | 36 | 200 |
-| 10 | 23 | 200 |
-| 11 | 25 | 200 |
-| 12 | 18 | 128 |
-| 13 | 4 | 34 |
-| 14 | 2 | 32 |
-| 15 | 1 | 2 |
+| 2 | 34 | 200 |
+| 3 | 36 | 200 |
+| 4 | 23 | 200 |
+| 5 | 25 | 200 |
+| 6 | 18 | 128 |
+| 7 | 4 | 34 |
+| 8 | 2 | 32 |
+| 9 | 1 | 2 |
+| 10 | 1 | 8 |
+| 11 | 1 | 2 |
+| 12 | 2 | 16 |
+| 13 | 6 | 60 |
+| 14 | 4 | 48 |
+| 15 | 0 | 0 |
 
 The compiler removed 204 unit(s) across these rounds
 
-Final javac state: **not clean** (`BUILD FAILED`). Nothing from this run may be sealed;
- the remaining errors are in the table below.
+Final javac state: **clean** (`BUILD SUCCESSFUL`). The surviving units were accepted, and only they may be sealed.
 
-Units with a first error:
+Units the compiler refused (first error seen in any round):
 
 | unit | first error |
 | --- | --- |
