@@ -41,6 +41,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `cn.nubia.gamelauncher` | `res/` + `assets/` + `lib/` كاملة | resource-set | — | `SCAFFOLDED` | تشغيل `44850020107` (BUILD SUCCESSFUL) · APK 130MB | 3536 موردًا · 54 أصلًا · 3 ABI؛ 41 اسمًا أعيد تسميته، 4 استُبعدت — القائمة في `MATERIALS.md` المرفوعة مع الـAPK |
 | `cn.nubia.gamelauncher` | `dev/redlab/gamespace/MainActivity.java` | activity | 0 | `REBUILT` | نفس التشغيل | شاشة تقرأ `port/inventory.json`؛ تزول حين يُبنى الردهة الأصلي |
+| `cn.nubia.gameassist` | `dev/redlab/gameassist/MainActivity.java` | activity | 0 | `SCAFFOLDED` | تشغيل `44865094295` (BUILD SUCCESSFUL) | shell: يبني APK (main + strings)؛ materials + ported code مؤجَّلان |
 
 **لماذا `SCAFFOLDED` لا أعلى:** الموارد تُترجم وتُحزَّم، ولم يُقس سلوكها على جهاز. ولا صفّ يتجاوز
 `SCAFFOLDED` بلا `evidence` جهاز.
