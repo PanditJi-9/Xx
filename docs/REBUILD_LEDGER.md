@@ -35,6 +35,19 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | `cn.nubia.gamelauncher` | `.../activity/GameSpaceActivity.java` | activity | 37 | `INVENTORIED` | — | بانتظار `jadx_index` |
 
+## 3.1 أول صفّ حقيقي (P1 — مقيس)
+
+| app | unit | kind | origin_refs | status | evidence | note |
+| --- | --- | --- | --- | --- | --- | --- |
+| `cn.nubia.gamelauncher` | `res/` + `assets/` + `lib/` كاملة | resource-set | — | `SCAFFOLDED` | تشغيل `44850020107` (BUILD SUCCESSFUL) · APK 130MB | 3536 موردًا · 54 أصلًا · 3 ABI؛ 41 اسمًا أعيد تسميته، 4 استُبعدت — القائمة في `MATERIALS.md` المرفوعة مع الـAPK |
+| `cn.nubia.gamelauncher` | `dev/redlab/gamespace/MainActivity.java` | activity | 0 | `REBUILT` | نفس التشغيل | شاشة تقرأ `port/inventory.json`؛ تزول حين يُبنى الردهة الأصلي |
+
+**لماذا `SCAFFOLDED` لا أعلى:** الموارد تُترجم وتُحزَّم، ولم يُقس سلوكها على جهاز. ولا صفّ يتجاوز
+`SCAFFOLDED` بلا `evidence` جهاز.
+
+**تحويل لازم سُجّل:** apktool يفكّ أجزاء AnimatedVectorDrawable بأسماء تبدأ بـ`$` يرفضها aapt2
+(41 ملفًا)، فتُعاد تسميتها إلى `rl_*` وتُعاد كتابة مراجعها ميكانيكيًّا — لا سلوك تغيّر، والقائمة منشورة.
+
 ## 4. ما يُولَّد آليًا وما يُكتب بيد
 
 | المحتوى | المصدر |

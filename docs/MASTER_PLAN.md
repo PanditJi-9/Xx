@@ -125,4 +125,6 @@ redlab/
 | خطّ البورت (apktool/jadx) | ✅ يعمل في CI: `RedLab port` — استخراج + تصنيف ثلاثي |
 | GameAssist (المقيس) | 18,025 وحدة: **PORT_AS_IS 16,241 (90%)** · ADAPT 589 · REIMPLEMENT 1,195 |
 | GameSpace (المقيس) | 9,816 وحدة: **PORT_AS_IS 8,007 (82%)** · ADAPT 848 · REIMPLEMENT 961 |
-| `apps/gamespace` · `apps/gameassist` | ⏳ غير موجودين بعد |
+| **`apps/gamespace`** | ✅ **يبني APK** من مواد الأصل: 3536 موردًا · 54 أصلًا · 3 ABI (تشغيل `44850020107`) |
+| مبنيٌّ ومُثبَّت | ❌ لم يُثبَّت على جهاز بعد — الترجمة لا تثبت السلوك |
+| `apps/gameassist` | ⏳ لم يُنشأ مجلده بعد |
