@@ -1,0 +1,54 @@
+package dev.redlab.gamespace.databinding;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import androidx.viewbinding.ViewBinding;
+import androidx.viewbinding.ViewBindings;
+import dev.redlab.gamespace.R;
+
+/* loaded from: classes.dex */
+public final class TexturefilterLayoutBinding implements ViewBinding {
+    public final ImageView adrGpuBgT;
+    private final LinearLayout rootView;
+    public final SeekBar seekBarAdrenoT;
+
+    private TexturefilterLayoutBinding(LinearLayout linearLayout, ImageView imageView, SeekBar seekBar) {
+        this.rootView = linearLayout;
+        this.adrGpuBgT = imageView;
+        this.seekBarAdrenoT = seekBar;
+    }
+
+    @Override // androidx.viewbinding.ViewBinding
+    public LinearLayout getRoot() {
+        return this.rootView;
+    }
+
+    public static TexturefilterLayoutBinding inflate(LayoutInflater layoutInflater) {
+        return inflate(layoutInflater, null, false);
+    }
+
+    public static TexturefilterLayoutBinding inflate(LayoutInflater layoutInflater, ViewGroup viewGroup, boolean z) {
+        View inflate = layoutInflater.inflate(R.layout.texturefilter_layout, viewGroup, false);
+        if (z) {
+            viewGroup.addView(inflate);
+        }
+        return bind(inflate);
+    }
+
+    public static TexturefilterLayoutBinding bind(View view) {
+        int i = R.id.adr_gpu_bg_t;
+        ImageView imageView = (ImageView) ViewBindings.findChildViewById(view, R.id.adr_gpu_bg_t);
+        if (imageView != null) {
+            i = R.id.seek_bar_adreno_t;
+            SeekBar seekBar = (SeekBar) ViewBindings.findChildViewById(view, R.id.seek_bar_adreno_t);
+            if (seekBar != null) {
+                return new TexturefilterLayoutBinding((LinearLayout) view, imageView, seekBar);
+            }
+        }
+        throw new NullPointerException("Missing required view with ID: ".concat(view.getResources().getResourceName(i)));
+    }
+}
