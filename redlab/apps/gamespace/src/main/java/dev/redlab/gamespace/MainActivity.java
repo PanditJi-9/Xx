@@ -39,19 +39,19 @@ public final class MainActivity extends Activity {
         column.setPadding(pad, pad, pad, pad);
 
         TextView title = new TextView(this);
-        title.setText(getString(R.string.rl_app_name) + " — " + getString(R.string.rl_port_title));
+        title.setText(text("rl_app_name") + " — " + text("rl_port_title"));
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         column.addView(title);
 
         JSONObject inventory = readInventory();
         if (inventory == null) {
-            column.addView(line(getString(R.string.rl_materials_missing), null));
+            column.addView(line(text("rl_materials_missing"), null));
         } else {
             renderInventory(column, inventory);
         }
 
-        TextView note = line(getString(R.string.rl_build_note), null);
+        TextView note = line(text("rl_build_note"), null);
         note.setPadding(0, dp(24), 0, 0);
         column.addView(note);
 
@@ -66,7 +66,7 @@ public final class MainActivity extends Activity {
         JSONObject components = inventory.optJSONObject("components");
         JSONObject triage = inventory.optJSONObject("triage");
 
-        column.addView(line(getString(R.string.rl_label_package), inventory.optString("package", "—")));
+        column.addView(line(text("rl_label_package"), inventory.optString("package", "—")));
 
         if (staged != null) {
             String value = "res " + staged.optInt("res") + " · assets " + staged.optInt("assets");
@@ -77,7 +77,7 @@ public final class MainActivity extends Activity {
                     value += " · " + abi.optString("abi") + " " + abi.optInt("libs");
                 }
             }
-            column.addView(line(getString(R.string.rl_label_materials), value));
+            column.addView(line(text("rl_label_materials"), value));
         }
 
         if (components != null) {
@@ -90,7 +90,7 @@ public final class MainActivity extends Activity {
                 value.append(key).append(' ').append(components.optJSONArray(key) == null
                         ? 0 : components.optJSONArray(key).length());
             }
-            column.addView(line(getString(R.string.rl_label_components), value.toString()));
+            column.addView(line(text("rl_label_components"), value.toString()));
         }
 
         if (triage != null) {
@@ -98,7 +98,7 @@ public final class MainActivity extends Activity {
                     + " · adapt " + triage.optInt("ADAPT")
                     + " · reimplement " + triage.optInt("REIMPLEMENT")
                     + " (of " + triage.optInt("total") + ")";
-            column.addView(line(getString(R.string.rl_label_triage), value));
+            column.addView(line(text("rl_label_triage"), value));
         }
     }
 
