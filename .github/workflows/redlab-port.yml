@@ -216,10 +216,10 @@ jobs:
           set -o pipefail
           : > /tmp/removed.txt
           clean=0
-          # Six rounds were measured to be too few: round 6 still failed, so the old step sealed
-          # units no compiler had accepted. Keep removing rejects until javac is clean, and fail
-          # loudly if it never is.
-          for round in $(seq 1 12); do
+          # Each round removes only the files javac named, but removing one file can expose the
+          # next: run 44873094696 needed 13 rounds (round 12 still had a real error). Forty is a
+          # safety cap; the loop normally stops as soon as javac is clean.
+          for round in $(seq 1 40); do
             LOG=/tmp/javac-round-$round.log
             set +e
             ./gradlew :apps:gamespace:compileDebugJavaWithJavac --no-daemon > "$LOG" 2>&1

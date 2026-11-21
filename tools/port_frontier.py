@@ -133,6 +133,19 @@ def render(app: str, run: str, slice_data: dict, logs: list[Path], removed: list
             else "The compiler removed no unit in the rounds it ran.",
             "",
         ]
+        last_text = logs[-1].read_text(encoding="utf-8", errors="replace")
+        if "BUILD SUCCESSFUL" in last_text:
+            rows += [
+                "Final javac state: **clean** (`BUILD SUCCESSFUL`). The surviving units were accepted,"
+                " and only they may be sealed.",
+                "",
+            ]
+        else:
+            rows += [
+                "Final javac state: **not clean** (`BUILD FAILED`). Nothing from this run may be sealed;",
+                " the remaining errors are in the table below.",
+                "",
+            ]
         if all_errors:
             rows += ["Units with a first error:", "", "| unit | first error |", "| --- | --- |"]
             for unit in sorted(all_errors):
@@ -202,7 +215,8 @@ def self_test() -> int:
             "  symbol:   class MediaItem\n"
             "  location: class c\n"
             "apps/gamespace/materials/sources/cn/nubia/c.java:20: error: cannot find symbol\n"
-            "apps/gamespace/materials/sources/cn/nubia/g.java:3: error: package does not exist\n",
+            "apps/gamespace/materials/sources/cn/nubia/g.java:3: error: package does not exist\n"
+            "BUILD FAILED\n",
             encoding="utf-8",
         )
         removed_path = root / "removed.txt"
@@ -222,6 +236,7 @@ def self_test() -> int:
         checks.append(("javac units are reported", "`cn/nubia/c.java` | `cannot find symbol [MediaItem]`" in report))
         checks.append(("removed units are listed", "- `cn/nubia/g.java`" in report))
         checks.append(("declared dependencies are not called runtime-ready", "not in the APK yet" in report))
+        checks.append(("a failed final round forbids sealing", "Final javac state: **not clean**" in report))
         empty = render("GameSpace", "", {}, [], [])
         checks.append(("a missing slice does not invent numbers", "| 0 | 0 | 0 | 0 |" in empty))
         checks.append(("a missing log is stated", "No per-round javac log" in empty))
