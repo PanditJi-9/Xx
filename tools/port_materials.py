@@ -150,9 +150,21 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
     rename, skipped = rename_plan(res)
     counts["skipped"] = skipped
     counts["renamed"] = sorted(str(source.relative_to(res)) for source in rename)
+    # Some decoded layouts reference private Android ids (e.g. android:id/search_src_text) that
+    # aapt2 refuses to link for a non-system app. They cannot be made to compile, so they are
+    # dropped here and named in `skipped` rather than failing the whole merge later.
+    PRIVATE_ANDROID_REFS = ("search_src_text",)
     for path in sorted(res.rglob("*")):
         if not path.is_file():
             continue
+        if path.suffix.lower() == ".xml":
+            try:
+                text = path.read_text(encoding="utf-8", errors="surrogateescape")
+            except OSError:
+                text = ""
+            if any(ref in text for ref in PRIVATE_ANDROID_REFS):
+                counts["skipped"].append("private-android-ref: " + str(path.relative_to(res)))
+                continue
         destination = main / "res" / path.relative_to(res)
         if path in rename:
             destination = main / "res" / rename[path].relative_to(res)
