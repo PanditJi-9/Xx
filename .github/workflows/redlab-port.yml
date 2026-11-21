@@ -36,21 +36,31 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Fetch the APKs (verified, retried)
+      - name: Fetch the APKs (draft-safe, verified)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p work/apps
+          # A draft release has no /releases/tags/<tag> lookup, so the list endpoint is used and
+          # the tag is matched client-side. This is the same measured fix the audit workflow
+          # carries: without it the step "succeeded" with an empty directory.
+          gh api "repos/${{ github.repository }}/releases?per_page=100" \
+            --jq '.[] | select(.tag_name == "${{ inputs.tag }}") | .assets[] | "\(.id) \(.name) \(.size)"' \
+            > /tmp/assets.txt
+          echo "assets listed: $(wc -l < /tmp/assets.txt)"
           for name in ${{ inputs.apps }}; do
-            for attempt in 1 2 3; do
-              rm -f "work/apps/$name"
-              if gh release download "${{ inputs.tag }}" -R "${{ github.repository }}" \
-                   --pattern "$name" --dir work/apps --clobber; then
-                if python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "work/apps/$name" 2>/dev/null; then
-                  echo "ok: $name $(stat -c%s work/apps/$name)"; break
-                fi
-                echo "corrupt zip: $name"
+            read -r id size < <(awk -v n="$name" '$2==n {print $1, $3}' /tmp/assets.txt)
+            if [ -z "${id:-}" ]; then echo "missing asset: $name"; exit 1; fi
+            for attempt in 1 2 3 4 5; do
+              curl -sSL -C - -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/octet-stream" \
+                "https://api.github.com/repos/${{ github.repository }}/releases/assets/$id" \
+                -o "work/apps/$name" || true
+              if [ "$(stat -c%s "work/apps/$name" 2>/dev/null || echo 0)" = "$size" ] && \
+                 python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "work/apps/$name" 2>/dev/null; then
+                echo "ok: $name $size"; break
               fi
+              echo "retry $name: $(stat -c%s "work/apps/$name" 2>/dev/null || echo 0)/$size"
               sleep $((attempt * 5))
             done
           done
