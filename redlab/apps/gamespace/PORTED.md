@@ -7,7 +7,7 @@ compiler accepted them** — the pruning loop drops every unit javac refuses.
 
 - sealed units: **278**
 - sealed on: 2026-11-21
-- corpus at the time: ? units
+- corpus at the time: 6280 units
 - rejected then: 5876 (library code 5217 · needs a dependency 448 · vendor framework 7)
 
 `SEALED.json` lists the paths so a later port run stages only what is still missing.

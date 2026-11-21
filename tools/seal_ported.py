@@ -64,7 +64,7 @@ def render(app: str, units: list[str], slice_info: dict, sealed_on: str) -> str:
             "",
             f"- sealed units: **{len(units)}**",
             f"- sealed on: {sealed_on}",
-            f"- corpus at the time: {slice_info.get('corpus', '?')} units",
+            f"- corpus at the time: {slice_info.get('total', '?')} units",
             f"- rejected then: {len(rejected)} "
             f"(library code {libraries} · needs a dependency {needs} · vendor framework {vendor})",
             "",
