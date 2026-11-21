@@ -25,8 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # The runner ships an Android SDK; the action's interactive license step fails the job,
+      # so licenses are accepted non-interactively and the one platform we compile against is
+      # installed explicitly.
+      - name: Android SDK (licenses + platform 36)
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" > /dev/null
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
