@@ -81,14 +81,7 @@ jobs:
               { echo "apktool failed for $app"; tail -30 "work/port-$app-apktool.log"; exit 1; }
             /opt/jadx/bin/jadx -d "work/port/$app/sources" --no-res --no-imports -q "$apk" || \
               { echo "jadx failed for $app"; exit 1; }
-            pkg=$(python3 - "$apk" <<'PY'
-import sys, zipfile, re
-with zipfile.ZipFile(sys.argv[1]) as z:
-    data = z.read('AndroidManifest.xml')
-m = re.search(rb'(?:cn|com)\.(?:nubia|zte)[a-z0-9_.]*', data)
-print(m.group(0).decode() if m else '')
-PY
-)
+            pkg=$(python3 -c "import sys,zipfile,re;d=zipfile.ZipFile(sys.argv[1]).read('AndroidManifest.xml');m=re.search(rb'(?:cn|com)\\.(?:nubia|zte)[a-z0-9_.]*',d);print(m.group(0).decode() if m else '')" "$apk")
             echo "package guess: $pkg"
             python3 tools/port_triage.py \
               --sources "work/port/$app/sources" \
