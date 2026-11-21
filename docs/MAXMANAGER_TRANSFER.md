@@ -5,7 +5,7 @@
 
 ---
 
-## 1. ما نُقل (27 ملفًا)
+## 1. ما نُقل (78 ملفًا — المجلد كاملًا كما هو)
 
 المصدر: `optmize-main/manager/app/src/main/java/nd/max/core/hardware/` → الهدف:
 `redlab/hardware/src/main/kotlin/dev/redlab/hardware/`.
@@ -46,10 +46,11 @@
 | `ThermalGuard` · `ThermalCeilingRouter` | `PowerManager` | يُستبدل بمصدر ضغط محقون |
 | `AtlasRouteMemory` · `AtlasRouteMemoryFactory` · `AtlasAdaptiveExecutor` | `core.atlas.*` (6 أنواع) | حزمة كاملة لم تُنقل |
 
-**الترتيب الحالي:** الوحدة `:hardware` **مُفعّلة في البناء** بالملفات الأربعة المغلقة فعلًا
-(`ControlOwnership` · `DriftGuard` · `ManualControlLocks` · `VerifiedControl`) واختبار `DriftGuardTest`
-المنقول. والباقي **مُرحَّل في `redlab/hardware/staging/`**: موجود في الشجرة بترويسة مصدره، خارج البناء،
-فلا يُدَّعى أنه يعمل.
+**الترتيب الحالي (بعد تصحيح المالك: «خذ الملفات كما هي»):** كل مجلد `core/hardware` نُقل **verbatim**
+(78 ملفًا) إلى وحدة **Android library** باسم `:hardware`، ولم يُعد كتبة أي ملف. والأصناف الناقصة من
+حزم MaxManager الأخرى تُوفَّر كطبقة توافق بأسمائها الأصلية (`nd.max.core.privilege.RootCommands`,
+`daemon.DaemonIpc`, `jni.ProbeBridge`, `ipc.RootNodeChannel`, `platform.EventLog`) وتُوجَّه إلى مقعد
+واحد. وحُذف مجلد `staging` لأنه لم يبقَ له معنى.
 
 **خريطة الفتح:** `docs/audit/MAXMANAGER_PORT_MAP.md` (مولَّدة) تسرد لكل ملف مُرحَّل الرموز الناقصة،
 وأكبر الفاتحين بالقياس: `RootFileAccess` (يفتح 7) ثم `GpuHardwareBackend` (6) ثم `HardwareControlArbiter`
