@@ -8,9 +8,10 @@ plugins {
     id("com.android.application")
 }
 
-dependencies {
-    implementation("androidx.preference:preference:1.2.1")
-}
+// No `androidx.preference` dependency on purpose: the exploited materials already carry that
+// library's resources (apktool kept them), and adding the AAR made mergeDebugResources fail with
+// "Can not add resource ... to table" — the same resource name declared twice. Units that need it
+// are reported as a dependency by port_slice.py and stay out of the frontier.
 
 android {
     namespace = "dev.redlab.gamespace"
