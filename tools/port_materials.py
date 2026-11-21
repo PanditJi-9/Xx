@@ -224,6 +224,12 @@ def our_classes(module: Path) -> dict[str, str]:
     return found
 
 
+def _normalized(relative: str) -> str:
+    while relative.startswith("sources/"):
+        relative = relative[len("sources/"):]
+    return relative
+
+
 def stage_sources(
     sources: Path, selection: Path, package: str, new_package: str, module: Path
 ) -> dict:
@@ -236,10 +242,17 @@ def stage_sources(
     """
     selected = json.loads(selection.read_text(encoding="utf-8"))["selected"]
     owned = our_classes(module)
+    index = module / "src" / "ported" / "java" / "SEALED.json"
+    sealed = set()
+    if index.is_file():
+        sealed = set(json.loads(index.read_text(encoding="utf-8")).get("units", []))
     target = module / "materials" / "sources"
     copied: list[str] = []
     skipped: dict[str, str] = {}
     for relative in selected:
+        if _normalized(relative) in sealed:
+            skipped[relative] = "already sealed in src/ported/java"
+            continue
         path = sources / relative
         if not path.is_file():
             skipped[relative] = "not found in the extracted sources"

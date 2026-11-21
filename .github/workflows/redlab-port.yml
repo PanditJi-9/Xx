@@ -223,6 +223,26 @@ jobs:
           echo "units removed by the compiler: $(wc -l < /tmp/removed.txt)"
           echo "units left: $(find apps/gamespace/materials/sources -name '*.java' | wc -l)"
 
+      # The point of a port is to own the code, not to regenerate it every run. Whatever javac
+      # accepted is written into src/ported/java and committed, so it can be read, reviewed and
+      # fixed here like any other source file.
+      - name: Seal the ported source into the repository
+        if: steps.ported.outcome == 'success'
+        run: |
+          python3 tools/seal_ported.py --app GameSpace \
+            --from redlab/apps/gamespace/materials/sources \
+            --to redlab/apps/gamespace/src/ported/java \
+            --slice work/port/GameSpace/slice.json
+          git config user.name "RedLab port"
+          git config user.email "actions@users.noreply.github.com"
+          git add redlab/apps/gamespace/src/ported redlab/apps/gamespace/PORTED.md
+          if git diff --cached --quiet; then
+            echo "already sealed"
+          else
+            git commit -m "Seal the ported units the compiler accepted (run ${{ github.run_id }})"
+            git push
+          fi
+
       - name: Report what the compiler said
         if: always()
         run: |
