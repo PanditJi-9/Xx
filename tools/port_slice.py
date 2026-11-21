@@ -33,6 +33,7 @@ PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.",
 # is smaller and correct. So its files are excluded and its imports are reported as a dependency to
 # add — never silently treated as available.
 LIBRARY_PATHS = (
+    "kotlin/",       # the Kotlin runtime, decompiled: `??` expressions are not Java
     "com/google/",
     "androidx/",
     "org/apache/",
@@ -42,6 +43,11 @@ LIBRARY_PATHS = (
     "org/jetbrains/",
     "com/facebook/",
     "bolts/",
+    "org/intellij/",
+    "com/bumptech/",
+    "io/reactivex/",
+    "org/greenrobot/",
+    "com/android/",
 )
 PACKAGE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.M)
 IMPORT = re.compile(r"^\s*import\s+(static\s+)?([\w.]+)\s*;", re.M)
