@@ -51,6 +51,9 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # سطر خطأ aapt2 الذي يسمّي موضعًا: `<file>:<line>: error: <message>`
 ERROR_LINE = re.compile(r"^(?P<file>[^:]+):(?P<line>\d+): error: (?P<message>.+)$")
 FAILED_FILE = re.compile(r"^(?P<file>[^:]+): error: file failed to compile\.$")
+# Some refusals carry no file or line at all — measured: `ERROR: '$' is not a valid file-based
+# resource name character`. Dropping them is what let the assay report "1 refusal" without a name.
+BARE_ERROR = re.compile(r"^ERROR: (?P<message>.+)$")
 
 
 def find_aapt2() -> str | None:
@@ -122,6 +125,10 @@ def offenders(aapt2: str, directory: str, root: str) -> list[str]:
         if match:
             where = os.path.relpath(match.group("file"), root)
             problems.append(f"{where}: الملفّ لم يُترجم")
+            continue
+        bare = BARE_ERROR.match(line.strip())
+        if bare:
+            problems.append(f"{os.path.relpath(directory, root)}: {bare.group('message')}")
     if not problems:
         # aapt2 returns 1 for resource errors, and something else when it did not run at all
         # (measured here: exit 132, SIGILL, with no output on stderr). An empty problem list then

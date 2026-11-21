@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -26,6 +27,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ANDROID_NS = "{http://schemas.android.com/apk/res/android}"
+# aapt2's own rule for file-based resources, and it is not negotiable: only a-z, 0-9 and _ .
+# apktool decodes some internal entries to names that break it (measured: `$m3_avd_show_password__2.xml`
+# in GameSpace), and one such file fails the whole `packageDebugResources` task.
+RES_NAME = re.compile(r"^[a-z0-9_]+\.(xml|png|webp|jpg|jpeg|9\.png|gif|ttf|otf|mp3|ogg|wav|json|bin|dtd|arsc)$")
 COMPONENTS = (
     ("activity", "activities"),
     ("activity-alias", "aliases"),
@@ -68,6 +73,11 @@ def read_components(manifest: Path) -> dict:
     return found
 
 
+def is_valid_res_name(path: Path) -> bool:
+    """A res file name is `<name>.<ext>` with a name aapt2 accepts; the extension set is wide."""
+    return bool(RES_NAME.match(path.name))
+
+
 def copy_tree(source: Path, target: Path) -> int:
     """Copy files without deleting anything already staged. Returns the number of files written."""
     written = 0
@@ -97,10 +107,26 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
     main = module / "materials"
     counts = {
         "app": app,
-        "res": copy_tree(res, main / "res"),
+        "res": 0,
         "assets": copy_tree(extract / "assets", main / "assets"),
         "abis": [],
+        "skipped": [],
     }
+
+    # Resources are copied file by file so a name aapt2 cannot accept is reported by name instead
+    # of stopping the build with nothing but a Gradle stack trace. Nothing is renamed: a renamed
+    # resource is a resource the original references and cannot find.
+    for path in sorted(res.rglob("*")):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(res)
+        if not is_valid_res_name(path):
+            counts["skipped"].append(str(relative))
+            continue
+        destination = main / "res" / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, destination)
+        counts["res"] += 1
 
     lib = extract / "lib"
     if lib.is_dir():
@@ -119,6 +145,7 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
         "package": components.get("package", ""),
         "staged": {"res": counts["res"], "assets": counts["assets"], "abis": counts["abis"]},
         "resDirs": dict(sorted(res_dirs.items())),
+        "skipped": counts["skipped"],
         "components": {key: value for key, value in components.items() if key != "package"},
     }
 
@@ -158,6 +185,18 @@ def render(app: str, inventory: dict) -> str:
     ]
     for abi in staged["abis"]:
         rows.append(f"| `jniLibs/{abi['abi']}` | {abi['libs']} |")
+    skipped = inventory.get("skipped", [])
+    if skipped:
+        rows += [
+            "",
+            f"### Skipped: {len(skipped)} entries aapt2 cannot accept as resource file names",
+            "",
+            "They are listed here rather than renamed or dropped silently: if the original code",
+            "references one, the reference fails loudly at build time instead of pointing at a",
+            "renamed file that no longer answers to its own name.",
+            "",
+        ]
+        rows += [f"- `{item}`" for item in skipped[:40]]
     rows += ["", f"Package in the original: `{inventory['package']}`", "", "## Components declared by the original", ""]
     for title in ("activities", "aliases", "services", "receivers", "providers"):
         names = inventory["components"].get(title, [])
@@ -205,6 +244,15 @@ def self_test() -> int:
         checks.append(("activities are listed", len(inventory["components"]["activities"]) == 2))
         checks.append(("permissions are listed", inventory["components"]["permissions"] == ["android.permission.INTERNET"]))
         checks.append(("materials doc is written", (module / "MATERIALS.md").is_file()))
+
+        # An apktool name aapt2 refuses must be skipped and listed, not passed to the build.
+        (extract / "res" / "drawable").mkdir()
+        (extract / "res" / "drawable" / "$avd_internal.xml").write_text("<x/>", encoding="utf-8")
+        skipped = stage(extract, module, "GameSpace")
+        checks.append(("a name aapt2 refuses is skipped", skipped["skipped"] == ["drawable/$avd_internal.xml"]))
+        checks.append(("and it is not staged", not (module / "materials/res/drawable/$avd_internal.xml").exists()))
+        checks.append(("the refusal is recorded", "Skipped: 1" in (module / "MATERIALS.md").read_text(encoding="utf-8")))
+        (extract / "res" / "drawable" / "$avd_internal.xml").unlink()
 
         # Re-staging must be idempotent: the run repeats on every build, and a second copy that
         # duplicates or drops files would make two runs disagree for no reason.
