@@ -122,6 +122,14 @@ def offenders(aapt2: str, directory: str, root: str) -> list[str]:
         if match:
             where = os.path.relpath(match.group("file"), root)
             problems.append(f"{where}: الملفّ لم يُترجم")
+    if not problems:
+        # aapt2 returns 1 for resource errors, and something else when it did not run at all
+        # (measured here: exit 132, SIGILL, with no output on stderr). An empty problem list then
+        # means "no judgement", not "all good" — and a gate that reads a crash as a pass is worse
+        # than no gate, because it is quoted as evidence.
+        problems.append(
+            f"{os.path.relpath(directory, root)}: aapt2 خرج بـ{code} بلا خطأ مورد — الحكم غير متاح"
+        )
     return problems
 
 
@@ -133,6 +141,20 @@ def self_test() -> int:
         print("  ⚠️ لا `aapt2` في هذه البيئة — **غير مُتحقَّقة** (لا يُدَّعى نجاح)")
         return 0
     print(f"  aapt2: {aapt2}")
+
+    # أولًا: هل يعمل aapt2 نفسه في هذه البيئة؟ قِيس محليًّا أنه يموت بـSIGILL (exit 132) بلا
+    # رسالة مورد؛ فإن لم يعمل فلا معنى لقياس الشجرة، ويُعلن «غير مُتحقَّقة» بدل نجاح كاذب.
+    with tempfile.TemporaryDirectory() as probe:
+        probe_res = os.path.join(probe, "res", "values")
+        os.makedirs(probe_res)
+        with open(os.path.join(probe_res, "ok.xml"), "w", encoding="utf-8") as handle:
+            handle.write('<?xml version="1.0" encoding="utf-8"?>\n<resources>\n  <string name="a">b</string>\n</resources>\n')
+        code, err = compile_dir(aapt2, os.path.join(probe, "res"))
+        if code != 0:
+            print(f"  ⚠️ aapt2 لا يُنتج حكمًا في هذه البيئة (exit {code}) — **غير مُتحقَّقة** (لا يُدَّعى نجاح)")
+            if err.strip():
+                print(f"     {err.strip().splitlines()[0]}")
+            return 0
 
     with tempfile.TemporaryDirectory() as root:
         res = os.path.join(root, "manager/app/src/main/res/values")
@@ -199,6 +221,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="تقرير للقراءة الآلية")
     parser.add_argument("--self-test", action="store_true", help="يقيس الأداة نفسها")
     parser.add_argument("--root", default=REPO, help="جذر المستودع (للفحص الذاتي)")
+    parser.add_argument(
+        "--include",
+        action="append",
+        default=[],
+        metavar="DIR",
+        help="مجلّد res إضافي يُقاس بنفس aapt2 (مثل مواد أصلٍ محضَّرة) — يُكرَّر",
+    )
     args = parser.parse_args(argv)
 
     if args.self_test:
@@ -213,6 +242,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     dirs = res_dirs(root)
+    dirs += [os.path.abspath(item) for item in args.include if os.path.isdir(item)]
     problems: list[str] = []
     for directory in dirs:
         problems.extend(offenders(aapt2, directory, root))

@@ -121,6 +121,55 @@ jobs:
             docs/port/*.json
           if-no-files-found: error
 
+      - name: Stage the materials into their app modules
+        run: |
+          set -e
+          for extract in work/port/*/; do
+            app=$(basename "$extract")
+            module="redlab/apps/$(echo "$app" | tr '[:upper:]' '[:lower:]')"
+            if [ ! -d "$module" ]; then echo "no module for $app yet — staged materials skipped"; continue; fi
+            python3 tools/port_materials.py --extract "$extract" --module "$module" \
+              --app "$app" --triage "docs/port/${app}.json" --assert
+          done
+
+      - name: Does aapt2 accept the original resource corpus?
+        run: |
+          # The same aapt2 that will reject them in the build, run alone first so a refusal names
+          # the file and line instead of arriving as one wall of Gradle output.
+          python3 tools/resource_compile.py --include work/port/GameSpace/res-out/res --json \
+            > /tmp/res-assay.json || true
+          python3 - <<'PY'
+          import json
+          report = json.load(open('/tmp/res-assay.json'))
+          if not report.get('verified'):
+              print('resources: NOT VERIFIED (no usable aapt2)')
+          else:
+              print(f"resources: {len(report['offenders'])} refusals in {report['dirs']} res dirs")
+              for item in report['offenders'][:20]:
+                  print('  -', item)
+          PY
+
+      - name: Android SDK (licenses + platform 36 + build-tools 36)
+        run: |
+          export ANDROID_HOME=/usr/local/lib/android/sdk
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platforms;android-36" "build-tools;36.0.0" > /dev/null
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build GameSpace out of the original materials
+        working-directory: redlab
+        run: ./gradlew :apps:gamespace:assembleDebug --no-daemon --stacktrace
+
+      - name: Keep the APK this run produced
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamespace-debug-apk
+          path: redlab/apps/gamespace/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
       - name: Show the summary
         run: |
           for f in docs/port/*_TRIAGE.md; do

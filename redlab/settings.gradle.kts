@@ -16,7 +16,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "RedLabEcosystem"
 
-// Phase 5 — foundation only. Application modules (`:gamespace`, `:gameassist`, …) are
-// added in phase 6+ per docs/ECOSYSTEM_MODULES.md §6, one at a time.
+// P1 (docs/MASTER_PLAN.md §8): `:apps:gamespace` is the first application module, built from the
+// original materials staged by tools/port_materials.py. The other apps are added the same way,
+// one at a time, each proof standing on its own.
 include(":core")
 include(":hardware")
+include(":apps:gamespace")

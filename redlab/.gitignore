@@ -1,0 +1,4 @@
+
+# Materials staged from the original APK by tools/port_materials.py: thousands of files that must
+# not be committed, and must never be hand-edited — the original is the source of truth.
+apps/*/materials/
