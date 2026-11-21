@@ -30,7 +30,10 @@ ANDROID_NS = "{http://schemas.android.com/apk/res/android}"
 # aapt2's own rule for file-based resources, and it is not negotiable: only a-z, 0-9 and _ .
 # apktool decodes some internal entries to names that break it (measured: `$m3_avd_show_password__2.xml`
 # in GameSpace), and one such file fails the whole `packageDebugResources` task.
-RES_NAME = re.compile(r"^[a-z0-9_]+\.(xml|png|webp|jpg|jpeg|9\.png|gif|ttf|otf|mp3|ogg|wav|json|bin|dtd|arsc)$")
+# `raw/` in the original really holds `click.he`, `magic_broadcast.mp4`, and the two help videos.
+# aapt2 2.20 compiles both extensions (measured), so dropping them was our allowlist's bug, not
+# a limit of the resource compiler. Extensions stay explicit so a typo still gets named, not built.
+RES_NAME = re.compile(r"^[a-z0-9_]+\.(xml|png|webp|jpg|jpeg|9\.png|gif|ttf|otf|mp3|ogg|wav|mp4|he|json|bin|dtd|arsc)$")
 COMPONENTS = (
     ("activity", "activities"),
     ("activity-alias", "aliases"),
@@ -314,11 +317,12 @@ def render(app: str, inventory: dict) -> str:
     if skipped:
         rows += [
             "",
-            f"### Skipped: {len(skipped)} entries aapt2 cannot accept as resource file names",
+            f"### Skipped: {len(skipped)} entries that could not be staged",
             "",
-            "They are listed here rather than renamed or dropped silently: if the original code",
-            "references one, the reference fails loudly at build time instead of pointing at a",
-            "renamed file that no longer answers to its own name.",
+            "They are listed here by name rather than dropped silently: a file name aapt2 refuses",
+            "even after repair, or a decoded layout that still points at a private Android id.",
+            "If the original code references one, the reference fails loudly at build time instead",
+            "of pointing at a file that no longer answers to its own name.",
             "",
         ]
         rows += [f"- `{item}`" for item in skipped[:40]]
@@ -407,6 +411,17 @@ def self_test() -> int:
 
         again = stage(extract, module, "GameSpace")
         checks.append(("staging is repeatable", again["res"] == counts["res"] and again["assets"] == counts["assets"]))
+
+        # GameSpace's raw/ really holds these two extensions; aapt2 2.20 compiled both locally.
+        # The allowlist must not turn a media file into a resource it refuses.
+        (extract / "res" / "raw").mkdir()
+        (extract / "res" / "raw" / "click.he").write_text("hevc", encoding="utf-8")
+        (extract / "res" / "raw" / "magic_broadcast.mp4").write_text("mp4", encoding="utf-8")
+        raw = stage(extract, module, "GameSpace")
+        checks.append(("a .he raw file is staged", (module / "materials/res/raw/click.he").is_file()))
+        checks.append(("a .mp4 raw file is staged", (module / "materials/res/raw/magic_broadcast.mp4").is_file()))
+        checks.append(("raw media is not reported as skipped", raw["skipped"] == []))
+        checks.append(("raw media is measured", raw["res"] == 4))
 
         # A local edit is not silently reverted? No: the original is the source of truth on every
         # run. What must not happen is an extraction with no resources passing as success.

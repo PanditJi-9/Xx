@@ -36,6 +36,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Self-test the port tools before trusting their numbers
+        run: |
+          python3 tools/port_slice.py --self-test
+          python3 tools/port_materials.py --self-test
+          python3 tools/port_frontier.py --self-test
+          python3 tools/seal_ported.py --self-test
+
       - name: Fetch the APKs (draft-safe, verified)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -189,6 +196,7 @@ jobs:
           # unit. Everything rejected is listed with the class that rejected it.
           python3 tools/port_slice.py --sources work/port/GameSpace/sources \
             --package cn.nubia.gamelauncher --app GameSpace \
+            --libraries redlab/apps/gamespace/libraries.txt \
             --json work/port/GameSpace/slice.json
 
       - name: Stage the units the corpus can compile
@@ -207,13 +215,14 @@ jobs:
         working-directory: redlab
         run: |
           set -o pipefail
-          LOG=/tmp/javac.log
           : > /tmp/removed.txt
           for round in 1 2 3 4 5 6; do
+            LOG=/tmp/javac-round-$round.log
             set +e
             ./gradlew :apps:gamespace:compileDebugJavaWithJavac --no-daemon > "$LOG" 2>&1
             rc=$?
             set -e
+            cp "$LOG" /tmp/javac.log
             if [ $rc -eq 0 ]; then echo "clean after round $round"; break; fi
             removed=$(LOG="$LOG" python3 - <<'PY'
           import os, re
@@ -240,6 +249,18 @@ jobs:
           echo "units removed by the compiler: $(wc -l < /tmp/removed.txt)"
           echo "units left: $(find apps/gamespace/materials/sources -name '*.java' | wc -l)"
 
+      # Every round is kept, so the frontier is a measurement rather than the last log winning.
+      - name: Record the measured compiler frontier
+        if: always()
+        run: |
+          python3 tools/port_frontier.py --app GameSpace \
+            --run "${{ github.run_id }}" \
+            --slice work/port/GameSpace/slice.json \
+            --logs '/tmp/javac-round-*.log' \
+            --removed /tmp/removed.txt \
+            --out docs/port/FRONTIER.md
+          sed -n '1,60p' docs/port/FRONTIER.md
+
       # The point of a port is to own the code, not to regenerate it every run. Whatever javac
       # accepted is written into src/ported/java and committed, so it can be read, reviewed and
       # fixed here like any other source file.
@@ -252,7 +273,7 @@ jobs:
             --slice work/port/GameSpace/slice.json
           git config user.name "RedLab port"
           git config user.email "actions@users.noreply.github.com"
-          git add redlab/apps/gamespace/src/ported redlab/apps/gamespace/PORTED.md
+          git add redlab/apps/gamespace/src/ported redlab/apps/gamespace/PORTED.md docs/port/FRONTIER.md
           if git diff --cached --quiet; then
             echo "already sealed"
           else
@@ -268,14 +289,16 @@ jobs:
             echo ""
             echo "Outcome: \`${{ steps.ported.outcome }}\`"
             echo ""
-            echo "javac errors: $(grep -c 'error:' /tmp/javac.log 2>/dev/null || echo 0)"
+            echo "javac errors: $(grep -h 'error:' /tmp/javac-round-*.log 2>/dev/null | wc -l)"
             echo ""
-            echo "The first errors, in order:"
+            echo "The first errors of the last round:"
             echo '```'
-            grep -m 15 'error:' /tmp/javac.log 2>/dev/null || echo "(none)"
+            last=$(ls -1 /tmp/javac-round-*.log 2>/dev/null | tail -1)
+            grep -m 15 'error:' "$last" 2>/dev/null || echo "(none)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          grep -m 15 'error:' /tmp/javac.log 2>/dev/null || true
+          last=$(ls -1 /tmp/javac-round-*.log 2>/dev/null | tail -1)
+          grep -m 15 'error:' "$last" 2>/dev/null || true
 
       - name: Keep the slice and the compiler log
         if: always()
@@ -285,6 +308,8 @@ jobs:
           path: |
             work/port/GameSpace/slice.json
             /tmp/javac.log
+            /tmp/javac-round-*.log
+            docs/port/FRONTIER.md
           if-no-files-found: warn
 
       - name: Keep the APK this run produced

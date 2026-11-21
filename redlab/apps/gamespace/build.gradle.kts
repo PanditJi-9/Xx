@@ -8,10 +8,11 @@ plugins {
     id("com.android.application")
 }
 
-// No `androidx.preference` dependency on purpose: the exploited materials already carry that
-// library's resources (apktool kept them), and adding the AAR made mergeDebugResources fail with
-// "Can not add resource ... to table" — the same resource name declared twice. Units that need it
-// are reported as a dependency by port_slice.py and stay out of the frontier.
+// The dependencies the original bundled in dex live in `libraries.txt`. tools/port_slice.py reads
+// the same file, so a unit it calls compilable is exactly a unit whose imports are on javac's
+// classpath. They are compileOnly: merging their resources would declare names the original
+// materials already carry (measured with androidx.preference: "Can not add resource ... to table"),
+// so this step buys compilation, not runtime classes.
 
 android {
     namespace = "dev.redlab.gamespace"
@@ -49,4 +50,23 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+// `<import prefix>. <maven coordinate>`, one per line; the prefix is what port_slice.py uses and
+// the coordinate is what Gradle resolves. Duplicates are collapsed so media3 can share one prefix.
+val portLibraries: List<String> = file("libraries.txt")
+    .takeIf { it.isFile }
+    ?.readLines()
+    ?.map(String::trim)
+    ?.filter { it.isNotEmpty() && !it.startsWith("#") }
+    ?.map { line ->
+        val columns = line.split(Regex("\\s+"))
+        require(columns.size == 2) { "libraries.txt: expected `<prefix>. <coordinate>`: $line" }
+        columns[1]
+    }
+    ?.distinct()
+    ?: emptyList()
+
+dependencies {
+    portLibraries.forEach { add("compileOnly", it) }
 }

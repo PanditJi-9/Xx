@@ -70,8 +70,33 @@ def imports_of(path: Path) -> list[str]:
     return [m.group(2) for m in IMPORT.finditer(text)]
 
 
-def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
-    """Shrink to a fixpoint and bucket every rejection with its reason."""
+def read_libraries(path: Path) -> tuple[str, ...]:
+    """Import prefixes answered by a real dependency, one `<prefix> <coordinate>` per line.
+
+    The same file is read by the app's build.gradle.kts, so the classpath javac sees and the
+    availability port_slice.py assumes cannot drift apart. A prefix must end with `.`; a line
+    without a coordinate is a typo, not a library.
+    """
+    prefixes: list[str] = []
+    for number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) != 2 or not parts[0].endswith("."):
+            raise SystemExit(f"{path}:{number}: expected `<import-prefix>. <maven-coordinate>`")
+        prefixes.append(parts[0])
+    return tuple(dict.fromkeys(prefixes))
+
+
+def frontier(
+    root: Path, package: str, corpus: dict[str, str], available: tuple[str, ...] = ()
+) -> dict:
+    """Shrink to a fixpoint and bucket every rejection with its reason.
+
+    `available` is the measured list of import prefixes a real dependency now answers. An
+    import under one of them is answered by javac too, so it must not reject the unit here.
+    """
     own_r = package + ".R"
     keep = set(corpus.values())
     reasons: dict[str, str] = {}
@@ -91,6 +116,8 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
             for imported in imports_of(root / relative):
                 if imported.startswith(PLATFORM):
                     continue
+                if available and imported.startswith(available):
+                    continue  # a declared compileOnly dependency answers it at compile time
                 if imported == own_r or imported.startswith(own_r + "$"):
                     continue  # R is regenerated with the same names by our build
                 target = corpus.get(imported)
@@ -120,6 +147,7 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
 
     return {
         "total": len(corpus),
+        "available": sorted(available),
         "selected": sorted(keep),
         "rejected": dict(sorted(reasons.items())),
         "buckets": dict(sorted(buckets.items())),
@@ -180,6 +208,31 @@ def self_test() -> int:
         checks.append(("the vendor reason names the class",
                        "cn.nubia.panel.Power" in result["rejected"].get("cn/nubia/app/UsesVendor.java", "")))
 
+        # The same corpus, with the dependencies a real build now declares. An import those
+        # artifacts answer must stop rejecting the unit; the build reads the very same file.
+        libraries = root / "libraries.txt"
+        libraries.write_text(
+            "# import prefix            maven coordinate\n"
+            "com.google.gson.          com.google.code.gson:gson:2.11.0\n"
+            "androidx.core.            androidx.core:core:1.9.0\n",
+            encoding="utf-8",
+        )
+        available = read_libraries(libraries)
+        checks.append(("library prefixes are read", available == ("com.google.gson.", "androidx.core.")))
+        supplied = frontier(root, "cn.nubia.app", corpus, available)
+        chosen = set(supplied["selected"])
+        checks.append(("a declared dependency keeps its user", "cn/nubia/app/UsesLib.java" in chosen))
+        checks.append(("a bundled library user is kept", "cn/nubia/app/NeedsAndroidx.java" in chosen))
+        checks.append(("a chain through a declared dependency survives", "cn/nubia/app/Chained.java" in chosen))
+        checks.append(("the declared prefixes are reported", supplied["available"] == ["androidx.core.", "com.google.gson."]))
+        bad = root / "bad-libraries.txt"
+        bad.write_text("com.google.gson Gson\n", encoding="utf-8")
+        try:
+            read_libraries(bad)
+            checks.append(("a malformed library line fails loudly", False))
+        except SystemExit:
+            checks.append(("a malformed library line fails loudly", True))
+
     failed = [name for name, ok in checks if not ok]
     for name, ok in checks:
         print(("ok   " if ok else "FAIL ") + name)
@@ -195,6 +248,10 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--package", required=False, default="")
     parser.add_argument("--app", default="")
     parser.add_argument("--json")
+    parser.add_argument(
+        "--libraries",
+        help="file of `<import-prefix>. <maven-coordinate>` lines, also read by the module's build",
+    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
     if args.self_test:
@@ -205,10 +262,11 @@ def main(argv: list[str]) -> int:
 
     root = Path(args.sources)
     corpus = index_corpus(root)
-    result = frontier(root, args.package, corpus)
+    available = read_libraries(Path(args.libraries)) if args.libraries else ()
+    result = frontier(root, args.package, corpus, available)
     print(
         f"{args.app or args.package}: corpus={result['total']} compilable_now={len(result['selected'])} "
-        f"rejected={len(result['rejected'])}"
+        f"rejected={len(result['rejected'])} dependencies={len(result['available'])}"
     )
     for key, value in result["buckets"].items():
         print(f"  {key}: {value}")
