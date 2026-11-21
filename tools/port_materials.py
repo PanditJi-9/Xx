@@ -153,7 +153,8 @@ def stage(extract: Path, module: Path, app: str, triage: Path | None = None) -> 
     # Some decoded layouts reference private Android ids (e.g. android:id/search_src_text) that
     # aapt2 refuses to link for a non-system app. They cannot be made to compile, so they are
     # dropped here and named in `skipped` rather than failing the whole merge later.
-    PRIVATE_ANDROID_REFS = ("search_src_text",)
+    # Only the private *Android framework* id, not any layout that merely mentions it.
+    PRIVATE_ANDROID_REFS = ("android:id/search_src_text",)
     for path in sorted(res.rglob("*")):
         if not path.is_file():
             continue
