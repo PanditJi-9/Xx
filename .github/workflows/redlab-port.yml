@@ -128,6 +128,9 @@ jobs:
           # assets/ and the decoded manifest — the app folder above it also holds jadx sources.
           for extract in work/port/*/res-out/; do
             app=$(basename "$(dirname "$extract")")
+            # GameAssist's resource tree still needs dependency resolution (appcompat private ids);
+            # its shell builds without materials until that is measured.
+            if [ "$app" = "GameAssist" ]; then echo "GameAssist: materials staging deferred"; continue; fi
             module="redlab/apps/$(echo "$app" | tr '[:upper:]' '[:lower:]')"
             if [ ! -d "$module" ]; then echo "no module for $app yet — staged materials skipped"; continue; fi
             python3 tools/port_materials.py --extract "$extract" --module "$module" \
@@ -175,9 +178,9 @@ jobs:
               echo "$app: no decoded manifest"; fi
           done
 
-      - name: Build GameSpace out of the original materials
+      - name: Build the apps out of the original materials
         working-directory: redlab
-        run: ./gradlew :apps:gamespace:assembleDebug --no-daemon --stacktrace
+        run: ./gradlew :apps:gamespace:assembleDebug :apps:gameassist:assembleDebug --no-daemon --stacktrace
 
       - name: Measure how much of the original code compiles today
         run: |

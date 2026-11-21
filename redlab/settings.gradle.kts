@@ -22,3 +22,4 @@ rootProject.name = "RedLabEcosystem"
 include(":core")
 include(":hardware")
 include(":apps:gamespace")
+include(":apps:gameassist")
