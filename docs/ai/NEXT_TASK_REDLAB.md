@@ -80,3 +80,12 @@ python3 tools/port_materials.py --self-test
   والمفاتيح الأربعة موجودة في `R.txt`. السلوك على جهاز لم يُقس بعد.
 - التالي: واجهة `PrivilegedTransport` واحدة بتنفيذين (root/shizuku) تُمرَّر خلف `HardwareControlArbiter`،
   ثم شاشة قائمة الألعاب من تخطيطات الأصل. لا تُعلن أي كتابة قبل قياسها على الجهاز.
+
+## تحديث 2026-11-21 (٢) — شاشة قائمة الألعاب من تخطيطات الأصل
+
+- `GameListActivity`: تعيد استخدام `game_space_main` و`game_item_medium` الأصليين حرفيًا، وتُعبّئ البطاقة
+  بأيقونة التطبيق واسمه من `queryIntentActivities(ACTION_MAIN/CATEGORY_LAUNCHER)` — بلا خدمة Nubia وبلا
+  صلاحية حزم، فتعمل على أي هاتف. النقر يفتح التطبيق عبر `getLaunchIntentForPackage`.
+- الزر في `MainActivity` من `rl_open_game_list` (EN + AR فقط).
+- التحقق: `:apps:gamespace:compileDebugJavaWithJavac` = **success**. السلوك المرئي لم يُقس: لا جهاز متصل
+  حاليًا (`adb devices` فارغ).

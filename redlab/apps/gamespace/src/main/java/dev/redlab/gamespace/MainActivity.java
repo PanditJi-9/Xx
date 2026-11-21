@@ -1,11 +1,13 @@
 package dev.redlab.gamespace;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -52,6 +54,11 @@ public final class MainActivity extends Activity {
             ControlMode mode = ModeProbe.detect(getApplicationContext());
             runOnUiThread(() -> showMode(mode));
         }, "mode-probe").start();
+
+        Button openGames = new Button(this);
+        openGames.setText(text("rl_open_game_list"));
+        openGames.setOnClickListener(v -> startActivity(new Intent(this, GameListActivity.class)));
+        column.addView(openGames);
 
         JSONObject inventory = readInventory();
         if (inventory == null) {
