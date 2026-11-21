@@ -124,8 +124,10 @@ jobs:
       - name: Stage the materials into their app modules
         run: |
           set -e
-          for extract in work/port/*/; do
-            app=$(basename "$extract")
+          # apktool writes into work/port/<app>/res-out, so that is the directory holding res/,
+          # assets/ and the decoded manifest — the app folder above it also holds jadx sources.
+          for extract in work/port/*/res-out/; do
+            app=$(basename "$(dirname "$extract")")
             module="redlab/apps/$(echo "$app" | tr '[:upper:]' '[:lower:]')"
             if [ ! -d "$module" ]; then echo "no module for $app yet — staged materials skipped"; continue; fi
             python3 tools/port_materials.py --extract "$extract" --module "$module" \
