@@ -89,8 +89,12 @@ jobs:
             # -s: skip dex decoding here; jadx produces the sources in the next step.
             apktool d -f -s "$apk" -o "work/port/$app/res-out" > "work/port-$app-apktool.log" 2>&1 || \
               { echo "apktool failed for $app"; tail -30 "work/port-$app-apktool.log"; exit 1; }
-            /opt/jadx/bin/jadx -d "work/port/$app/sources" --no-res --no-imports -q "$apk" || \
-              { echo "jadx failed for $app"; exit 1; }
+            # A 15k-class APK needs a bigger heap than the JVM default: the first run died
+            # silently here, which is why the log is kept and printed on failure.
+            JAVA_OPTS="-Xmx6g -XX:MaxMetaspaceSize=1g" /opt/jadx/bin/jadx \
+              -d "work/port/$app/sources" --no-res --no-imports --threads-count 2 \
+              "$apk" > "work/port-$app-jadx.log" 2>&1 || \
+              { echo "jadx failed for $app"; tail -20 "work/port-$app-jadx.log"; exit 1; }
             pkg=$(python3 -c "import sys,zipfile,re;d=zipfile.ZipFile(sys.argv[1]).read('AndroidManifest.xml');m=re.search(rb'(?:cn|com)\\.(?:nubia|zte)[a-z0-9_.]*',d);print(m.group(0).decode() if m else '')" "$apk")
             echo "package guess: $pkg"
             python3 tools/port_triage.py \
