@@ -1,5 +1,20 @@
 plugins {
-    kotlin("jvm")
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "dev.redlab.hardware"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 28
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 }
 
 kotlin {
@@ -7,16 +22,12 @@ kotlin {
 }
 
 dependencies {
-    // MaxManager persists a little JSON (locks, route memory) with org.json; keeping the same
-    // calls keeps the ported logic byte-identical to the measured original.
+    // MaxManager persists a little JSON (locks, route memory) with org.json.
     implementation("org.json:json:20240303")
-    testImplementation(kotlin("test"))
     testImplementation("junit:junit:4.13.2")
 }
 
-tasks.test {
+tasks.withType<Test>().configureEach {
     useJUnit()
-    // Print each result: a task that passes because it discovered no tests is a silent lie,
-    // and this project has already been bitten by gates that measured nothing.
     testLogging { events("passed", "failed", "skipped") }
 }

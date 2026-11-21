@@ -1,7 +1,6 @@
-// Ported from MaxManager (same owner, same project lineage) on 2026-11-20.
-// Changes here: package renamed to dev.redlab.hardware; Android-only calls replaced by
-// JVM seams where the module must build without the Android SDK. Logic is otherwise
-// unchanged, so MaxManager's measurements stay valid evidence for this code.
+// Ported verbatim from MaxManager (same owner, same lineage), 2026-11-20.
+// Only the package line changed. Android APIs are used as-is: this module is an
+// Android library, so Context/Os/PowerManager need no rewrite.
 
 /*
  * Copyright (C) 2026 Nader Magdy. All rights reserved.

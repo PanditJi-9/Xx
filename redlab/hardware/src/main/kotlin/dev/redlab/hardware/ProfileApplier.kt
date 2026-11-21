@@ -1,0 +1,132 @@
+// Ported verbatim from MaxManager (same owner, same lineage), 2026-11-20.
+// Only the package line changed. Android APIs are used as-is: this module is an
+// Android library, so Context/Os/PowerManager need no rewrite.
+
+/*
+ * Copyright (C) 2026-2027 MaxManager contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package dev.redlab.hardware
+
+import nd.max.MaxManagerPaths
+import nd.max.core.daemon.DaemonIpc
+import nd.max.core.diagnostics.DiagnosticCenter
+
+/**
+ * تطبيق ملفات الأداء العامة (performance / balanced / eco) عبر خدمة
+ * الوحدة الحقيقية sys.maxmanager-service — نفس المسار الذي يستخدمه
+ * HomeViewmodel.applyProfile() وزر التشغيل السريع.
+ *
+ * هذه هي الطريقة الوحيدة الصحيحة لتبديل الملف العام: الوحدة الأصلية
+ * تدير المحافظ والحدود و I/O وغيرها كوحدة واحدة، فأي كتابة مباشرة
+ * منفصلة كانت ستتصارع معها.
+ */
+object ProfileApplier {
+
+    const val PROFILE_PERFORMANCE = "1"
+    const val PROFILE_BALANCED = "2"
+    const val PROFILE_ECO = "3"
+
+    // نفس مسار ملف الملف الحالي الذي يراقبه RootUtils (observeProfileRes)
+    // عبر FileObserver — الكتابة هنا تُحدِّث شارة الملف في الواجهة تلقائيًا.
+    private const val DAEMON_PROFILE_PATH = "/data/adb/.config/MaxManager/API/current_profile"
+
+    /**
+     * يطبّق ملفًا عامًا. يعيد true فقط عندما تنجح الخدمة فعليًا.
+     *
+     * @param profileId "1" أداء / "2" متوازن / "3" توفير طاقة
+     */
+    fun apply(profileId: String): Boolean {
+        if (profileId !in listOf(PROFILE_PERFORMANCE, PROFILE_BALANCED, PROFILE_ECO)) {
+            return false
+        }
+        return runService(profileId, fromAi = false)
+    }
+
+    /**
+     * مسار محرك MAX AI ومحرك الأمان: نفس الخدمة، بعلم --from-ai الذي
+     * يتيح لها التطبيق أثناء تفعيل AI — بوابة الوحدة ترفض المسار
+     * اليدوي فقط (الاختيار اليدوي أثناء AI يُحفظ معلقًا في التطبيق
+     * بدل التنفيذ، فلا يتصارع مالكان على الملف).
+     */
+    fun applyFromAi(profileId: String): Boolean {
+        if (profileId !in listOf(PROFILE_PERFORMANCE, PROFILE_BALANCED, PROFILE_ECO)) {
+            return false
+        }
+        return runService(profileId, fromAi = true)
+    }
+
+    private fun runService(profileId: String, fromAi: Boolean): Boolean {
+        // **القناة أولًا (بلا جذر):** الخادم هو من يطبّق الملفّ. فإن ردّ نجح الأمر أو رُفض صراحةً فلا
+        // تُعاد المحاولة بالجذر (كانت ستنفّذه مرّتين أو تتجاوز بوّابة AI). وإن تعذّر الوصول إلى القناة
+        // (خادم قديم، موديول بلا قناة، رفض SELinux) يبقى المسار القديم أدناه كما كان حرفًا بحرف.
+        when (val ipc = DaemonIpc.default.profile(profileId, fromAi)) {
+            is DaemonIpc.Result.Ok -> return true
+            is DaemonIpc.Result.Refused -> {
+                DiagnosticCenter.record(
+                    "profile",
+                    "apply profileId=$profileId fromAi=$fromAi refused by daemon: ${ipc.reason}",
+                    level = DiagnosticCenter.Level.WARN,
+                )
+                return false
+            }
+            DaemonIpc.Result.Unreachable -> Unit
+        }
+        if (!RootFileAccess.exists(MaxManagerPaths.serviceBin())) {
+            // الوحدة مثبتة لكن خدمتها غير موجودة — أثر بالغ الأهمية في
+            // التشخيص: كل تبديل ملف من الواجهة يفشل بصمت خلافًا لذلك.
+            DiagnosticCenter.record(
+                "profile",
+                "service binary missing at ${MaxManagerPaths.serviceBin()}",
+                level = DiagnosticCenter.Level.ERROR
+            )
+            return false
+        }
+        val cmd = if (fromAi) {
+            "${MaxManagerPaths.serviceBin()} -p $profileId --from-ai"
+        } else {
+            "${MaxManagerPaths.serviceBin()} -p $profileId"
+        }
+        val result = nd.max.core.privilege.RootCommands.cmd(cmd).exec()
+        if (!result.isSuccess) {
+            DiagnosticCenter.record(
+                "profile",
+                "apply profileId=$profileId fromAi=$fromAi failed via module service" +
+                    (result.err.take(3).joinToString(" ").take(160)).let { if (it.isBlank()) "" else " :: $it" }
+            )
+        }
+        return result.isSuccess
+    }
+
+    /**
+     * يحفظ نيّة المستخدم في `API/max_ai_mode` — الملفّ الذي يقرؤه الخادم عند
+     * الإقلاع وعند كل حدث inotify. الكتابة **ليست عتادًا** (ملفّ حالة في مجلّد
+     * الوحدة)، لكنها تبقى هنا لا في `core/maxai`: طبقة السياسة ممنوعة من
+     * `RootFileAccess.write` مباشرةً (حرس `ControlPlaneArchitectureTest`)،
+     * والباب الواحد لتبديل الملفّ هو هذه الطبقة.
+     *
+     * تعيد `true` فقط إذا نجحت الكتابة فعلًا؛ والفشل يُسجَّل في التشخيص عند
+     * المستدعي لأن لكل مسار سببًا مختلفًا (صلاحية، ملفّ مقفل، مساحة).
+     */
+    fun persistMaxAiMode(profileId: String): Boolean {
+        if (profileId !in listOf(PROFILE_PERFORMANCE, PROFILE_BALANCED, PROFILE_ECO)) {
+            return false
+        }
+        return RootFileAccess.write(MaxManagerPaths.MAX_AI_MODE, "$profileId\n")
+    }
+
+    /** الملف العام الحالي من ملف الوحدة، أو null عند تعذّر القراءة. */
+    fun currentProfile(): String? = RootFileAccess.read(DAEMON_PROFILE_PATH)
+}
