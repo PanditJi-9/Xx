@@ -29,6 +29,8 @@ import java.nio.charset.StandardCharsets;
  */
 public final class MainActivity extends Activity {
 
+    private TextView modeLine;
+
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -43,6 +45,13 @@ public final class MainActivity extends Activity {
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         column.addView(title);
+
+        modeLine = line(text("rl_mode_probing"), null);
+        column.addView(modeLine);
+        new Thread(() -> {
+            ControlMode mode = ModeProbe.detect(getApplicationContext());
+            runOnUiThread(() -> showMode(mode));
+        }, "mode-probe").start();
 
         JSONObject inventory = readInventory();
         if (inventory == null) {
@@ -100,6 +109,18 @@ public final class MainActivity extends Activity {
                     + " (of " + triage.optInt("total") + ")";
             column.addView(line(text("rl_label_triage"), value));
         }
+    }
+
+    private void showMode(ControlMode mode) {
+        String key;
+        if (mode == ControlMode.ROOT) {
+            key = "rl_mode_root";
+        } else if (mode == ControlMode.SHIZUKU) {
+            key = "rl_mode_shizuku";
+        } else {
+            key = "rl_mode_none";
+        }
+        modeLine.setText(text(key));
     }
 
     private TextView line(String label, String value) {

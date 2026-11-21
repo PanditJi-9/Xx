@@ -69,3 +69,14 @@ python3 tools/port_materials.py --self-test
 - لا تقليد شكل/أيقونات من تطبيقات مرجعية (§0.4).
 - لا تدّعِ «١٠٠٪ تغطية» لغات (فقط EN/AR).
 - لا تبني شاشة معدلة لمجرد الاطمئنان (§0.1).
+
+## تحديث 2026-11-21 — طبقة الأوضاع الثلاثة (أول شريحة قابلة للقياس)
+
+- أُضيف `ControlMode` (`ROOT`/`SHIZUKU`/`NONE`) و`ModeProbe` داخل `apps/gamespace`، ويُعرض الوضع
+  في `MainActivity` بعد فحص غير متزامن. النصوص في `values/mode.xml` و`values-ar/mode.xml` فقط (§0.2).
+- الفحص للقراءة فقط: Root يُقبل حين يعيد `su -c id` قيمة `uid=0` خلال 3 ثوانٍ؛ Shizuku يُقبل حين
+  توجد حزمته **و** يعمل binder الخدمة `shizuku`؛ وإلا `NONE` (واجهة للقراءة).
+- التحقق: `:apps:gamespace:compileDebugJavaWithJavac` = **success** (6 تحذيرات من كود الأصل فقط)،
+  والمفاتيح الأربعة موجودة في `R.txt`. السلوك على جهاز لم يُقس بعد.
+- التالي: واجهة `PrivilegedTransport` واحدة بتنفيذين (root/shizuku) تُمرَّر خلف `HardwareControlArbiter`،
+  ثم شاشة قائمة الألعاب من تخطيطات الأصل. لا تُعلن أي كتابة قبل قياسها على الجهاز.

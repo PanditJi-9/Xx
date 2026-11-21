@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rl_mode_probing">Checking control mode…</string>
+    <string name="rl_mode_root">Root: available</string>
+    <string name="rl_mode_shizuku">Shizuku: running</string>
+    <string name="rl_mode_none">No root or Shizuku — read-only</string>
+</resources>

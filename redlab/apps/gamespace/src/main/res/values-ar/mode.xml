@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rl_mode_probing">جارٍ فحص وضع التحكم…</string>
+    <string name="rl_mode_root">Root: متاح</string>
+    <string name="rl_mode_shizuku">Shizuku: يعمل</string>
+    <string name="rl_mode_none">لا Root ولا Shizuku — قراءة فقط</string>
+</resources>
