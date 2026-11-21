@@ -32,10 +32,20 @@ def normalized(relative: str) -> str:
     return relative
 
 
+GENERATED = ("R.java", "BuildConfig.java")
+
+
+def generated(path: Path) -> bool:
+    """aapt and AGP write these; sealing them shadows the R of our own package."""
+    return path.name in GENERATED or path.name.startswith("R$")
+
+
 def collect(sources: Path) -> dict[str, Path]:
     """`relative -> file` for every `.java` unit, nested prefix removed, collisions refused."""
     found: dict[str, Path] = {}
     for path in sorted(sources.rglob("*.java")):
+        if generated(path):
+            continue
         relative = normalized(path.relative_to(sources).as_posix())
         if relative in found:
             raise SystemExit(f"two units would seal to {relative}: {found[relative]} and {path}")
