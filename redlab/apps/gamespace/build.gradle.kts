@@ -31,10 +31,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        // The owner explicitly requested the original package id. The namespace stays
-        // dev.redlab.gamespace because the ported R classes were compiled against it; only the
-        // installed package identity changes.
-        applicationId = "cn.nubia.gamelauncher"
+        // A unique id, not cn.nubia.gamelauncher: the stock GameSpace is a system app, so an APK
+        // carrying its id cannot be installed over it without root (signature mismatch). Coexisting
+        // with it is what lets this build install on an ordinary phone. The namespace stays
+        // dev.redlab.gamespace because the ported R classes were compiled against it.
+        applicationId = "dev.redlab.gamespace"
         minSdk = 28
         targetSdk = 36
         versionCode = 1

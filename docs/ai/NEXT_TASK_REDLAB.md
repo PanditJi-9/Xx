@@ -89,3 +89,6 @@ python3 tools/port_materials.py --self-test
 - الزر في `MainActivity` من `rl_open_game_list` (EN + AR فقط).
 - التحقق: `:apps:gamespace:compileDebugJavaWithJavac` = **success**. السلوك المرئي لم يُقس: لا جهاز متصل
   حاليًا (`adb devices` فارغ).
+- تصحيح حزمة التثبيت: `applicationId` صار `dev.redlab.gamespace` بدل `cn.nubia.gamelauncher`؛
+  تطبيق النظام لا يُستبدل بلا توقيع المنصّة، فبقاء المعرّف الأصلي يمنع التثبيت على جهاز فيه GameSpace.
+  الـAPK أُعيد بناؤه (resources.arsc يحمل المعرّف الجديد)، والأصناف الأربعة مؤكَّدة في dex.
