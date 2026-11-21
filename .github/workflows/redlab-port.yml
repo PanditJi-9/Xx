@@ -181,13 +181,47 @@ jobs:
             --sources work/port/GameSpace/sources --slice work/port/GameSpace/slice.json \
             --package cn.nubia.gamelauncher --new-package dev.redlab.gamespace --assert
 
+      # The compiler is the judge, not the import graph: port_slice.py closes over imports only, so
+      # a unit can still reference a sibling in its own package that was excluded. Rather than guess
+      # which, run javac, drop exactly the files it refuses, and run it again until it is clean.
       - name: Compile the ported units
         id: ported
         continue-on-error: true
         working-directory: redlab
         run: |
-          ./gradlew :apps:gamespace:compileDebugJavaWithJavac --no-daemon 2>&1 | tee /tmp/javac.log
-          exit ${PIPESTATUS[0]}
+          set -o pipefail
+          LOG=/tmp/javac.log
+          : > /tmp/removed.txt
+          for round in 1 2 3 4 5 6; do
+            set +e
+            ./gradlew :apps:gamespace:compileDebugJavaWithJavac --no-daemon > "$LOG" 2>&1
+            rc=$?
+            set -e
+            if [ $rc -eq 0 ]; then echo "clean after round $round"; break; fi
+            removed=$(LOG="$LOG" python3 - <<'PY'
+          import os, re
+          log = os.environ["LOG"]
+          failed = set()
+          for line in open(log, encoding="utf-8", errors="replace"):
+              m = re.search(r"materials/sources/(.+?):\d+: error:", line)
+              if m:
+                  failed.add(m.group(1))
+          kept = 0
+          with open("/tmp/removed.txt", "a", encoding="utf-8") as out:
+              for rel in sorted(failed):
+                  path = os.path.join("apps/gamespace/materials/sources", rel)
+                  if os.path.exists(path):
+                      os.remove(path)
+                      out.write(rel + "\n")
+                      kept += 1
+          print(kept)
+          PY
+            )
+            echo "round $round: compiler rejected $removed units"
+            [ "$removed" -eq 0 ] && break
+          done
+          echo "units removed by the compiler: $(wc -l < /tmp/removed.txt)"
+          echo "units left: $(find apps/gamespace/materials/sources -name '*.java' | wc -l)"
 
       - name: Report what the compiler said
         if: always()

@@ -8,6 +8,10 @@ plugins {
     id("com.android.application")
 }
 
+dependencies {
+    implementation("androidx.preference:preference:1.2.1")
+}
+
 android {
     namespace = "dev.redlab.gamespace"
     compileSdk = 36
@@ -30,6 +34,10 @@ android {
     if (file("materials/sources").isDirectory) {
         sourceSets["main"].java.srcDir("materials/sources")
     }
+
+    // Libraries the original app bundled as dex and we therefore do not port from decompiled
+    // source (measured: jadx output for them does not compile). The real artifact replaces it.
+    useLibrary("org.apache.http.legacy")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
