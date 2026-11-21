@@ -171,6 +171,32 @@
   الـ573. التشغيل التالي يبنيها كاملة ويجب أن يكون `SKIPPED` للتثبيت (لا جديد) ثم `BUILD SUCCESSFUL`.
 - لا ادّعاء لتشغيل الشاشات: `compileOnly` ما زال لا يضع أصناف المكتبات في الـAPK.
 
+### 3.8 بناء نظيف للـ573، وأول تشغيل على جهاز حقيقي (تشغيل `44904667579`)
+
+| المقياس | القيمة | الدليل |
+| --- | ---: | --- |
+| الالتزام | `1cf63f2` | `headSha` |
+| `assembleDebug` | **BUILD SUCCESSFUL** | سجل التشغيل |
+| APK (مضغوط في artifact) | 137,625,295 بايت | `gamespace-debug-apk` |
+| وحدات مرحّلة (غير مختومة) | 165 | كلها رفضها `javac` عبر 15 جولة |
+| الجولة 16 | **BUILD SUCCESSFUL** | الوحدات الـ573 المختومة وحدها |
+| تثبيت جديد | **لا شيء** (`already sealed`) | خطوة seal |
+| إجمالي المختوم | **573** | `SEALED.json` |
+
+- هذه أول مرة يُبنى فيها APK بعد تثبيت الـ573، لذلك يحوي كودها. لم يُنزَّل الـAPK محليًا بسبب
+  انقطاع الشبكة المتكرر (`curl` فشل عند 42MB من 131MB)؛ الادّعاء مبني على نجاح خطوة البناء في السجل،
+  لا على فحص محلي للـAPK.
+- **قياس على جهاز:** `adb connect 192.168.1.3:41325` نجح؛ الجهاز `24129RT7CC` (Android 16، `arm64-v8a`).
+  ثُبّت APK أقدم (تشغيل `44870917262`، 278 مختومة) و`MainActivity` عملت: الشاشة تعرض `res 3536 ·
+  assets 54 · arm64-v8a 1 · armeabi-v7a 1 · x86_64 1` و28 activities/11 services/14 receivers/13 providers.
+  هذا يثبت أن الموارد الأصلية **داخل APK وتُقرأ وقت التشغيل**، لكنه **لا يثبت** الـ573 ولا أي شاشة أصلية.
+- `GameRefreshRateActivity` مختومة لكنها لا تصلح كأول شاشة: تخطيطها يضمّ
+  `<fragment android:name="...GameRefreshRateFragment">`، وهذا الصنف غير مختوم (يعتمد على
+  `androidx.preference.PreferenceFragment`). إعلان النشاط وحده سيؤدي إلى انهيار عند التضخيم؛ لا يُعلَن
+  مكوّن قبل أن تُثبت سلسلته كاملة.
+- التالي المقيس: إدخال تبعيات وقت التشغيل كـ`implementation` دون دمج مواردها (أصنافها فقط)، ثم إعلان
+  شاشة أصلية كاملة السلسلة وقياسها على هذا الجهاز.
+
 ## 4. ما يُولَّد آليًا وما يُكتب بيد
 
 | المحتوى | المصدر |
@@ -178,3 +204,38 @@
 | قائمة الوحدات وأعداد المراجع | `tools/jadx_index.py` (⏳) |
 | صفوف الموارد وأنواعها | `tools/apk_resources.py` + `tools/asset_parity.py` (⏳) |
 | الحالة و`evidence` | تُكتب في الالتزام الذي ينفّذ الوحدة، وتمنعها بوابة `rebuild_ledger.py --assert` إن نقصت |
+
+### 3.9 معرّفات الموارد الثابتة، وأصناف المكتبات في الـAPK، وأول واجهة أصلية تعمل
+
+| المقياس | القيمة | الدليل |
+| --- | ---: | --- |
+| `public.xml` الأصلي | 12,633 مدخلًا | `materials/res/values/public.xml` (990,847 بايت) |
+| مفتاح `stable-ids` الصحيح | `dev.redlab.gamespace:<type>/<name> = 0x...` | aapt2 يتجاهل الملف كله بلا بادئة الحزمة |
+| `id/tgk_case_modify_name` | **0x7f0a0643** | مطابق للأصل بعد `processDebugResources` |
+| `string/gcs_game_refresh_rate` | **0x7f1202b6** | مطابق للأصل |
+| `xml/gcs_game_refresh_rate` | **0x7f150006** | مطابق للأصل |
+| بناء كامل محلي | **BUILD SUCCESSFUL** (`build14` 4m17s، `build15` 8m56s) | `assembleDebug` |
+| APK | 168MB، 19 `classes*.dex` | أصناف المكتبات صارت داخل الـAPK |
+| أول واجهة أصلية | `TgkCaseRenameDialog` | ظهر بعنوانه العربي وحقل `EditText`، بلا crash |
+
+- جمهور `--stable-ids` هو الذي يثبّت المعرّفات: `public.xml` وحده لا يكفي لأن AGP يزيل علامات
+  `<public>` عند الدمج. المفاتيح يجب أن تكون مؤهّلة بالحزمة، وأسماء الأنماط تحتفظ بالنقاط
+  (`style/Activity.Style`)، و`$` في أسماء الرسوم تبقى `rl_*`.
+- `processDebugResources` كان يبقى `UP-TO-DATE` ولا يقرأ الملف المصحّح؛ أُضيف `inputs.file(stableIdsFile)`
+  فأصبح كل تغيير في الخريطة يعيد الربط.
+- `src/main/res/values/styleables.xml` يضيف 11 `declare-styleable` أصلية كانت غائبة من الموارد المفكوكة،
+  وبها بقي `R$styleable` قابلاً للترجمة.
+- أصناف المكتبات تُحزَم عبر `portRuntime` (تحويل AAR→`classes.jar` ثم `implementation(incoming.files)`)
+  مع استبعاد `org.jetbrains:annotations` و`kotlin-stdlib`/`jdk7`/`jdk8`/`common` لتفادي التكرار مع
+  Kotlin 2.3.10 المدمج في AGP.
+- **قياس على الجهاز:** ثُبّت APK ذو 168MB على `24129RT7CC` (Android 16، arm64) و`am start` لـ
+  `ProofActivity` نجح؛ الحوار الأصلي ظهر كاملًا. هذا يثبت تضخيم تخطيط أصلي وكود أصلي، لكنه **حوار**
+  وليس نشاطًا كاملًا.
+- `GameRefreshRateActivity` **ميتة على Android 16 في التطبيق الأصلي نفسه**: تضخيم تخطيطها يفشل بـ
+  `Fragment$InstantiationException` لأن وسم `<fragment>` يستخدم `android.app.Fragment` بينما الصنف
+  `androidx.fragment.app.Fragment`. أُعيد القياس على `cn.nubia.gamelauncher` فظهر الانهيار نفسه؛
+  لذلك لا تُعدّل لتُصلَح، ولا تُعلَن كشاشة.
+- الشاشة التالية المرشّحة `GameCenterActivity`: تعمل في الأصل وتُظهر قائمة الإعدادات العربية، لكن
+  سلسلتها تضم 17 `Fragment` ومساعدات متعددة؛ تُقاس وتُغلق تدريجيًا، ولا يُعلَن أي مكوّن قبل اكتمال سلسلته.
+- **حدّ صريح:** كل ما فوق بُني محليًا من `materials/` غير المتعقّب؛ لم تُدفع هذه التغييرات بعد، ولم
+  يبنِ CI معرّفات `stable-ids` ولا أصناف المكتبات حتى الآن.

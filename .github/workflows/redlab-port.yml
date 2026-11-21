@@ -190,6 +190,23 @@ jobs:
         working-directory: redlab
         run: ./gradlew :apps:gamespace:assembleDebug :apps:gameassist:assembleDebug --no-daemon --stacktrace
 
+      # compileOnly proves the units compile; this proves the classes they call are actually in the
+      # APK. A DEX string scan is enough here: the descriptor of every packaged library class that
+      # is referenced lands in the string table, and a missing one is a runtime NoClassDefFoundError.
+      - name: Verify the runtime library classes reached the APK
+        run: |
+          apk=redlab/apps/gamespace/build/outputs/apk/debug/gamespace-debug.apk
+          unzip -o "$apk" 'classes*.dex' -d /tmp/apk-dex >/dev/null
+          missing=0
+          for cls in androidx/viewbinding/ViewBinding androidx/recyclerview/widget/RecyclerView androidx/preference/Preference com/google/gson/Gson com/google/android/material/appbar/AppBarLayout; do
+            if grep -aq "$cls" /tmp/apk-dex/classes*.dex; then
+              echo "present: $cls"
+            else
+              echo "MISSING: $cls"; missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+
       - name: Measure how much of the original code compiles today
         run: |
           # Not an estimate: the units that stay after the import fixpoint are the ones whose

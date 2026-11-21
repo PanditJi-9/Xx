@@ -1,6 +1,6 @@
 {
   "app": "GameSpace",
-  "measured_run": "44898305585",
+  "measured_run": "local build20 + runs 44904667579/44902867016",
   "repairs": [
     {
       "id": "volley/hurlstack-raw-map",
@@ -29,6 +29,27 @@
       "find": "if (this.mTotalSize + r2 < this.mMaxCacheSizeInBytes * 0.9f) {",
       "replace": "if (this.mTotalSize + i < this.mMaxCacheSizeInBytes * 0.9f) {",
       "reason": "`r2` is the method's `int i` argument (the incoming size); jadx 1.5.7 emits `long j = i` and adds `j` here."
+    },
+    {
+      "id": "preference/self-import",
+      "path": "cn/nubia/gamecenter/settings/compatible/Preference.java",
+      "find": "import androidx.preference.Preference;\n",
+      "replace": "",
+      "reason": "jadx 1.5.1 imports the superclass under the same simple name the file declares, which javac rejects as `Preference is already defined in this compilation unit`; the extends clause already uses the FQCN."
+    },
+    {
+      "id": "widget/clipimageview-uninitialized-i3",
+      "path": "cn/nubia/gamecenter/settings/widget/ClipImageView.java",
+      "find": "            } else {\n                i4 = -1;\n            }\n            if (i2 < 0 && i2 <= 90) {",
+      "replace": "            } else {\n                i3 = -1;\n                i4 = -1;\n            }\n            if (i2 < 0 && i2 <= 90) {",
+      "reason": "jadx dropped the assignment on the 180..270 branch; javac reports `variable i3 might not have been initialized`."
+    },
+    {
+      "id": "aiflicker/location-dead-register",
+      "path": "com/zte/gameassist/ai/AIFlickerTips.java",
+      "find": "            this.mTargetView.getLocationInWindow(new int[2]);\n            return new RectF(r1[0] + rect.left",
+      "replace": "            int[] r1 = new int[2];\n            this.mTargetView.getLocationInWindow(r1);\n            return new RectF(r1[0] + rect.left",
+      "reason": "jadx 1.5.1 passes an unnamed array then reads the dead register `r1`; 1.5.7 emits the local `iArr`, which is the measured fix."
     }
   ]
 }

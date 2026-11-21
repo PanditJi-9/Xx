@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The original app declared custom styleable attributes with <declare-styleable> in its own
+  sources. apktool decodes the attrs but not those declarations, so the decoded `materials/res`
+  has no `R.styleable` at all. The sealed code still uses `R.styleable.*`, so the declarations
+  are restored here in their original array order (the order defines the indices, e.g.
+  `R.styleable.ProgressView_progress`). Attribute names and order are read from the sealed
+  `cn/nubia/gamelauncher/R.java` styleable arrays; no new attribute is invented.
+-->
+<resources>
+    <declare-styleable name="BatteryView">
+        <attr name="isHostMode" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomPerfSeekBar">
+        <attr name="line_color" />
+        <attr name="line_height" />
+        <attr name="segment_color" />
+        <attr name="text_color" />
+        <attr name="text_line_space" />
+        <attr name="text_size" />
+        <attr name="thumb_src" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomSeekBar">
+        <attr name="csb_line_color" />
+        <attr name="csb_line_height" />
+        <attr name="csb_segment_color" />
+        <attr name="csb_show_tick_marks_type" />
+        <attr name="csb_text_color" />
+        <attr name="csb_text_line_space" />
+        <attr name="csb_text_size" />
+        <attr name="csb_thumb_src" />
+    </declare-styleable>
+
+    <declare-styleable name="PlugScoreRatingBar">
+        <attr name="barColor" />
+        <attr name="barDistance" />
+        <attr name="barDrawable" />
+        <attr name="defaultColor" />
+        <attr name="defaultDrawable" />
+    </declare-styleable>
+
+    <declare-styleable name="ProgressView">
+        <attr name="progress" />
+        <attr name="progress_color" />
+        <attr name="progress_radius" />
+        <attr name="progress_rect_width" />
+        <attr name="progress_round_radius" />
+        <attr name="progress_state" />
+        <attr name="progress_state_color" />
+        <attr name="progress_stripe_color" />
+        <attr name="progress_stripe_width" />
+    </declare-styleable>
+
+    <declare-styleable name="RoundImageView">
+        <attr name="riv_radius" />
+    </declare-styleable>
+
+    <declare-styleable name="SelectableImageView">
+        <attr name="bg" />
+        <attr name="selected" />
+        <attr name="text" />
+    </declare-styleable>
+
+    <declare-styleable name="TgkCustomRadioButton">
+        <attr name="summary_text" />
+    </declare-styleable>
+
+    <declare-styleable name="TgkMenuView">
+        <attr name="backgroundFist" />
+        <attr name="backgroundSecond" />
+        <attr name="icon" />
+    </declare-styleable>
+
+    <declare-styleable name="TgkSensitivityView">
+        <attr name="title" />
+    </declare-styleable>
+
+    <declare-styleable name="nubiaDialogLinearLayout">
+        <attr name="maxHeightRatio" />
+    </declare-styleable>
+</resources>

@@ -8,9 +8,10 @@
 # lifecycle 2.5.1) or the version measured in the dex (media3 1.4.0 is read from
 # MediaLibraryInfo; constraintlayout 2.2.0 is the version GameAssist declares).
 #
-# compileOnly on purpose. These AARs must not merge their resources: the original materials already
+# compileOnly + portRuntime. The AARs must not merge their resources: the original materials already
 # carry them, and a second copy is the duplicate-resource failure measured earlier with
-# androidx.preference. Classes are compile-time only until the runtime classpath is solved.
+# androidx.preference. build.gradle.kts therefore takes only `classes.jar` from each AAR and packages
+# that, so javac and the APK both see the classes while the resource table stays original.
 androidx.viewbinding.         androidx.databinding:viewbinding:8.4.0
 androidx.databinding.         androidx.databinding:databinding-runtime:8.4.0
 androidx.databinding.         androidx.databinding:databinding-adapters:8.4.0

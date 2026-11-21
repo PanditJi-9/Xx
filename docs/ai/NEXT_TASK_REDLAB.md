@@ -21,15 +21,36 @@
 - CI `redlab-port.yml`: `assembleDebug` BUILD SUCCESSFUL في `44898305585` (أول بناء يضم الـ534)،
   artifact APK 137,583,914 بايت مضغوط، `res/` 3536 · assets 54 · 3 ABI · `skipped=0`؛
   ثم مرّ `javac` على الـ204 غير المثبّتة ورفضها جميعًا (`units left: 0`) ولم يثبّت جديدًا.
+- التشغيل `44904667579` على `1cf63f2`: `assembleDebug` **BUILD SUCCESSFUL** للـ573، ثم رفض `javac`
+  الـ165 غير المثبّتة عبر 15 جولة، والجولة 16 نظفت الـ573، ولم يُثبّت جديد (`already sealed`).
+  APK الـartifact 137,625,295 بايت مضغوط؛ لم يُنزَّل محليًا بسبب انقطاع الشبكة.
+- **جهاز حقيقي متصل:** `adb connect 192.168.1.3:41325` → `24129RT7CC` (Android 16، `arm64-v8a`).
+  ثُبّت APK أقدم (278 مختومة) وعملت `MainActivity`؛ الشاشة قرأت `res 3536 · assets 54 · 3 ABI`
+  و28 activities/11 services/14 receivers/13 providers. هذا يثبت الموارد وقت التشغيل، **لا** الـ573
+  ولا أي شاشة أصلية.
+- **أصناف المكتبات صارت في الـAPK:** تحويل `AAR→classes.jar` باسم `portRuntime`، ثم
+  `implementation(portRuntime.incoming.files)`؛ البناء المحلي `build15` أنتج APK بحجم **168MB و19 dex**
+  بعد استبعاد `annotations` و`kotlin-stdlib(-jdk7/-jdk8/-common)` لتفادي التكرار مع Kotlin 2.3.10.
+- **معرّفات الموارد مثبّتة:** `public.xml` الأصلي 12,633 مدخلًا؛ يُحوَّل إلى `--stable-ids` بمفاتيح
+  مؤهّلة بالحزمة (`dev.redlab.gamespace:id/name = 0x...`). أُعيد الربط فصار
+  `id/tgk_case_modify_name=0x7f0a0643` و`string/gcs_game_refresh_rate=0x7f1202b6` و
+  `xml/gcs_game_refresh_rate=0x7f150006` مطابقة للأصل. `styleables.xml` يعيد 11 `declare-styleable`.
+- **أول واجهة أصلية تعمل:** `TgkCaseRenameDialog` ظهر على الجهاز بعنوانه العربي وحقل `EditText`
+  بلا crash، عبر `ProofActivity` (يعيد نوع النافذة إلى `TYPE_APPLICATION` قبل `show`).
+- **`GameRefreshRateActivity` ميتة في الأصل نفسه على Android 16:** الانهيار `InflateException` →
+  `Fragment$InstantiationException` يتكرر حرفيًا عند تشغيل `cn.nubia.gamelauncher`؛ لا تُصلَح ولا تُعلَن.
+  `GameCenterActivity` تعمل في الأصل وتُظهر الإعدادات العربية، وهي الهدف التالي (سلسلة كبيرة).
 - `redlab/apps/gameassist/` = shell يبني APK (main + strings)؛ materials + ported code مؤجَّلان.
 
 ## الخطوة التالية (الأولوية)
-1. **ثبّت بناء الـ573**: شغّل CI بلا تغيير كود؛ يجب أن يبني `assembleDebug` الـ573، ثم يمرّ `javac`
-   على الـ165 المتبقية ويفشل في تثبيت أي جديد (`already sealed`). لا تعلن الشاشات عاملة قبل ذلك.
-2. **جبهة الـ165 المرفوضة**: صنّف `com/zte/shared/wrapper` كواجهات Android مخفية بدل إعادة تغذيتها،
+1. **أول نشاط أصلي كامل السلسلة**: الحوار أثبت التضخيم والموارد. الهدف التالي `GameCenterActivity`
+   لأنها تعمل في الأصل وتُظهر الإعدادات العربية؛ أقِس سلسلتها (17 `Fragment` ومساعداتها)، وأضِف
+   الناقص كوحدات مختومة، ولا تُعلنها في المانيفست قبل نجاح `am start` بلا crash.
+2. **تثبيت عمل اليوم**: معرّفات `stable-ids`، و`portRuntime`، و`styleables.xml`، و`ProofActivity`
+   موجودة محليًا فقط. راجع `git diff` ثم ادفعها في التزام واحد ليصبح CI مرجعًا مقيسًا؛ لا تُدفع
+   `materials/` (gitignored) ولا أي نشاط يعتمد على كود غير متعقّب.
+3. **جبهة الـ165 المرفوضة**: صنّف `com/zte/shared/wrapper` كواجهات Android مخفية بدل إعادة تغذيتها،
    وأغلِق سلاسل `Preference`/`AlertDialog` داخل الحزمة، وأصلح آثار jadx الحقيقية فقط بعد قراءة الملف.
-3. **وقت التشغيل**: `compileOnly` لا يضع الأصناف في الـAPK. قبل تشغيل أي شاشة أصلية، أثبت وجود
-   الصنف في `classes.dex` أو أضف المكتبة كـ`implementation` مع استبعاد مواردها المتعارضة.
 4. **GameAssist**: staging للمواد + حلّ appcompat (`abc_search_view`/`edit_query`/`overflow_button`)
    إما بتبعية مع استبعاد الموارد المكرّرة أو بتشذيب أدنى للمراجع.
 5. لا تنسَ: كل نص جديد في `values/` + `values-ar/` فقط (§0.2)، التثبيت add-only (لا حذف).
