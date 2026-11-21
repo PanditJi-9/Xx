@@ -165,7 +165,7 @@ jobs:
         run: |
           # The package name is apktool's manifest reading, not a constant in this file: a second
           # app with a different vendor package needs no edit here.
-          for app in GameSpace GameAssist; do
+          for app in GameSpace; do
             manifest="work/port/$app/res-out/AndroidManifest.xml"
             if [ -f "$manifest" ]; then
               pkg=$(grep -o 'package="[^"]*"' "$manifest" | head -1 | cut -d'"' -f2)
@@ -175,9 +175,9 @@ jobs:
               echo "$app: no decoded manifest"; fi
           done
 
-      - name: Build both apps out of the original materials
+      - name: Build GameSpace out of the original materials
         working-directory: redlab
-        run: ./gradlew :apps:gamespace:assembleDebug :apps:gameassist:assembleDebug --no-daemon --stacktrace
+        run: ./gradlew :apps:gamespace:assembleDebug --no-daemon --stacktrace
 
       - name: Measure how much of the original code compiles today
         run: |
@@ -273,76 +273,6 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           grep -m 15 'error:' /tmp/javac.log 2>/dev/null || true
-
-      - name: Measure GameAssist's frontier
-        run: |
-          pkg=$(cat /tmp/pkg-GameAssist)
-          python3 tools/port_slice.py --sources work/port/GameAssist/sources \
-            --package "$pkg" --app GameAssist \
-            --json work/port/GameAssist/slice.json
-
-      - name: Stage the units GameAssist's corpus can compile
-        run: |
-          pkg=$(cat /tmp/pkg-GameAssist)
-          python3 tools/port_materials.py --extract work/port/GameAssist/res-out \
-            --module redlab/apps/gameassist --app GameAssist \
-            --sources work/port/GameAssist/sources --slice work/port/GameAssist/slice.json \
-            --package "$pkg" --new-package dev.redlab.gameassist --assert
-
-      - name: Compile GameAssist's ported units
-        id: ported_assist
-        continue-on-error: true
-        working-directory: redlab
-        run: |
-          set -o pipefail
-          LOG=/tmp/javac-assist.log
-          : > /tmp/removed-assist.txt
-          for round in 1 2 3 4 5 6; do
-            set +e
-            ./gradlew :apps:gameassist:compileDebugJavaWithJavac --no-daemon > "$LOG" 2>&1
-            rc=$?
-            set -e
-            if [ $rc -eq 0 ]; then echo "clean after round $round"; break; fi
-            removed=$(LOG="$LOG" OUT=/tmp/removed-assist.txt python3 - <<'PY'
-          import os, re
-          log = os.environ["LOG"]
-          failed = set()
-          for line in open(log, encoding="utf-8", errors="replace"):
-              m = re.search(r"materials/sources/(.+?):\d+: error:", line)
-              if m:
-                  failed.add(m.group(1))
-          kept = 0
-          with open(os.environ["OUT"], "a", encoding="utf-8") as out:
-              for rel in sorted(failed):
-                  path = os.path.join("apps/gameassist/materials/sources", rel)
-                  if os.path.exists(path):
-                      os.remove(path)
-                      out.write(rel + "\n")
-                      kept += 1
-          print(kept)
-          PY
-            )
-            echo "round $round: compiler rejected $removed units"
-            [ "$removed" -eq 0 ] && break
-          done
-          echo "units removed by the compiler: $(wc -l < /tmp/removed-assist.txt)"
-
-      - name: Seal GameAssist's ported source into the repository
-        if: steps.ported_assist.outcome == 'success'
-        run: |
-          python3 tools/seal_ported.py --app GameAssist \
-            --from redlab/apps/gameassist/materials/sources \
-            --to redlab/apps/gameassist/src/ported/java \
-            --slice work/port/GameAssist/slice.json
-          git config user.name "RedLab port"
-          git config user.email "actions@users.noreply.github.com"
-          git add redlab/apps/gameassist/src/ported redlab/apps/gameassist/PORTED.md
-          if git diff --cached --quiet; then
-            echo "already sealed"
-          else
-            git commit -m "Seal GameAssist's ported units (run ${{ github.run_id }})"
-            git push
-          fi
 
       - name: Keep the slice and the compiler log
         if: always()
