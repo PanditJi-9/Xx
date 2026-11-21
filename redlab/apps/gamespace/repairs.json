@@ -1,0 +1,34 @@
+{
+  "app": "GameSpace",
+  "measured_run": "44898305585",
+  "repairs": [
+    {
+      "id": "volley/hurlstack-raw-map",
+      "path": "cn/nubia/volley/toolbox/HurlStack.java",
+      "find": "        HashMap hashMap = new HashMap();",
+      "replace": "        HashMap<String, String> hashMap = new HashMap<>();",
+      "reason": "jadx 1.5.1 erased the map's generics; javac rejects `for (String str : hashMap.keySet())` on a raw HashMap."
+    },
+    {
+      "id": "volley/networkresponse-empty-list",
+      "path": "cn/nubia/volley/NetworkResponse.java",
+      "find": "(List<Header>) Collections.emptyList()",
+      "replace": "Collections.<Header>emptyList()",
+      "reason": "javac 17 infers List<Object> through the cast; the explicit type argument gives it List<Header>."
+    },
+    {
+      "id": "volley/volleylog-dead-register",
+      "path": "cn/nubia/volley/VolleyLog.java",
+      "find": "this.mMarkers.get(r4.size() - 1).time",
+      "replace": "this.mMarkers.get(this.mMarkers.size() - 1).time",
+      "reason": "jadx left the dead register `r4` in place of the receiver it had already loaded; the field is the list being sized."
+    },
+    {
+      "id": "volley/diskbasedcache-dead-register",
+      "path": "cn/nubia/volley/toolbox/DiskBasedCache.java",
+      "find": "if (this.mTotalSize + r2 < this.mMaxCacheSizeInBytes * 0.9f) {",
+      "replace": "if (this.mTotalSize + i < this.mMaxCacheSizeInBytes * 0.9f) {",
+      "reason": "`r2` is the method's `int i` argument (the incoming size); jadx 1.5.7 emits `long j = i` and adds `j` here."
+    }
+  ]
+}

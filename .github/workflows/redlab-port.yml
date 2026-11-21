@@ -41,6 +41,7 @@ jobs:
           python3 tools/port_slice.py --self-test
           python3 tools/port_materials.py --self-test
           python3 tools/port_frontier.py --self-test
+          python3 tools/port_repairs.py --self-test
           python3 tools/seal_ported.py --self-test
 
       - name: Fetch the APKs (draft-safe, verified)
@@ -206,6 +207,16 @@ jobs:
             --sources work/port/GameSpace/sources --slice work/port/GameSpace/slice.json \
             --package cn.nubia.gamelauncher --new-package dev.redlab.gamespace --assert
 
+      # jadx 1.5.1 wrote a few statements javac refuses. Each repair is an exact string with the
+      # measured error that justified it; a missing string fails this step instead of being ignored.
+      - name: Repair the measured decompiler artifacts
+        run: |
+          python3 tools/port_repairs.py --app GameSpace --run "${{ github.run_id }}" \
+            --sources redlab/apps/gamespace/materials/sources \
+            --registry redlab/apps/gamespace/repairs.json \
+            --report docs/port/REPAIRS.md
+          cat docs/port/REPAIRS.md
+
       # The compiler is the judge, not the import graph: port_slice.py closes over imports only, so
       # a unit can still reference a sibling in its own package that was excluded. Rather than guess
       # which, run javac, drop exactly the files it refuses, and run it again until it is clean.
@@ -278,7 +289,7 @@ jobs:
             --slice work/port/GameSpace/slice.json
           git config user.name "RedLab port"
           git config user.email "actions@users.noreply.github.com"
-          git add redlab/apps/gamespace/src/ported redlab/apps/gamespace/PORTED.md docs/port/FRONTIER.md
+          git add redlab/apps/gamespace/src/ported redlab/apps/gamespace/PORTED.md docs/port/FRONTIER.md docs/port/REPAIRS.md
           if git diff --cached --quiet; then
             echo "already sealed"
           else
@@ -315,6 +326,7 @@ jobs:
             /tmp/javac.log
             /tmp/javac-round-*.log
             docs/port/FRONTIER.md
+            docs/port/REPAIRS.md
           if-no-files-found: warn
 
       - name: Keep the APK this run produced
@@ -328,6 +340,8 @@ jobs:
 
       - name: Show the summary
         run: |
+          echo "== docs/port/REPAIRS.md"
+          grep -E '^Applied ' docs/port/REPAIRS.md || true
           for f in docs/port/*_TRIAGE.md; do
             echo "== $f"
             sed -n '1,14p' "$f"

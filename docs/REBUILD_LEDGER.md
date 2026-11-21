@@ -128,6 +128,24 @@
 - **حدّ يجب قياسه في التشغيل التالي:** `assembleDebug` في هذا التشغيل جرى **قبل** تثبيت الـ256، فالـAPK المرفوع
   لا يحتوي كودها بعد. التشغيل التالي يبني الـ534 كاملة؛ لا يُدّعى أنها في APK قبل ذلك.
 
+### 3.6 سجل إصلاحات مقيسة قبل `javac` (لم يُقس بعد)
+
+204 وحدات رفضها المترجم في `44898305585`. تحليل السجلات أظهر أن **40 وحدة من `cn/nubia/volley`** كلها
+تسقط بسبب أربعة ملفات جذر فقط؛ والباقي سلاسل `cannot find symbol` تتبعها:
+
+| الملف | الخطأ المقيس | الإصلاح الدقيق |
+| --- | --- | --- |
+| `toolbox/HurlStack.java` | `:65 incompatible types: Object cannot be converted to String` | إعادة أجناس الخريطة: `HashMap<String,String>` |
+| `NetworkResponse.java` | `:33 List<Object> cannot be converted to List<Header>` | `Collections.<Header>emptyList()` |
+| `VolleyLog.java` | `:125 cannot find symbol: variable r4` | `this.mMarkers.size()` بدل `r4.size()` |
+| `toolbox/DiskBasedCache.java` | `:193 cannot find symbol: variable r2` | `i` (وسيط الدالة) بدل `r2` |
+
+- `tools/port_repairs.py` + `redlab/apps/gamespace/repairs.json`: كل إصلاح **سلسلة واحدة محددة** مع سبب مقيس.
+  إن اختفت السلسلة يفشل التشغيل صراحةً بدل تجاهلها؛ والاختبار الذاتي 11 حالة.
+- الإصلاحات تُطبَّق على `materials/sources` بعد الـstaging وقبل `javac`، وتُكتب `docs/port/REPAIRS.md`.
+- **لا يُدّعى نجاح:** عدد الوحدات الإضافية التي سيقبلها المترجم يُقاس في التشغيل التالي ويُثبَّت فقط بعد
+  `BUILD SUCCESSFUL`. إن بقيت أخطاء جديدة فستظهر في `FRONTIER.md` بأسمائها.
+
 ## 4. ما يُولَّد آليًا وما يُكتب بيد
 
 | المحتوى | المصدر |

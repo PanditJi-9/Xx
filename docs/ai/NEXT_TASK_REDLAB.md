@@ -18,16 +18,18 @@
   (`compileOnly`) وإلى `port_slice.py --libraries`؛ فانخفض `library not linked` من 448 إلى 11.
 - `org.xmlpull.v1` (في android.jar) و`org.apache.http` (via `useLibrary`) صارا معروفين لـ`port_slice`،
   فلا يُرفض 6 ملفات وأتباعها خطأً.
-- CI `redlab-port.yml`: `assembleDebug` BUILD SUCCESSFUL في `44874120151`، APK 152.8MB،
-  `res/` 3536 · assets 54 · 3 ABI · `skipped=0` — لكن هذا الـAPK بُني **قبل** تثبيت الـ256،
-  فالتشغيل التالي هو أول بناء يضم الـ534.
+- CI `redlab-port.yml`: `assembleDebug` BUILD SUCCESSFUL في `44898305585` (أول بناء يضم الـ534)،
+  artifact APK 137,583,914 بايت مضغوط، `res/` 3536 · assets 54 · 3 ABI · `skipped=0`؛
+  ثم مرّ `javac` على الـ204 غير المثبّتة ورفضها جميعًا (`units left: 0`) ولم يثبّت جديدًا.
 - `redlab/apps/gameassist/` = shell يبني APK (main + strings)؛ materials + ported code مؤجَّلان.
 
 ## الخطوة التالية (الأولوية)
 1. **أعِد البناء بـ534 مثبّتة وتحقّق من الـAPK**: شغّل CI؛ المطلوب `assembleDebug` أخضر بعد التثبيت،
    و`javac` نظيف، وألّا يزيد عدد مثبّت فوق 534 بلا قبول صريح.
-2. **جبهة الـ204 المرفوضة**: أغلِق المراجع داخل الحزمة نفسها (سلاسل `Preference`/`AlertDialog`/
-   `Anim3DHelper`/`ToastUtil`)؛ أصلح آثار jadx الحقيقية فقط بعد قراءة الملف.
+2. **جبهة الـ204 المرفوضة**: ابدأ من `redlab/apps/gamespace/repairs.json` (`tools/port_repairs.py`)
+   لأربعة جذور في `cn/nubia/volley`؛ قِس كم وحدة إضافية قَبِلها المترجم، ثم أغلِق المراجع داخل
+   الحزمة نفسها (سلاسل `Preference`/`AlertDialog`/`Anim3DHelper`/`ToastUtil`)، وأصلح آثار jadx
+   الحقيقية فقط بعد قراءة الملف.
 3. **وقت التشغيل**: `compileOnly` لا يضع الأصناف في الـAPK. قبل تشغيل أي شاشة أصلية، أثبت وجود
    الصنف في `classes.dex` أو أضف المكتبة كـ`implementation` مع استبعاد مواردها المتعارضة.
 4. **GameAssist**: staging للمواد + حلّ appcompat (`abc_search_view`/`edit_query`/`overflow_button`)
