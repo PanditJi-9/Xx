@@ -65,6 +65,17 @@ def index_corpus(root: Path) -> dict[str, str]:
     return corpus
 
 
+def normalized(relative: str) -> str:
+    """jadx nests its output one `sources/` deep, and paths arrive with that prefix.
+
+    Matching library roots without removing it silently matched nothing (measured: the numbers
+    did not move when `kotlin/` was added), so the prefix is stripped before any classification.
+    """
+    while relative.startswith("sources/"):
+        relative = relative[len("sources/"):]
+    return relative
+
+
 def imports_of(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8", errors="replace")
     return [m.group(2) for m in IMPORT.finditer(text)]
@@ -76,7 +87,7 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
     keep = set(corpus.values())
     reasons: dict[str, str] = {}
 
-    libraries = {relative for relative in keep if relative.startswith(LIBRARY_PATHS)}
+    libraries = {relative for relative in keep if normalized(relative).startswith(LIBRARY_PATHS)}
     for relative in libraries:
         reasons[relative] = "library code: use the real dependency instead of decompiled source"
     keep -= libraries
@@ -149,7 +160,7 @@ def self_test() -> int:
               "package cn.nubia.app;\nimport cn.nubia.app.UsesVendor;\nclass UsesExcluded {}\n")
         write("cn/nubia/app/NeedsAndroidx.java",
               "package cn.nubia.app;\nimport androidx.core.ViewKt;\nclass NeedsAndroidx {}\n")
-        write("androidx/core/ViewKt.java", "package androidx.core;\nclass ViewKt {}\n")
+        write("sources/androidx/core/ViewKt.java", "package androidx.core;\nclass ViewKt {}\n")
         write("cn/nubia/app/Chained.java",
               "package cn.nubia.app;\nimport cn.nubia.app.NeedsAndroidx;\nclass Chained {}\n")
 
@@ -162,7 +173,8 @@ def self_test() -> int:
         checks.append(("vendor imports are rejected", "cn/nubia/app/UsesVendor.java" not in selected))
         checks.append(("missing libraries are rejected", "cn/nubia/app/UsesLib.java" not in selected))
         checks.append(("a file importing a rejected file is rejected", "cn/nubia/app/UsesExcluded.java" not in selected))
-        checks.append(("bundled library code is not ported", "androidx/core/ViewKt.java" not in selected))
+        checks.append(("bundled library code is not ported", "sources/androidx/core/ViewKt.java" not in selected))
+        checks.append(("a nested sources/ prefix does not hide a library", len(result["selected"]) < len(corpus)))
         checks.append(
             (
                 "a unit needing that library is reported as a dependency",
