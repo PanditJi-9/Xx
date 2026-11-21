@@ -48,22 +48,7 @@ def collect(sources: Path) -> dict[str, Path]:
     return found
 
 
-def prune(target: Path, keep: set[str], owned: set[str]) -> list[str]:
-    """Remove sealed units that are no longer accepted; never touch a file we did not write."""
-    removed = []
-    for path in sorted(target.rglob("*.java")):
-        relative = path.relative_to(target).as_posix()
-        if relative in keep or relative not in owned:
-            continue
-        path.unlink()
-        removed.append(relative)
-    for directory in sorted(target.rglob("*"), reverse=True):
-        if directory.is_dir() and not any(directory.iterdir()):
-            directory.rmdir()
-    return removed
-
-
-def render(app: str, units: list[str], slice_info: dict) -> str:
+def render(app: str, units: list[str], slice_info: dict, sealed_on: str) -> str:
     rejected = slice_info.get("rejected", {})
     libraries = sum(1 for reason in rejected.values() if reason.startswith("library code"))
     needs = sum(1 for reason in rejected.values() if reason.startswith("library not linked"))
@@ -78,7 +63,7 @@ def render(app: str, units: list[str], slice_info: dict) -> str:
             "compiler accepted them** — the pruning loop drops every unit javac refuses.",
             "",
             f"- sealed units: **{len(units)}**",
-            f"- sealed on: {date.today().isoformat()}",
+            f"- sealed on: {sealed_on}",
             f"- corpus at the time: {slice_info.get('corpus', '?')} units",
             f"- rejected then: {len(rejected)} "
             f"(library code {libraries} · needs a dependency {needs} · vendor framework {vendor})",
@@ -89,23 +74,36 @@ def render(app: str, units: list[str], slice_info: dict) -> str:
     )
 
 
-def seal(sources: Path, target: Path, app: str, slice_info: dict, prune_stale: bool) -> dict:
+def seal(sources: Path, target: Path, app: str, slice_info: dict) -> dict:
+    """Add what the compiler accepted this run to what is already sealed.
+
+    Sealing is add-only, and that is a measurement, not a preference: the pruning loop deletes every
+    unit javac refuses from `materials/sources`, so a run where all remaining units were refused
+    leaves that directory empty. Pruning the sealed tree from it deleted all 278 sealed units
+    (run 44859682746). Nothing is removed here; a unit leaves the tree only when a human deletes it.
+    """
     units = collect(sources)
     index = target / "SEALED.json"
-    owned = set(json.loads(index.read_text(encoding="utf-8")).get("units", [])) if index.is_file() else set()
+    previous = json.loads(index.read_text(encoding="utf-8")) if index.is_file() else {}
+    owned = set(previous.get("units", []))
     target.mkdir(parents=True, exist_ok=True)
+    added = 0
     for relative, path in units.items():
         destination = target / relative
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, destination)
-    removed = prune(target, set(units), owned) if prune_stale else []
-    ordered = sorted(units)
+        added += 1
+    ordered = sorted(owned | set(units))
+    removed: list[str] = []
+    # The date is when the tree last grew, not when this tool last ran: otherwise PORTED.md would
+    # change every run and every run would commit a file whose content is the same.
+    sealed_on = date.today().isoformat() if set(units) - owned else previous.get("sealed", date.today().isoformat())
     index.write_text(
-        json.dumps({"app": app, "units": ordered, "sealed": date.today().isoformat()}, indent=2) + "\n",
+        json.dumps({"app": app, "units": ordered, "sealed": sealed_on}, indent=2) + "\n",
         encoding="utf-8",
     )
-    (target.parents[2] / "PORTED.md").write_text(render(app, ordered, slice_info), encoding="utf-8")
-    return {"written": len(units), "removed": removed, "units": ordered}
+    (target.parents[2] / "PORTED.md").write_text(render(app, ordered, slice_info, sealed_on), encoding="utf-8")
+    return {"written": added, "removed": removed, "units": ordered}
 
 
 def self_test() -> int:
@@ -134,22 +132,30 @@ def self_test() -> int:
                 "cn/nubia/D.java": "vendor framework: cn.nubia.Y",
             },
         }
-        result = seal(sources, target, "Demo", slice_info, prune_stale=True)
+        result = seal(sources, target, "Demo", slice_info)
 
         checks.append(("the nested prefix is stripped", (target / "cn/nubia/a/A.java").is_file()))
         checks.append(("a decompiled R is sealed like any unit", (target / "cn/nubia/gamelauncher/R.java").is_file()))
         checks.append(("no duplicate nesting is created", not (target / "sources").exists()))
-        checks.append(("a stale sealed unit is pruned", result["removed"] == ["cn/nubia/Gone.java"]))
+        checks.append(("a sealed unit is never removed", (target / "cn/nubia/Gone.java").is_file()))
+        checks.append(("nothing is reported as pruned", result["removed"] == []))
         checks.append(("a hand-added file is left alone", (target / "cn/nubia/HandEdited.java").is_file()))
         index = json.loads((target / "SEALED.json").read_text())
         checks.append(
             (
                 "the index lists what was sealed",
-                index["units"] == ["cn/nubia/B.java", "cn/nubia/a/A.java", "cn/nubia/common/R.java", "cn/nubia/gamelauncher/R.java"],
+                index["units"]
+                == [
+                    "cn/nubia/B.java",
+                    "cn/nubia/Gone.java",
+                    "cn/nubia/a/A.java",
+                    "cn/nubia/common/R.java",
+                    "cn/nubia/gamelauncher/R.java",
+                ],
             )
         )
         report = (root / "apps" / "demo" / "PORTED.md").read_text()
-        checks.append(("the report counts the units", "**4**" in report))
+        checks.append(("the report counts the units", "**5**" in report))
         checks.append(("the report separates the reasons", "library code 1" in report))
 
     failed = [name for name, ok in checks if not ok]
@@ -169,14 +175,14 @@ def main() -> int:
     parser.add_argument("--to", dest="target", type=Path)
     parser.add_argument("--app")
     parser.add_argument("--slice", dest="slice_path", type=Path)
-    parser.add_argument("--no-prune", action="store_true")
+
     args = parser.parse_args()
     if args.self_test:
         return self_test()
     if not (args.sources and args.target and args.app):
         parser.error("--from, --to and --app are required")
     slice_info = json.loads(args.slice_path.read_text(encoding="utf-8")) if args.slice_path else {}
-    result = seal(args.sources, args.target, args.app, slice_info, prune_stale=not args.no_prune)
+    result = seal(args.sources, args.target, args.app, slice_info)
     print(f"sealed: {result['written']} units, pruned: {len(result['removed'])}")
     return 0
 
