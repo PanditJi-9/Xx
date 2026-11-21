@@ -211,19 +211,22 @@ jobs:
       # which, run javac, drop exactly the files it refuses, and run it again until it is clean.
       - name: Compile the ported units
         id: ported
-        continue-on-error: true
         working-directory: redlab
         run: |
           set -o pipefail
           : > /tmp/removed.txt
-          for round in 1 2 3 4 5 6; do
+          clean=0
+          # Six rounds were measured to be too few: round 6 still failed, so the old step sealed
+          # units no compiler had accepted. Keep removing rejects until javac is clean, and fail
+          # loudly if it never is.
+          for round in $(seq 1 12); do
             LOG=/tmp/javac-round-$round.log
             set +e
             ./gradlew :apps:gamespace:compileDebugJavaWithJavac --no-daemon > "$LOG" 2>&1
             rc=$?
             set -e
             cp "$LOG" /tmp/javac.log
-            if [ $rc -eq 0 ]; then echo "clean after round $round"; break; fi
+            if [ $rc -eq 0 ]; then echo "clean after round $round"; clean=1; break; fi
             removed=$(LOG="$LOG" python3 - <<'PY'
           import os, re
           log = os.environ["LOG"]
@@ -246,8 +249,10 @@ jobs:
             echo "round $round: compiler rejected $removed units"
             [ "$removed" -eq 0 ] && break
           done
+          echo "clean=$clean" >> "$GITHUB_OUTPUT"
           echo "units removed by the compiler: $(wc -l < /tmp/removed.txt)"
           echo "units left: $(find apps/gamespace/materials/sources -name '*.java' | wc -l)"
+          [ "$clean" -eq 1 ]  # no seal, no green run, unless javac actually accepted the set
 
       # Every round is kept, so the frontier is a measurement rather than the last log winning.
       - name: Record the measured compiler frontier
@@ -265,7 +270,7 @@ jobs:
       # accepted is written into src/ported/java and committed, so it can be read, reviewed and
       # fixed here like any other source file.
       - name: Seal the ported source into the repository
-        if: steps.ported.outcome == 'success'
+        if: steps.ported.outputs.clean == '1'
         run: |
           python3 tools/seal_ported.py --app GameSpace \
             --from redlab/apps/gamespace/materials/sources \

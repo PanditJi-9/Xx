@@ -25,7 +25,21 @@ import sys
 from pathlib import Path
 
 # Imports answered by the platform or by the compiler itself; nothing to port.
-PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.", "org.json.")
+# `org.xmlpull.v1` ships in android.jar (XmlPullParser), and `org.apache.http` is supplied by
+# `useLibrary("org.apache.http.legacy")`, which both app modules already declare — so javac
+# answers both, and treating them as missing rejected 6 units plus every unit that imports them.
+PLATFORM = (
+    "java.",
+    "javax.",
+    "android.",
+    "dalvik.",
+    "jdk.",
+    "sun.",
+    "kotlin.",
+    "org.json.",
+    "org.xmlpull.v1.",
+    "org.apache.http.",
+)
 
 # Third-party code the APK bundles. It is in the corpus because jadx decompiled every dex, but
 # porting someone else's library from decompiled source is wrong on three counts: measured here it
@@ -184,6 +198,10 @@ def self_test() -> int:
         write("sources/androidx/core/ViewKt.java", "package androidx.core;\nclass ViewKt {}\n")
         write("cn/nubia/app/Chained.java",
               "package cn.nubia.app;\nimport cn.nubia.app.NeedsAndroidx;\nclass Chained {}\n")
+        write("cn/nubia/app/UsesXmlPull.java",
+              "package cn.nubia.app;\nimport org.xmlpull.v1.XmlPullParser;\nclass UsesXmlPull {}\n")
+        write("cn/nubia/app/UsesHttp.java",
+              "package cn.nubia.app;\nimport org.apache.http.Header;\nclass UsesHttp {}\n")
 
         corpus = index_corpus(root)
         result = frontier(root, "cn.nubia.app", corpus)
@@ -192,6 +210,8 @@ def self_test() -> int:
         checks.append(("its dependent is selected too", "cn/nubia/app/UsesLeaf.java" in selected))
         checks.append(("R users are selected", "cn/nubia/app/UsesLayout.java" in selected))
         checks.append(("vendor imports are rejected", "cn/nubia/app/UsesVendor.java" not in selected))
+        checks.append(("org.xmlpull is platform code", "cn/nubia/app/UsesXmlPull.java" in selected))
+        checks.append(("org.apache.http is provided by useLibrary", "cn/nubia/app/UsesHttp.java" in selected))
         checks.append(("missing libraries are rejected", "cn/nubia/app/UsesLib.java" not in selected))
         checks.append(("a file importing a rejected file is rejected", "cn/nubia/app/UsesExcluded.java" not in selected))
         checks.append(("bundled library code is not ported", "sources/androidx/core/ViewKt.java" not in selected))

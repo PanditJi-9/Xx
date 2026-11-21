@@ -7,17 +7,31 @@
 - لا أسرار في الملفات · push مسموح على `PanditJi-9/Xx` · لغات جديدة: EN + AR فقط (§0.2).
 
 ## ما أنجز (مقيس)
-- `redlab/apps/gamespace/src/ported/java/` = **278 ملفًا (3.2 م.ب)** مملوكة (git-tracked)، ثُبّتت بعد أن قبلها `javac`.
-- `redlab/apps/gamespace/PORTED.md` + `SEALED.json` يوثّقان (corpus 6280 · مكتبات 5217 · مرشَّحة 404 · مملوكة 278 · مرفوضة 126).
-- CI `redlab-port.yml` = **success** (آخر تشغيل `44865094295`)، `assembleDebug` BUILD SUCCESSFUL.
+- `redlab/apps/gamespace/src/ported/java/` = **278 ملفًا** مملوكة ومُتحقَّق منها (git-tracked).
+  التشغيل `44870917262` اختار **733** وحدة (زيادة +329 عن 404) لكنه لم يثبّت منها شيئًا بعد:
+  الحلقة توقفت بعد 6 جولات والجولة السادسة فاشلة، ثم ثبّتت الأداة 285 وحدة غير مقبولة — عُدّلت
+  الحلقة (12 جولة، توقف عند `rc=0`، تثبيت مشروط بـ`clean=1`) وأُزيلت الـ285. العدد الحقيقي يُقاس
+  في التشغيل التالي.
+- `redlab/apps/gamespace/libraries.txt` = **74 إحداثية Maven** مقيسة من الـAPK، تُمرَّر إلى Gradle
+  (`compileOnly`) وإلى `port_slice.py --libraries`؛ فانخفض `library not linked` من 448 إلى 11.
+- `org.xmlpull.v1` (في android.jar) و`org.apache.http` (via `useLibrary`) صارا معروفين لـ`port_slice`،
+  فلا يُرفض 6 ملفات وأتباعها خطأً.
+- `docs/port/FRONTIER.md` يُولَّد آليًا من جولات `javac` المحفوظة، ويعرض أول خطأ لكل وحدة.
+- CI `redlab-port.yml`: `assembleDebug` BUILD SUCCESSFUL في `44870917262` قبل التثبيت، APK 152.8MB،
+  `res/` 3536 · assets 54 · 3 ABI · `skipped=0`.
 - `redlab/apps/gameassist/` = shell يبني APK (main + strings)؛ materials + ported code مؤجَّلان.
-- `tools/port_materials.py` يتجاهل layouts referencing `android:id/search_src_text` (private framework id) — narrowed to the framework reference only.
-- `docs/MASTER_PLAN.md §10` و`docs/REBUILD_LEDGER.md §3.2/§3.3` محدّثان.
+- `docs/MASTER_PLAN.md §10` و`docs/REBUILD_LEDGER.md §3.4` محدّثان.
 
 ## الخطوة التالية (الأولوية)
-1. **الـ126 وحدة المرفوضة**: اجمع أسباب الرفض (من `/tmp/javac.log` في CI) into `docs/port/FRONTIER.md`. største Gruppe: `library not linked` (androidx.preference، gson، okhttp…). أضفها كـ`compileOnly`/`implementation` **بدون** تعارض موارد (androidx.preference فشل أصلًا بـ`Can not add resource ... to table`). الهدف: ترجمة ≥ 50 weitere Einheiten.
-2. **GameAssist**: حلّ اعتماد appcompat (abc_search_view/edit_query/overflow_button) — إما إضافة appcompat dependency مع استبعاد مواردها المكرّرة، أو تشذيب resources.
-3. لا تنسَ: كل نص جديد في `values/` + `values-ar/` فقط (§0.2)، التثبيت add-only (لا حذف).
+1. **شغّل CI وتحقق من نظافة `javac`**: لا تعلن أي عدد مثبّت قبل `clean after round N`. إن لم ينظف
+   خلال 12 جولة، فالـrun يفشل عمدًا ويُرفع `FRONTIER.md` بالسبب.
+2. **جبهة الـ170 المرفوضة**: أغلِق المراجع داخل الحزمة نفسها (سلاسل `Preference`/`AlertDialog`/
+   `Anim3DHelper`/`ToastUtil`)؛ أصلح آثار jadx الحقيقية فقط بعد قراءة الملف.
+3. **وقت التشغيل**: `compileOnly` لا يضع الأصناف في الـAPK. قبل تشغيل أي شاشة أصلية، أثبت وجود
+   الصنف في `classes.dex` أو أضف المكتبة كـ`implementation` مع استبعاد مواردها المتعارضة.
+4. **GameAssist**: staging للمواد + حلّ appcompat (`abc_search_view`/`edit_query`/`overflow_button`)
+   إما بتبعية مع استبعاد الموارد المكرّرة أو بتشذيب أدنى للمراجع.
+5. لا تنسَ: كل نص جديد في `values/` + `values-ar/` فقط (§0.2)، التثبيت add-only (لا حذف).
 
 ## أوامر مفيدة
 ```sh

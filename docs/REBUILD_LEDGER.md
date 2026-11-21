@@ -39,7 +39,7 @@
 
 | app | unit | kind | origin_refs | status | evidence | note |
 | --- | --- | --- | --- | --- | --- | --- |
-| `cn.nubia.gamelauncher` | `res/` + `assets/` + `lib/` كاملة | resource-set | — | `SCAFFOLDED` | تشغيل `44850020107` (BUILD SUCCESSFUL) · APK 130MB | 3536 موردًا · 54 أصلًا · 3 ABI؛ 41 اسمًا أعيد تسميته، 4 استُبعدت — القائمة في `MATERIALS.md` المرفوعة مع الـAPK |
+| `cn.nubia.gamelauncher` | `res/` + `assets/` + `lib/` كاملة | resource-set | — | `SCAFFOLDED` | تشغيل `44870917262` (BUILD SUCCESSFUL) · APK 152.8MB | 3536 موردًا · 54 أصلًا · 3 ABI؛ 41 اسمًا أعيد تسميته فقط، **skipped = 0**. تصحيح مقيس: الأربعة `raw/*.he|mp4` كانت تُنسخ وتُحزم فعلًا في `44850020107`، لكن تقرير `MATERIALS.md` كان يعدّها «مستبعدة» بقائمة امتدادات خاطئة؛ التقرير صُحّح ولم يُفقد أي مورد. |
 | `cn.nubia.gamelauncher` | `dev/redlab/gamespace/MainActivity.java` | activity | 0 | `REBUILT` | نفس التشغيل | شاشة تقرأ `port/inventory.json`؛ تزول حين يُبنى الردهة الأصلي |
 | `cn.nubia.gameassist` | `dev/redlab/gameassist/MainActivity.java` | activity | 0 | `SCAFFOLDED` | تشغيل `44865094295` (BUILD SUCCESSFUL) | shell: يبني APK (main + strings)؛ materials + ported code مؤجَّلان |
 
@@ -79,6 +79,32 @@
 **حدّ الأداة معلن:** الإغلاق على **الاستيرادات** لا على المراجع داخل الحزمة نفسها؛ ولهذا بقي 31 خطأ
 «cannot find symbol» داخل وحدات مختارة. الخطوة التالية المقيسة: إغلاق على مستوى الحزمة، ثم إضافة
 التبعيات الحقيقية (`androidx.preference`, `org.apache.http.legacy`).
+
+### 3.4 التبعيات الحقيقية والجبهة المقيسة (تشغيل `44870917262`)
+
+| المقياس | قبل (44860316090) | بعد | الدليل |
+| --- | ---: | ---: | --- |
+| وحدات مختارة بواسطة `port_slice` | 404 | **733** | `slice.json` + `--libraries` |
+| مرفوضة | 5876 | 5547 | نفسه |
+| `library not linked` | 448 | **11** | بقيت `com.android.*` (systemui/inputEventTool) وليست تبعية Maven |
+| `depends on an excluded unit` | 197 | 301 | زادت لأن وحدات أكثر صارت مختارة |
+| `missing library` | 7 | 11 | نفسه |
+| وحدات مثبّتة بعد قبول `javac` | 278 | **278** (تصحيح — انظر أدناه) | `SEALED.json` |
+| ملفات `res/` | 3536 | 3536 | لم يُفقد شيء؛ `skipped=0` |
+| `assembleDebug` | success | success | APK 152,827,031 بايت |
+
+- `redlab/apps/gamespace/libraries.txt` = 48 بادئة استيراد / 74 إحداثية Maven مقيسة من `META-INF` وdex،
+  كلها `compileOnly` حتى لا تدمج مواردها وتُعيد تعارض `androidx.preference` المقيس.
+- `docs/port/FRONTIER.md` يُولَّد من سجلات `javac-round-*.log` ويعرض أول خطأ لكل وحدة.
+- **تصحيح مقيس (خطأ في خط الأنابيب):** الحلقة توقفت بعد 6 جولات بينما الجولة السادسة ما زالت فاشلة
+  (200 سطر خطأ)، ثم ثبّتت `seal_ported.py` الوحدات الـ285 المتبقية رغم أن `javac` لم يقبلها. السبب:
+  شرط `steps.ported.outcome == 'success'` لم يمنع التثبيت. أُزيلت الـ285 من `src/ported/java` (لم تكن
+  مقبولة قط)، وأُعيد `SEALED.json` إلى 278. أُصلحت الحلقة: 12 جولة، وتتوقف فقط عند `rc=0`،
+  والتثبيت مشروط بـ`clean=1`. التشغيل التالي هو الذي يقيس العدد الحقيقي.
+- **تحذير صريح:** `compileOnly` يشتري الترجمة فقط؛ أصناف هذه المكتبات **ليست في الـAPK بعد**. أي شاشة
+  تستدعيها وقت التشغيل ستنهار حتى تُضاف كـ`implementation` أو يُثبت وجودها في dex الأصلي.
+- الجولة التالية: 170 وحدة رفضها المترجم (أولها سلاسل `Preference`/`AlertDialog`/`Anim3DHelper`)؛
+  وإغلاق المراجع داخل الحزمة نفسها؛ ثم GameAssist materials + appcompat.
 
 ## 4. ما يُولَّد آليًا وما يُكتب بيد
 
