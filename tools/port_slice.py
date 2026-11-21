@@ -25,7 +25,24 @@ import sys
 from pathlib import Path
 
 # Imports answered by the platform or by the compiler itself; nothing to port.
-PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.")
+PLATFORM = ("java.", "javax.", "android.", "dalvik.", "jdk.", "sun.", "kotlin.", "org.json.")
+
+# Third-party code the APK bundles. It is in the corpus because jadx decompiled every dex, but
+# porting someone else's library from decompiled source is wrong on three counts: measured here it
+# produced 218 syntax errors in 12 files (gson, guava), the licence is theirs, and a real dependency
+# is smaller and correct. So its files are excluded and its imports are reported as a dependency to
+# add — never silently treated as available.
+LIBRARY_PATHS = (
+    "com/google/",
+    "androidx/",
+    "org/apache/",
+    "okhttp3/",
+    "com/squareup/",
+    "kotlinx/",
+    "org/jetbrains/",
+    "com/facebook/",
+    "bolts/",
+)
 PACKAGE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.M)
 IMPORT = re.compile(r"^\s*import\s+(static\s+)?([\w.]+)\s*;", re.M)
 
@@ -53,6 +70,11 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
     keep = set(corpus.values())
     reasons: dict[str, str] = {}
 
+    libraries = {relative for relative in keep if relative.startswith(LIBRARY_PATHS)}
+    for relative in libraries:
+        reasons[relative] = "library code: use the real dependency instead of decompiled source"
+    keep -= libraries
+
     while True:
         removed: dict[str, str] = {}
         for relative in sorted(keep):
@@ -68,6 +90,9 @@ def frontier(root: Path, package: str, corpus: dict[str, str]) -> dict:
                 if target is None:
                     vendor = imported.startswith(("cn.nubia.", "com.zte.", "com.nubia."))
                     removed[relative] = ("vendor framework" if vendor else "missing library") + f": {imported}"
+                    break
+                if target in libraries:
+                    removed[relative] = f"library not linked: {imported}"
                     break
                 if target not in keep:
                     removed[relative] = f"depends on an excluded unit: {target}"
@@ -131,9 +156,15 @@ def self_test() -> int:
         checks.append(("vendor imports are rejected", "cn/nubia/app/UsesVendor.java" not in selected))
         checks.append(("missing libraries are rejected", "cn/nubia/app/UsesLib.java" not in selected))
         checks.append(("a file importing a rejected file is rejected", "cn/nubia/app/UsesExcluded.java" not in selected))
-        checks.append(("a library present in the corpus is enough", "androidx/core/ViewKt.java" in selected))
-        checks.append(("androidx classes come with the corpus", "cn/nubia/app/NeedsAndroidx.java" in selected))
-        checks.append(("the chain follows the corpus", "cn/nubia/app/Chained.java" in selected))
+        checks.append(("bundled library code is not ported", "androidx/core/ViewKt.java" not in selected))
+        checks.append(
+            (
+                "a unit needing that library is reported as a dependency",
+                result["rejected"].get("cn/nubia/app/NeedsAndroidx.java", "").startswith("library not linked"),
+            )
+        )
+        checks.append(("and it is not selected", "cn/nubia/app/NeedsAndroidx.java" not in selected))
+        checks.append(("a chain into a library does not survive", "cn/nubia/app/Chained.java" not in selected))
         checks.append(("every rejection carries a reason", len(result["rejected"]) > 0))
         checks.append(("the vendor reason names the class",
                        "cn.nubia.panel.Power" in result["rejected"].get("cn/nubia/app/UsesVendor.java", "")))
