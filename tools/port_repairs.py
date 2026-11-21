@@ -57,14 +57,30 @@ def load_registry(path: Path) -> list[dict[str, str]]:
     return loaded
 
 
+def resolve_unit(sources: Path, relative: str) -> Path | None:
+    """Find a unit whether the staged tree kept jadx's `sources/` prefix or stripped it.
+
+    `port_materials.py` stages `sources/cn/...` under `materials/sources/`, so the file really
+    lives at `materials/sources/sources/cn/...`. Run 44901913678 proved the cost of assuming the
+    shorter path: all four repairs were reported `absent` and never applied.
+    """
+    normalized = relative
+    while normalized.startswith("sources/"):
+        normalized = normalized[len("sources/") :]
+    for candidate in (sources / relative, sources / "sources" / normalized, sources / normalized):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def apply_repairs(sources: Path, repairs: list[dict[str, str]]) -> list[dict[str, str]]:
     if not sources.is_dir():
         raise RepairError(f"{sources}: source directory does not exist")
     results: list[dict[str, str]] = []
     for repair in repairs:
-        target = sources / repair["path"]
+        target = resolve_unit(sources, repair["path"])
         result = {"id": repair["id"], "path": repair["path"], "reason": repair["reason"]}
-        if not target.is_file():
+        if target is None:
             results.append({**result, "status": "absent"})
             continue
         text = target.read_text(encoding="utf-8")
@@ -128,6 +144,9 @@ def self_test() -> int:
         unit = sources / "pkg" / "Demo.java"
         unit.parent.mkdir(parents=True)
         unit.write_text("class Demo {\n    void f() { r4.size(); }\n}\n", encoding="utf-8")
+        nested = sources / "sources" / "pkg" / "Nested.java"
+        nested.parent.mkdir(parents=True)
+        nested.write_text("class Nested { int x = 1; }\n", encoding="utf-8")
         registry = root / "repairs.json"
         registry.write_text(
             json.dumps(
@@ -147,17 +166,26 @@ def self_test() -> int:
                             "replace": "y",
                             "reason": "already sealed",
                         },
+                        {
+                            "id": "demo/nested-prefix",
+                            "path": "pkg/Nested.java",
+                            "find": "int x = 1;",
+                            "replace": "int x = 2;",
+                            "reason": "staged under sources/",
+                        },
                     ]
                 }
             ),
             encoding="utf-8",
         )
         repairs = load_registry(registry)
-        check(len(repairs) == 2, "loads every repair")
+        check(len(repairs) == 3, "loads every repair")
         results = apply_repairs(sources, repairs)
         check(results[0]["status"] == "applied", "applies an exact match")
         check("this.items.size()" in unit.read_text(encoding="utf-8"), "writes the replacement")
         check(results[1]["status"] == "absent", "reports an absent file without failing")
+        check(results[2]["status"] == "applied", "finds a unit under the nested sources/ prefix")
+        check("int x = 2;" in nested.read_text(encoding="utf-8"), "writes the nested replacement")
         results = apply_repairs(sources, repairs)
         check(results[0]["status"] == "already", "recognises its own replacement")
         check(unit.read_text(encoding="utf-8").count("this.items.size()") == 1, "is idempotent")
