@@ -112,6 +112,17 @@ public final class MainActivity extends Activity {
     }
 
     /** Reads the staged inventory; a build without materials is a valid build, not an error. */
+    /**
+     * Why by name and not `R.string`: the ported sources carry their own decompiled `R` (the only
+     * place the original's `styleable` constants survive), so `R.string` here would resolve to that
+     * table instead of the one aapt generates from our resources. The generated table still exists;
+     * we just ask for it explicitly.
+     */
+    private String text(String name) {
+        int id = getResources().getIdentifier(name, "string", getPackageName());
+        return id == 0 ? name : getString(id);
+    }
+
     private JSONObject readInventory() {
         try (InputStream in = getAssets().open("port/inventory.json")) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
