@@ -122,5 +122,7 @@ redlab/
 | `:core` (مقاعد/جلسة/قدرات) | ✅ 50 اختبارًا |
 | `:hardware` (MaxManager، 78 ملفًا كما هي) | 🟡 يترجم جزئيًا: ينقصه `kotlinx.serialization` + أصناف `nd.max` قليلة |
 | `:compat` | 🟡 بذرة: `RootCommands`/`DaemonIpc`/`ProbeBridge`/`RootNodeChannel`/`EventLog` |
-| خطّ البورت (apktool/jadx) | ⏳ لم يُشغَّل بعد (تنزيل APK-ين متوقف) |
+| خطّ البورت (apktool/jadx) | ✅ يعمل في CI: `RedLab port` — استخراج + تصنيف ثلاثي |
+| GameAssist (المقيس) | 18,025 وحدة: **PORT_AS_IS 16,241 (90%)** · ADAPT 589 · REIMPLEMENT 1,195 |
+| GameSpace (المقيس) | 9,816 وحدة: **PORT_AS_IS 8,007 (82%)** · ADAPT 848 · REIMPLEMENT 961 |
 | `apps/gamespace` · `apps/gameassist` | ⏳ غير موجودين بعد |
