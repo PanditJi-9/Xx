@@ -29,7 +29,9 @@
             android:exported="false" />
         <activity
             android:name="dev.redlab.gamespace.GameListActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/GameSpaceTheme.Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -19,34 +19,45 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dev.redlab.gamespace.recycler.BannerRecyclerView;
+import dev.redlab.gamespace.view.GamePlayLayout;
+
 /**
- * The first screen rebuilt on the original look rather than on the original activity code.
+ * The original lobby shape, filled with the apps this phone can launch.
  *
- * <p>It reuses the original lobby's root ({@code game_space_main}) and its card
- * ({@code game_item_medium}) verbatim, then fills the card with the apps this phone can launch.
- * Nothing here needs a Nubia service or a privileged transport, so the screen runs on any phone;
- * privileged controls stay behind {@link ControlMode} and are not touched here.
+ * <p>It inflates the original {@code game_lobby_layout} verbatim: background, title, side
+ * controls, Lottie frame, {@link BannerRecyclerView} and the play slot all come from the RedMagic
+ * resources. Only the play slot is replaced by {@link GamePlayLayout}, which needs no Nubia
+ * service. No layout file is edited.
  */
 public final class GameListActivity extends Activity {
 
     private final List<Entry> entries = new ArrayList<>();
     private GameAdapter adapter;
+    private TextView selectedName;
+    private Entry selected;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        getWindow().setBackgroundDrawableResource(R.mipmap.wallpaper_0);
+        getWindow().setFlags(
+                android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         PortLayoutInflater.install(getLayoutInflater());
-        setContentView(R.layout.game_space_main);
+        setContentView(R.layout.game_lobby_layout);
         setTitle(R.string.game_space_app_name);
 
-        RecyclerView list = new RecyclerView(this);
+        selectedName = findViewById(R.id.lobby_game_name);
+
+        BannerRecyclerView list = findViewById(R.id.game_list);
+        list.setAlpha(1f);
         list.setLayoutManager(new GridLayoutManager(this, 4));
         adapter = new GameAdapter();
         list.setAdapter(adapter);
 
-        ViewGroup container = findViewById(R.id.fragment_container);
-        container.addView(list, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        GamePlayLayout play = findViewById(R.id.lobby_play_view);
+        play.setOnClickListener(view -> openSelected());
 
         loadLauncherApps();
     }
@@ -75,8 +86,22 @@ public final class GameListActivity extends Activity {
                 entries.clear();
                 entries.addAll(found);
                 adapter.notifyDataSetChanged();
+                if (!entries.isEmpty()) {
+                    select(entries.get(0));
+                }
             });
         }, "game-list").start();
+    }
+
+    private void select(Entry entry) {
+        selected = entry;
+        selectedName.setText(entry.label);
+    }
+
+    private void openSelected() {
+        if (selected != null) {
+            open(selected.packageName);
+        }
     }
 
     private void open(String packageName) {
@@ -118,7 +143,12 @@ public final class GameListActivity extends Activity {
             holder.label.setVisibility(View.VISIBLE);
             holder.icon.setImageDrawable(entry.icon);
             holder.icon.setVisibility(View.VISIBLE);
-            holder.itemView.setOnClickListener(view -> open(entry.packageName));
+            holder.itemView.setOnClickListener(view -> select(entry));
+            holder.itemView.setOnLongClickListener(view -> {
+                select(entry);
+                open(entry.packageName);
+                return true;
+            });
         }
 
         @Override
