@@ -7,6 +7,11 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- The wallpaper panel writes the original lobby wallpaper; the zen panel asks the user
+         for notification-policy access before it can change the interruption filter. -->
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
     <!-- The original identity comes from the owner's own APK: the same launcher label and the same
          adaptive icon resources. §0.4 forbids copying a *reference* app's look, not reusing the
          owner's assets. Gradle installs cn.nubia.gamelauncher as requested; dev.redlab.gamespace
@@ -37,5 +42,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- The original Game Space Center shell and its own original theme. It is not exported:
+             the lobby is the only entry point, exactly like the stock launcher. -->
+        <activity
+            android:name="dev.redlab.gamespace.GameCenterActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false"
+            android:label="@string/gcs_gamecenter_title"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/Theme_gcs_GameCenter.CenterActivityStyle" />
     </application>
 </manifest>

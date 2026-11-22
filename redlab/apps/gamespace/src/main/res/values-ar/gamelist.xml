@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="rl_open_game_list">قائمة الألعاب</string>
+
+    <!-- مركز Game Space: كل نص ظاهر هنا وفي values/gamelist.xml. -->
+    <string name="rl_hub_system_display">إعدادات العرض في النظام</string>
+    <string name="rl_hub_brightness">السطوع</string>
+    <string name="rl_hub_timeout">مهلة الشاشة</string>
+    <string name="rl_hub_refresh">معدل التحديث</string>
+    <string name="rl_hub_refresh_value">الوضع الحالي: %1$s</string>
+    <string name="rl_hub_refresh_modes">الأوضاع المدعومة: %1$s</string>
+    <string name="rl_hub_refresh_note">تبديل معدل تحديث النظام يحتاج خدمة GameCenter من RedMagic، وهي غير موجودة على هذا الهاتف. الأوضاع أعلاه مقروءة من الشاشة.</string>
+    <string name="rl_hub_rotation">العرض والدوران</string>
+    <string name="rl_hub_wifi">إعدادات Wi-Fi</string>
+    <string name="rl_hub_data">استخدام بيانات الهاتف</string>
+    <string name="rl_hub_wireless">الإعدادات اللاسلكية</string>
+    <string name="rl_hub_network_value">الشبكة النشطة: %1$s</string>
+    <string name="rl_hub_net_wifi">Wi-Fi</string>
+    <string name="rl_hub_net_mobile">بيانات الهاتف</string>
+    <string name="rl_hub_net_other">أخرى</string>
+    <string name="rl_hub_net_none">لا توجد</string>
+    <string name="rl_hub_zen_state">مرشح المقاطعة: %1$s</string>
+    <string name="rl_hub_zen_on">عدم الإزعاج</string>
+    <string name="rl_hub_zen_off">كل المقاطعات</string>
+    <string name="rl_hub_zen_grant">السماح بالوصول إلى عدم الإزعاج</string>
+    <string name="rl_hub_zen_toggle">تبديل عدم الإزعاج</string>
+    <string name="rl_hub_zen_note">يعمل التبديل بعد منح النظام صلاحية سياسة الإشعارات.</string>
+    <string name="rl_hub_wallpaper_set">تعيين خلفية RedMagic</string>
+    <string name="rl_hub_wallpaper_choose">اختيار خلفية أخرى</string>
+    <string name="rl_hub_wallpaper_done">تم تعيين الخلفية.</string>
+    <string name="rl_hub_wallpaper_failed">تعذّر تعيين الخلفية.</string>
+    <string name="rl_hub_wallpaper_note">يستخدم خلفية اللوبي الأصلية المرفقة مع Game Space.</string>
+    <string name="rl_hub_notifications">إشعارات التطبيق</string>
+    <string name="rl_hub_app_info">معلومات التطبيق</string>
+    <string name="rl_hub_accessibility">إعدادات إمكانية الوصول</string>
+    <string name="rl_hub_dev_options">خيارات المطور</string>
+    <string name="rl_hub_games_count">التطبيقات القابلة للتشغيل: %1$d</string>
+    <string name="rl_hub_summary_note">الإنجازات التفصيلية تحتاج قاعدة بيانات GameCenter من Nubia، وهي غير متاحة على هذا الهاتف.</string>
+    <string name="rl_hub_about_body">الحزمة: %1$s\nالإصدار: %2$s\nيعيد هذا البناء استخدام موارد Game Space الأصلية تحت حزمة المالك ويعمل دون خدمات Nubia.</string>
+    <string name="rl_hub_disabled_title">غير متاح على هذا الهاتف</string>
+    <string name="rl_hub_disabled_body">لوحة التحكم، حقيبة الهدايا، ملاحظات الألعاب، وقت RedMagic، وضع 3A/PC، التسجيلات وتسريع الشبكة تحتاج خدمات Nubia. تُعرض هنا مع سببها بدل مفتاح يعمل.</string>
+    <string name="rl_vendor_notes">ملاحظات الألعاب تحتاج خدمة ملاحظات Nubia، وهي غير موجودة على هذا الهاتف.</string>
+    <string name="rl_vendor_gift">حقيبة الهدايا تحتاج خدمة حساب GameCenter من Nubia.</string>
+    <string name="rl_vendor_red_time">وقت RedMagic يحتاج خدمة GameCenter من Nubia.</string>
 </resources>

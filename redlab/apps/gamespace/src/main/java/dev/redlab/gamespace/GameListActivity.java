@@ -14,6 +14,7 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,7 +91,37 @@ public final class GameListActivity extends Activity {
         GamePlayLayout play = findViewById(R.id.lobby_play_view);
         play.setOnClickListener(view -> openSelected());
 
+        // The original hides the 3A/PC track when the stream feature is absent; this phone has no
+        // stream service, so the measured original behaviour is GONE, not a dead label.
+        findViewById(R.id.lobby_3a).setVisibility(View.GONE);
+        // The vendor control panel and atmosphere editor are absent. Their universal substitutes
+        // are the Game Space Center and its wallpaper section, reached from the same original
+        // controls so the lobby keeps its shape.
+        findViewById(R.id.lobby_control).setOnClickListener(view -> openCenter(null));
+        findViewById(R.id.lobby_custom).setOnClickListener(view ->
+                openCenter(GameCenterActivity.SECTION_WALLPAPER));
+        // These three icons address Nubia services that are not installed. They stay in place and
+        // answer with the measured reason instead of doing nothing.
+        findViewById(R.id.lobby_notes).setOnClickListener(view ->
+                vendorToast(R.string.rl_vendor_notes));
+        findViewById(R.id.lobby_red_time).setOnClickListener(view ->
+                vendorToast(R.string.rl_vendor_red_time));
+        findViewById(R.id.lobby_gift_bag).setOnClickListener(view ->
+                vendorToast(R.string.rl_vendor_gift));
+
         loadLauncherApps();
+    }
+
+    private void openCenter(String section) {
+        Intent intent = new Intent(this, GameCenterActivity.class);
+        if (section != null) {
+            intent.putExtra(GameCenterActivity.EXTRA_SECTION, section);
+        }
+        startActivity(intent);
+    }
+
+    private void vendorToast(int message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

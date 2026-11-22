@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="rl_open_game_list">Game list</string>
+
+    <!-- Game Space Center hub: every visible string lives here and in values-ar. -->
+    <string name="rl_hub_system_display">System display settings</string>
+    <string name="rl_hub_brightness">Brightness</string>
+    <string name="rl_hub_timeout">Screen timeout</string>
+    <string name="rl_hub_refresh">Refresh rate</string>
+    <string name="rl_hub_refresh_value">Current mode: %1$s</string>
+    <string name="rl_hub_refresh_modes">Supported modes: %1$s</string>
+    <string name="rl_hub_refresh_note">Switching the system refresh rate needs the RedMagic GameCenter service, which this phone does not have. The modes above are read from the display.</string>
+    <string name="rl_hub_rotation">Display and rotation</string>
+    <string name="rl_hub_wifi">Wi-Fi settings</string>
+    <string name="rl_hub_data">Mobile data usage</string>
+    <string name="rl_hub_wireless">Wireless settings</string>
+    <string name="rl_hub_network_value">Active network: %1$s</string>
+    <string name="rl_hub_net_wifi">Wi-Fi</string>
+    <string name="rl_hub_net_mobile">Mobile data</string>
+    <string name="rl_hub_net_other">Other</string>
+    <string name="rl_hub_net_none">None</string>
+    <string name="rl_hub_zen_state">Interruption filter: %1$s</string>
+    <string name="rl_hub_zen_on">Do Not Disturb</string>
+    <string name="rl_hub_zen_off">All interruptions</string>
+    <string name="rl_hub_zen_grant">Allow Do Not Disturb access</string>
+    <string name="rl_hub_zen_toggle">Toggle Do Not Disturb</string>
+    <string name="rl_hub_zen_note">The toggle works after the system grants notification policy access.</string>
+    <string name="rl_hub_wallpaper_set">Set the RedMagic wallpaper</string>
+    <string name="rl_hub_wallpaper_choose">Choose another wallpaper</string>
+    <string name="rl_hub_wallpaper_done">Wallpaper set.</string>
+    <string name="rl_hub_wallpaper_failed">Could not set the wallpaper.</string>
+    <string name="rl_hub_wallpaper_note">Uses the original lobby wallpaper that ships with Game Space.</string>
+    <string name="rl_hub_notifications">App notifications</string>
+    <string name="rl_hub_app_info">App info</string>
+    <string name="rl_hub_accessibility">Accessibility settings</string>
+    <string name="rl_hub_dev_options">Developer options</string>
+    <string name="rl_hub_games_count">Launchable apps: %1$d</string>
+    <string name="rl_hub_summary_note">Detailed achievements need the Nubia GameCenter database, which is not available on this phone.</string>
+    <string name="rl_hub_about_body">Package: %1$s\nVersion: %2$s\nThis build reuses the original Game Space resources under the owner package name and runs without Nubia system services.</string>
+    <string name="rl_hub_disabled_title">Not available on this phone</string>
+    <string name="rl_hub_disabled_body">Controller panel, gift bag, Game Notes, RedMagic time, 3A/PC mode, recordings and network acceleration need Nubia system services. They are shown here with their reason instead of a working switch.</string>
+    <string name="rl_vendor_notes">Game Notes needs the Nubia notes service, which is not on this phone.</string>
+    <string name="rl_vendor_gift">The gift bag needs the Nubia GameCenter account service.</string>
+    <string name="rl_vendor_red_time">RedMagic time needs the Nubia GameCenter service.</string>
 </resources>
