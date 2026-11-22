@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -91,6 +90,17 @@ public final class GameCenterActivity extends Activity {
         category.setAdapter(adapter);
 
         select(sectionIndex(getIntent().getStringExtra(EXTRA_SECTION)), true);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        // launchMode is the stock singleTask, so a second stock-action launch reuses this
+        // instance; the requested section must still be applied.
+        if (adapter != null) {
+            select(sectionIndex(intent.getStringExtra(EXTRA_SECTION)), true);
+        }
     }
 
     @Override
