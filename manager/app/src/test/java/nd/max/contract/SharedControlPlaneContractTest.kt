@@ -32,10 +32,11 @@ import java.io.File
  * **ولماذا حرسٌ على النصّ لا اختبارٌ سلوكيّ:** القرار نفسه (`createDeviceProtectedStorageContext`)
  * يحتاج `android.jar` وسياقًا لا يوجدان في هذه البيئة، والسلوك يحتاج **إقلاع جهاز** — والمقيس هنا
  * هو **البنية التي تُنتج العطب**: أيّ مجلد يُسلَّم للمستودع، ومن يستطيع أن يرمي من `main`، وهل
- * يُبدأ الخادم قبل التأكّد من الرفيق. وهذا يُقاس في ثوانٍ بلا مُصرّف ولا جهاز.
+ * يبقى الخادم ميتًا إذا تأخّر الرفيق أو تنفلت محاولة استعادته. وهذا يُقاس في ثوانٍ بلا جهاز.
  *
  * **والحدّ المُعلن:** هذا الحرس يقيس **الشكل** لا الزمن: أن المستودع يُبنى في تخزين المحميّ بالجهاز
- * ومن الموضع الواحد، وأن الرفيق لا يموت من استثناء غير مُلتقَط، وأن السكربت لا يبدأ الخادم على ظنّ.
+ * ومن الموضع الواحد، وأن الرفيق لا يموت من استثناء غير مُلتقَط، وأن السكربت يبدأ الخادم عند جاهزية
+ * الحزمة ويقصر استعادة الرفيق المتأخّر على عدد معلوم من المحاولات.
  * وما يحتاج جهازًا يبقى يحتاج جهازًا: أن `mkdirs` تنجح فعلًا قبل الفتح، وأن الإقلاع يعمل على ROM بعينه.
  */
 class SharedControlPlaneContractTest {
@@ -162,10 +163,10 @@ class SharedControlPlaneContractTest {
         )
     }
 
-    // ── ٣) والسكربت لا يبدأ الخادم على ظنّ أنّ الرفيق حيّ ─────────────────────
+    // ── ٣) الخادم لا يبقى ميتًا إذا تأخّر الرفيق، والاستعادة المتأخرة محدودة ──
 
     @Test
-    fun `the module script confirms the companion before starting the daemon`() {
+    fun `the module script starts the daemon and bounds late companion recovery`() {
         val script = script()
         val where = scriptLabel
 
@@ -178,25 +179,33 @@ class SharedControlPlaneContractTest {
             script.contains("toybox pidof \"\$COMPANION_NAME\""),
         )
         assertTrue(
-            "ولا يُنفَّذ الخادم إلا بتأكيدٍ مسبق: بدونه ينتظر ١٢٠ ثانية ثم يُغلق الوحدة برسالة مُضلّلة",
-            script.contains("if [ \"\$COMPANION_READY\" -eq 1 ]; then\n    sleep 1 && exec \"\$BIN_SVC\" --run"),
-        )
-        assertTrue(
             "وغياب أداة القياس لا يُسقط الوحدة: يُقال إنه لم يُقس ويُعاد السلوك السابق",
             script.contains("pidof unavailable; companion liveness not measured"),
         )
         assertTrue(
-            "وفشل الرفيق يُكتب في سجلّ الاستعادة بسببه",
-            script.contains("java companion failed to start; see sysmon.log"),
+            "وفشل المحاولتين لا يقتل الخادم: يُعلن الانتقال إلى الاستعادة المتأخرة",
+            script.contains("java companion not ready after retry; starting daemon anyway"),
         )
-        // **وسطر تنفيذ الخادم واحد لا اثنان:** البدء القديم كان بلا شرط، فبقاؤه بعد الشرط يُنتج
-        // خادمًا ينتظر ١٢٠ ثانية في كل إقلاع فاشل باسم «تعافٍ» — والعدّ على **سطور التنفيذ** لا على
-        // النصّ كله (فالتعليقات تذكر الأمر ولا تُنفّذه).
+        assertTrue(
+            "والاستعادة المتأخرة محدودة بعشرين محاولة، لا حلقة خفيّة دائمة",
+            script.contains("while [ \"\$n\" -lt 20 ]; do"),
+        )
+        assertTrue(
+            "وتتوقف الاستعادة فور تعطيل الوحدة أو طلب إزالتها",
+            script.contains("[ -f \"\$MODDIR/disable\" ] && exit 0") &&
+                script.contains("[ -f \"\$MODDIR/remove\" ] && exit 0"),
+        )
+        assertTrue(
+            "الخادم يبدأ متى صارت الحزمة جاهزة، ولو كان الرفيق ما زال في الاستعادة المتأخرة [$where]",
+            script.contains("if [ \"\$PACKAGE_READY\" -eq 1 ]; then\n    sleep 1 && exec \"\$BIN_SVC\" --run"),
+        )
+        // **وسطر تنفيذ الخادم واحد لا اثنان:** الاستعادة المتأخرة تخصّ الرفيق فقط؛ فلا يجوز أن
+        // تُنشئ خادمًا ثانيًا بالتوازي. والعدّ على سطور التنفيذ لا التعليقات.
         val execLines = script.lines()
             .filterNot { it.trimStart().startsWith("#") }
             .filter { it.contains("--run") }
         assertEquals(
-            "سطور تنفيذ الخادم يجب أن تكون واحدة لا اثنتين (البدء الأعمى القديم يُعاد) [$where]",
+            "سطور تنفيذ الخادم يجب أن تكون واحدة لا اثنتين [$where]",
             1,
             execLines.size,
         )

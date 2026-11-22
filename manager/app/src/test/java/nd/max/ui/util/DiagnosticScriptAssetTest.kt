@@ -18,13 +18,13 @@ import org.junit.Test
  *
  * نقل السكربت من `LogUtil.kt` إلى `assets-internal/scripts/diagnostics.sh` يفصل شيئين
  * كانا متّصلين: **محتوى السكربت** (يبقى كما هو) و**مكانه في الحزمة** (يخرج من جدول نصوص
- * DEX إلى أصل يُختم بمفتاح البصمة). والفصل نفسه هو ما يُقاس هنا: لو عاد السكربت نصًّا في
- * Kotlin لبقيت المتغيّرات `${...}` داخل الأصل ولفشل التشغيل على الجهاز بصمت.
+ * DEX إلى أصل يُختم بمفتاح البصمة). والفصل نفسه هو ما يُقاس هنا: كل قيمة يحقنها Kotlin يجب أن
+ * يستهلكها الأصل بصيغة shell صحيحة، وكل مرجع صغير الحروف يجب أن يعرّفه الأصل محليًّا.
  *
  * ## وحدّه المُعلَن
  *
  * لا يُثبت أن السكربت **يعمل** على جهاز: هذا يحتاج جهازًا. الذي يُثبته: الأصل موجود،
- * والمتغيّرات التي تُمرَّر من Kotlin كلها مذكورة فيه، ولا بقايا استيفاء Kotlin، وصياغة
+ * والمتغيّرات التي تُمرَّر من Kotlin كلها مستهلكة فيه، ولا مرجع shell محلي بلا تعريف، وصياغة
  * الصدفة صحيحة (`sh -n`) على مُشغّل CI.
  */
 class DiagnosticScriptAssetTest {
@@ -52,18 +52,34 @@ class DiagnosticScriptAssetTest {
     @Test
     fun `every variable supplied by kotlin is consumed by the script`() {
         val text = asset().readText()
-        val missing = supplied.filter { "\$$it" !in text }
+        // يقبل الصيغتين الصحيحتين في الصدفة: `$NAME` و`${NAME:-default}`/`${NAME##*/}`.
+        // البحث الحرفي القديم لم يرَ `OUT_NAME` بعد أن صارت قراءته محمية من مكوّنات المسار.
+        val missing = supplied.filter { name ->
+            val escaped = Regex.escape(name)
+            Regex("""\$(?:$escaped\b|\{$escaped(?:\}|[^A-Za-z0-9_]))""").find(text) == null
+        }
         assertEquals("متغيّرات تُمرَّر ولا يستهلكها السكربت: $missing", emptyList<String>(), missing)
     }
 
     @Test
-    fun `no kotlin interpolation survives in the asset`() {
+    fun `lowercase shell references are declared inside the asset`() {
         val text = asset().readText()
-        // حلقات السكربت الحقيقية وحدها مسموحة؛ أي اسم Kotlin آخر يعني نقلًا ناقصًا.
-        val braced = Regex("""\$\{([a-z][A-Za-z0-9_]*)}""").findAll(text).map { it.groupValues[1] }.toSet()
-        val plain = Regex("""\$([a-z][A-Za-z0-9_]*)""").findAll(text).map { it.groupValues[1] }.toSet()
-        assertEquals("استيفاء Kotlin باقٍ داخل الأصل", setOf("live"), braced)
-        assertEquals("متغيّر Kotlin باقٍ داخل الأصل", setOf("cg", "gen_file", "live"), plain)
+        // متغيّرات Kotlin الممرّرة أعلاه كبيرة الحروف. وأي مرجع صغير الحروف يجب أن يكون محلّيًّا
+        // عرّفه السكربت نفسه (حلقة أو إسناد)؛ وبذلك نمسك بقايا نقل Kotlin بلا تجميد قائمة أسماء
+        // حلقات تتقادم كلما أضيف جمع تشخيصي جديد.
+        val references = (
+            Regex("""\$\{([a-z][A-Za-z0-9_]*)""").findAll(text) +
+                Regex("""\$([a-z][A-Za-z0-9_]*)""").findAll(text)
+            ).map { it.groupValues[1] }.toSet()
+        val declared = (
+            Regex("""(?m)^\s*([a-z][A-Za-z0-9_]*)=""").findAll(text) +
+                Regex("""(?m)^\s*for\s+([a-z][A-Za-z0-9_]*)\s+in\b""").findAll(text)
+            ).map { it.groupValues[1] }.toSet()
+        assertEquals(
+            "مراجع shell صغيرة الحروف بلا تعريف محلّي داخل الأصل",
+            emptySet<String>(),
+            references - declared,
+        )
     }
 
     @Test
