@@ -113,7 +113,16 @@ def path_findings(files: list[str]) -> list[Finding]:
     hits: list[Finding] = []
     for rel in files:
         parts = rel.lower().replace("\\", "/").split("/")
-        for part in parts:
+        # أسماء الحزم بعد جذر لغة المصدر ليست «شجرة مرجعية». مثال مقيس:
+        # `src/ported/java/com/zte/performance/scene/ITaskCallback.java` — `scene` هنا
+        # namespace لنوع Binder، لا نسخة مجلّد المرجع `scene/`. أمّا مرجع منسوخ مثل
+        # `vendor/scene/src/main/java/...` فيبقى قبل `java` ويُمسك. كان فحص كلّ مقطع
+        # بلا هذا الحدّ إيجابية كاذبة أسقطت التشغيل 45057614533.
+        namespace_at = next(
+            (index for index, part in enumerate(parts) if part in {"java", "kotlin", "aidl"}),
+            len(parts),
+        )
+        for part in parts[:namespace_at]:
             if part in REFERENCE_TREES:
                 hits.append(Finding(rel, 0, part, "مسار مرجعي متعقَّب داخل المستودع"))
                 break
@@ -175,6 +184,16 @@ def self_test() -> int:
         (
             "مجلّد مرجعي",
             {"scene_n1/A.java": "class A {}\n"},
+            1,
+        ),
+        (
+            "اسم حزمة بعد جذر Java ليس شجرة مرجعية",
+            {"app/src/main/java/com/example/scene/A.java": "package com.example.scene;\nclass A {}\n"},
+            0,
+        ),
+        (
+            "مرجع متداخل قبل جذر Java يُمسك",
+            {"vendor/scene/src/main/java/com/example/A.java": "class A {}\n"},
             1,
         ),
         (
