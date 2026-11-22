@@ -27,6 +27,9 @@ plugins {
 // classpath. compileOnly keeps javac honest without letting the AARs merge resources into a table
 // that already carries the original copies; `portRuntime` below puts only their classes in the APK.
 
+// The installed identity and the package prefix aapt2 expects in `--stable-ids`.
+val portPackageId = "cn.nubia.gamelauncher"
+
 android {
     namespace = "dev.redlab.gamespace"
     compileSdk = 36
@@ -36,7 +39,9 @@ android {
         // carrying its id cannot be installed over it without root (signature mismatch). Coexisting
         // with it is what lets this build install on an ordinary phone. The namespace stays
         // dev.redlab.gamespace because the ported R classes were compiled against it.
-        applicationId = "dev.redlab.gamespace"
+        // Owner instruction: the installed identity must be the original package. The namespace
+        // stays dev.redlab.gamespace because the ported R classes were compiled against it.
+        applicationId = portPackageId
         minSdk = 28
         targetSdk = 36
         versionCode = 1
@@ -83,10 +88,12 @@ android {
                 if (name.startsWith("$")) {
                     name = "rl_" + name.substring(1)
                 }
-                // aapt2 2.20 accepts stable ids only when the key is package-qualified
-                // (`dev.redlab.gamespace:string/name = 0x...`). Without the package it silently
-                // ignores the file and renumbers everything (measured in /tmp/opencode/aapttest).
-                "dev.redlab.gamespace:$type/$name = ${match.groupValues[3]}"
+                // aapt2 2.20 accepts stable ids only when the key is package-qualified with the
+                // *installed* package (`cn.nubia.gamelauncher:string/name = 0x...`). Without it
+                // the file is silently ignored and everything is renumbered; using the namespace
+                // instead of the applicationId is the same silent failure (measured: 0x7f0d0082
+                // vs 0x7f0d026d for layout/game_space_main).
+                "$portPackageId:$type/$name = ${match.groupValues[3]}"
             }.toList()
             out.writeText(lines.joinToString("\n", postfix = "\n"))
         }
@@ -319,6 +326,16 @@ val generatePortR = tasks.register("generatePortR") {
                                 val resolved = idOf("attr", attr)
                                 if (resolved != 0) ids[index] = resolved
                             }
+                        }
+                        // A zero entry is dangerous: AssetManager matches it against the
+                        // attribute whose name id is 0, which is `style`, so the view's style
+                        // reference is handed to the library as if it were that attribute's
+                        // value. Measured on game_lobby_layout: ConstraintLayout read
+                        // style="@style/ShadowStyle" (0x7f1301ca) as a dimension and crashed
+                        // with `For input string: "@2131952074"`. Keep the slot, but give every
+                        // unresolved attribute an id no real attribute can match.
+                        for (slot in ids.indices) {
+                            if (ids[slot] == 0) ids[slot] = 0x7f700000 + slot
                         }
                         source.append("        public static final int[] ").append(name).append(" = { ")
                             .append(ids.joinToString(", ") { "0x" + Integer.toHexString(it) })
