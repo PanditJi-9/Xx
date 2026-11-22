@@ -44,11 +44,19 @@ object RootCommands {
         )
 
         fun exec(): Result = synchronized(commandLock) {
-            if (!permitted()) return refused()
+            if (!permitted()) return refused("mode-root-blocked")
             return runCatching {
-                val shell = Shell.getShell()
+                var shell = Shell.getShell()
+                // الصدفة قد تكون بُنيت قبل منح الجذر (سباق الإقلاع) أو عادت بلا جذر. لا تُترك
+                // المهمة على «مرفوض» أبدي: تُطلب مرّة، ثم يُعاد فحص الوضع بعد الانتظار.
+                // ولا يُسأل بعد رفض صريح، حتى لا يفتح النداء الدوري نافذة صلاحية كل بضع ثوانٍ.
+                if (!shell.isRoot) {
+                    if (Shell.isAppGrantedRoot() == false) return refused("root-denied")
+                    if (!PrivilegeManager.requestRoot()) return refused("root-not-granted")
+                    shell = Shell.getShell()
+                }
                 // الحصول على su قد ينتظر نافذة إذن؛ لا تُرسل المهمة بعد تبديل الوضع أثناء الانتظار.
-                if (!permitted() || !shell.isRoot) return refused()
+                if (!permitted() || !shell.isRoot) return refused("root-not-available")
                 val job = shell.newJob().add(*commands.toTypedArray())
                 if (redirected) job.to(output, error) else job.to(ArrayList(), ArrayList())
                 val result = job.exec()
@@ -63,6 +71,6 @@ object RootCommands {
             }
         }
 
-        private fun refused() = Result(emptyList(), listOf("mode-root-blocked"), -1)
+        private fun refused(reason: String) = Result(emptyList(), listOf(reason), -1)
     }
 }

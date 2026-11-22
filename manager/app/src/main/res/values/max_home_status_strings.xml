@@ -8,11 +8,14 @@
     <string name="home_status_active_body">Your chosen path is working, so this is active. The lines below show each part as it is now: root and Shizuku are two routes to the same goal, so the route you did not take is not required. A part that is missing narrows what the app can do; it does not mean the app is stopped.</string>
     <string name="home_status_row_root">Root granted</string>
     <string name="home_status_row_module">Module installed</string>
+    <string name="home_status_row_module_pending">Module written — reboot to activate it</string>
     <string name="home_status_row_shizuku">Shizuku ready</string>
     <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«لا يجيب» ثلاث حالات لا واحدة -->
     <string name="home_status_row_daemon_running">Daemon runs and answers</string>
     <string name="home_status_row_daemon_denied">Daemon runs but refuses this app\'s identity</string>
     <string name="home_status_row_daemon_stopped">Daemon answers but does not report itself as running</string>
+    <string name="home_status_row_daemon_unreachable">Daemon is not running</string>
+    <string name="home_status_row_daemon_unknown">Daemon status not measured yet</string>
     <string name="home_status_close">Close</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
     <string name="home_status_enable_module">Enable the module (offline)</string>

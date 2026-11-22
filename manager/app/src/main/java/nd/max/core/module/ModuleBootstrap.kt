@@ -84,6 +84,10 @@ object ModuleBootstrap {
             "chcon -R u:object_r:system_file:s0 ${quote("$target/system/bin")}",
             // ٥) قراءة مرتجعة: لا «نجح» بلا دليل من الملفّ نفسه.
             "test -s ${quote("$target/module.prop")}",
+            // ٦) علامة الإقلاع المعلّق: صار مدير الجذر يرى ملفّات الوحدة فورًا، لكن سكربتاتها
+            //    لا تعمل قبل الإقلاع. فالعلامة تجعل التطبيق يقول «تحتاج إعادة تشغيل» بدل أن
+            //    يعدّها عاملة — وتمسحها service.sh بعد الإقلاع.
+            "touch ${quote("$target/update")}",
         )
 
         val result = runCatching { RootCommands.cmd(*commands).exec() }

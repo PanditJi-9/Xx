@@ -148,7 +148,7 @@ internal fun LegendaryHomeDashboard(
 ) {
     // «مفعّل» إثبات أنّ المسار المختار يعمل بشرطيه، لا زينة بصرية (أمر المالك ٢٠٢٦-١١-١٦):
     // جذر بلا وحدة = نصف منظومة، وShizuku لا يصل هنا إلا بإذنه ممنوحًا. القرار في `HomeActivityRules`.
-    val active = HomeActivityRules.active(accessLevel, ui.moduleInstalled)
+    val active = HomeActivityRules.active(accessLevel, ui.moduleInstalled, ui.moduleUpdatePending)
     // ترتيب حسب الخطورة: بطاقة الخلل الحقيقي تصعد تحت البطل، وإلا تبقى في موضعها المحدّد.
     val focusFirst = HomeFocusModel.focusKind(
         heatC = deviceHeatC(dashboard) ?: 0,
@@ -731,10 +731,16 @@ private fun HomeStatusReasonDialog(
                 )
                 HomeStatusReasonRow(R.string.home_status_row_root, accessLevel == PrivilegeLevel.ROOT)
                 HomeStatusReasonRow(R.string.home_status_row_module, moduleInstalled)
+                if (moduleUpdatePending) {
+                    // ملفّات الوحدة مكتوبة ويراها مدير الجذر، لكن سكربتاتها لا تعمل قبل الإقلاع.
+                    // فالسطر يمنع قراءة «مثبّتة» كأنها عاملة الآن.
+                    HomeStatusReasonRow(R.string.home_status_row_module_pending, satisfied = false)
+                }
                 HomeStatusReasonRow(R.string.home_status_row_shizuku, accessLevel == PrivilegeLevel.SHIZUKU)
-                // سطر الخادم: لا يظهر قبل أوّل قياس (`UNKNOWN`)، ولا يقول «لا يجيب» عن خادم لم يُسأل.
-                HomeStatusCopy.daemonRowRes(daemonHealth)?.let { labelRes ->
-                    HomeStatusReasonRow(labelRes, HomeStatusCopy.daemonSatisfied(daemonHealth))
+                // سؤال الخادم لا يُطرح إلا في وضع الروت (أمر المالك ٢٠٢٦-١١-٢٢): في Shizuku
+                // يعمل التطبيق بمساره المباشر، وعرض «الخادم لا يجيب» هناك عطبٌ موهوم.
+                HomeStatusCopy.daemonRowFor(accessLevel, daemonHealth)?.let { labelRes ->
+                    HomeStatusReasonRow(labelRes, HomeStatusCopy.daemonVerdict(daemonHealth))
                 }
                 outcome?.let { line ->
                     Text(line, color = p.text, style = MaterialTheme.typography.bodySmall)
@@ -784,7 +790,7 @@ private fun HomeStatusReasonDialog(
 
 /** سطر شرط واحد: علامة تُقرأ بلا لون وحده (لون ≠ معنى وحيد — ADR-07). */
 @Composable
-private fun HomeStatusReasonRow(labelRes: Int, satisfied: Boolean) {
+private fun HomeStatusReasonRow(labelRes: Int, satisfied: Boolean?) {
     val p = neuralPalette()
     Row(
         Modifier.fillMaxWidth(),
@@ -792,9 +798,17 @@ private fun HomeStatusReasonRow(labelRes: Int, satisfied: Boolean) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = if (satisfied) Icons.Rounded.CheckCircle else Icons.Rounded.Cancel,
+            imageVector = when (satisfied) {
+                true -> Icons.Rounded.CheckCircle
+                false -> Icons.Rounded.Cancel
+                null -> Icons.Rounded.HelpOutline
+            },
             contentDescription = null,
-            tint = if (satisfied) p.ok else p.danger,
+            tint = when (satisfied) {
+                true -> p.ok
+                false -> p.danger
+                null -> p.muted
+            },
             modifier = Modifier.size(MaxSize.iconGlyph),
         )
         Text(

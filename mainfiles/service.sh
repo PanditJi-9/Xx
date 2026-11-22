@@ -32,6 +32,10 @@ done
 # Remove Single Instance since we dont need it anymore
 rm -f /dev/.maxmanagerSingleInstance
 
+# The app's offline bootstrap writes this marker so Home can say "reboot required". The module
+# scripts have now run, so the marker's promise is fulfilled — drop it before any UI reads it.
+rm -f "$MODDIR/update"
+
 # Reset anti bootloop
 echo "BOOTCOUNT=0" > "$MODDIR/count.sh"
 
@@ -172,6 +176,12 @@ rotate_sysmon_log() {
 
 launch_companion() {
     rotate_sysmon_log
+    # **بصمة محاولة التشغيل قبل `nohup`:** كانت الحزمة تُظهر صفر بايت ولا يُعرف أَشغَّل
+    # `service.sh` الرفيق أصلًا أم لا. والسطر يُكتب بالجذر في المجلّد نفسه، فلا يعتمد على
+    # نجاح `app_process` ولا على إعادة توجيه مخرجه.
+    printf '%s I EVENT=COMPANION_LAUNCH apk=%s\n' \
+        "$(date '+%Y-%m-%d %H:%M:%S.000')" "$APK_COMP" \
+        >>"$MODULE_CONFIG/sysmon.log" 2>/dev/null
     # والمخرَج **يُضاف** لا يُقتطع: كان `>` يمحو ما كتبه رفيق سابق في الإقلاع نفسه —
     # والحالة التي دفعت الثمن هي التي تُشفى: موت الرفيق في الإقلاع يُتبع بإعادة تشغيل
     # (من الحارس في التطبيق، أو من شاشة فحص الشحن) — فلو مُحي السابق لم يبق دليل يُرسل.
@@ -180,6 +190,7 @@ launch_companion() {
         "$MODULE_CONFIG/app_status" \
         "$MODULE_CONFIG/background_apps" \
         "$MODULE_CONFIG/java.lock" >>"$MODULE_CONFIG/sysmon.log" 2>&1 &
+    log_recovery "companion launched pid=$!"
 }
 
 # اسم الرفيق يضعه `--nice-name`، فيُقاس حضوره **بالاسم** لا بالتخمين.
@@ -229,18 +240,38 @@ if [ "$PACKAGE_READY" -eq 1 ]; then
             if [ "$COMPANION_READY" -eq 1 ]; then
                 log_recovery "java companion running after retry"
             else
-                log_recovery "java companion failed to start; see sysmon.log (service not started)"
+                log_recovery "java companion not ready after retry; starting daemon anyway"
             fi
         fi
     fi
 fi
 
-# Run MaxManager service — **فقط** إذا كان الرفيق حيًّا.
-# وليس الشرط وجود الحزمة وحده: انظر تعليق الفحص أعلاه — الرسالة المُضلّلة («crashed or failed to start»)
-# تُستبدل بسطر واحد صادق في `package-recovery.log` يسمّي ما جرى.
-if [ "$COMPANION_READY" -eq 1 ]; then
+# **الخادم يُبدأ دائمًا حين تكون الحزمة جاهزة، والرفيق يُلحق بها.**
+# كان الشرط `COMPANION_READY` يترك الوحدة بلا خادم أبدًا إذا فشل الرفيق مرّتين — ثم لا شيء
+# يعيد المحاولة. والخادم نفسه صار ينتظر ١٢٠ ثانية ويرى العملية بالاسم الجميل، فإعطاؤه
+# الفرصة أصدق من إعلان الفشل؛ والرفيق المتأخّر يوقظ الخادم عبر `DaemonSupervisor` في داخله.
+if [ "$PACKAGE_READY" -eq 1 ] && [ "$COMPANION_READY" -ne 1 ]; then
+    (
+        n=0
+        while [ "$n" -lt 20 ]; do
+            # توقّف فور تعطيل الوحدة أو إزالتها: لا عملية تُترك خلف وحدة مطفأة.
+            [ -d "$MODDIR" ] || exit 0
+            [ -f "$MODDIR/disable" ] && exit 0
+            if companion_alive; then
+                log_recovery "java companion recovered late pid=$(/system/bin/toybox pidof "$COMPANION_NAME" 2>/dev/null | tr ' ' ',')"
+                exit 0
+            fi
+            launch_companion
+            n=$((n + 1))
+            sleep 5
+        done
+        log_recovery "java companion still absent after ${n} late retries"
+    ) &
+fi
+
+if [ "$PACKAGE_READY" -eq 1 ]; then
     sleep 1 && exec "$BIN_SVC" --run
 else
-    log_recovery "service not started; java companion unavailable"
+    log_recovery "service not started; package unavailable"
     exit 0
 fi

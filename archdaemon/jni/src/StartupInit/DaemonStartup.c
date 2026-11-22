@@ -71,9 +71,13 @@ void verify_system_integrity(void) {
  * أصلًا، فلم يكن في متناول الدالة أي شيء يفرّق بين «رفيق يتهيّأ الآن» و«رفيق مات» — فانتظرت
  * الـ120 ثانية كاملة ثم أعلنت «crashed or failed to start» **بلا سبب**، بعد دقيقتين من الحدث.
  *
- * والقياس هنا **مباشر**: اسم الفئة في `/proc/<pid>/cmdline` (‏`nd.max.AppMonitor`) — فالاسم الذي
- * يضعه `app_process` موجود بنصّه ولا يُقتطع بحجم `TASK_COMM_LEN` مثل `/proc/<pid>/stat`. وقراءة
- * ملفّات صغيرة، وكل خمس ثوانٍ لا كل ثانية (كلفة الصدفة لا تُدفع حيث لا قرار لها).
+ * والقياس هنا **مباشر**، لكن بالاسم الذي يبقى فعلًا في `/proc/<pid>/cmdline`: `--nice-name`
+ * (‏`sys.maxmanager-appmonitoring`) **يستبدل** سطر الأمر عبر `setArgv0`، فيُمحى اسم الفئة
+ * (‏`nd.max.AppMonitor`) من `/proc/<pid>/cmdline` — قِيس على عملية رفيق حيّة: السطر يحمل
+ * الاسم الجميل وحده. فالبحث عن اسم الفئة كان **لا يطابق أبدًا**؛ لذلك تُقبل المطابقتان:
+ * الاسم الجميل (التشغيل العادي) واسم الفئة (تشغيل يدوي بلا `--nice-name`). والاسم الجميل
+ * أطول من `TASK_COMM_LEN`، فلا يُقاس في `/proc/<pid>/stat`؛ وهنا `/proc/<pid>/cmdline` نفسه.
+ * وقراءة ملفّات صغيرة، وكل خمس ثوانٍ لا كل ثانية (كلفة الصدفة لا تُدفع حيث لا قرار لها).
  *
  * @param needle النصّ الذي يُبحث عنه في سطر أمر العملية.
  * @return true إن وُجدت عملية حيّة تحمله.
@@ -111,6 +115,17 @@ static bool is_process_cmdline_alive(const char* needle) {
 
     closedir(proc);
     return found;
+}
+
+/**
+ * @brief حضور الرفيق: الاسم الجميل أولًا، ثم اسم الفئة للتشغيل اليدوي بلا `--nice-name`.
+ *
+ * والاسم الجميل هو ما يبقى في `cmdline` بعد `setArgv0`، واسم الفئة يبقى فقط حين يُشغَّل
+ * `app_process` بلا `--nice-name` (تشخيص يدوي). فقبول الاثنين يغطّي الطريقين بلا فقد.
+ */
+static bool is_companion_process_alive(void) {
+    return is_process_cmdline_alive("sys.maxmanager-appmonitoring") ||
+           is_process_cmdline_alive("nd.max.AppMonitor");
 }
 
 /**
@@ -155,9 +170,14 @@ void wait_for_java_companion(DaemonContext* ctx) {
             log_zenith(LOG_WARN, "EVENT=JAVA_COMPANION_WAIT_RETRY reason=lock_not_held");
         }
 
-        if ((java_check_retries % COMPANION_PROBE_EVERY) == 0 &&
-            is_process_cmdline_alive("nd.max.AppMonitor")) {
+        if ((java_check_retries % COMPANION_PROBE_EVERY) == 0 && is_companion_process_alive()) {
             companion_seen = true;
+        }
+        // العملية تُرى وليس القفل بعد: تهيئة بطيئة لا موت — تُقال مرّة واحدة ويُنتظر حتى 120.
+        if (companion_seen && java_check_retries == COMPANION_ABSENT_CHECKS) {
+            log_zenith(LOG_INFO,
+                       "EVENT=JAVA_COMPANION_SLOW_LOCK checks=%d action=wait",
+                       java_check_retries);
         }
         if (!companion_seen && java_check_retries >= COMPANION_ABSENT_CHECKS) {
             log_zenith(LOG_FATAL,

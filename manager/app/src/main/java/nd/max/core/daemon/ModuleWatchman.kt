@@ -6,6 +6,7 @@
 
 package nd.max.core.daemon
 
+import nd.max.AppMonitorLogger
 import nd.max.MaxManagerPaths
 
 /**
@@ -184,8 +185,10 @@ class ModuleWatchman(
     private val rootIo: DaemonIo = RootShellDaemonIo,
     private val serviceBin: String = MaxManagerPaths.serviceBin(),
     private val logPath: String = MaxManagerPaths.MAXMANAGER_LOG,
-    private val info: (String) -> Unit = {},
-    private val problem: (String) -> Unit = {},
+    /** سطر خَبَر (نجاح/قيام) — يُكتب في sysmon ثم logcat عند تعذّر الملف، فلا قرار صامت. */
+    private val info: (String) -> Unit = { AppMonitorLogger.i(it) },
+    /** سطر يحتاج انتباهًا (فشل/تخلٍّ) — كان افتراضه `{}` فماتت كل أسباب الحارس بلا أثر. */
+    private val problem: (String) -> Unit = { AppMonitorLogger.w(it) },
 ) {
 
     private val cheapDaemonProbe = DaemonLivenessProbe(cheapIo)
@@ -203,6 +206,16 @@ class ModuleWatchman(
         // ٢) المُثبِت: القياس نفسه بجذر، لأنّ «لم أجده» من صدفة لا ترى كل عمليّة **مجهول** لا «ميّت».
         val daemon = rootDaemonProbe.read()
         val companion = companionLiveness(rootIo)
+        // **ولا فعل على «مجهول»:** صدفة الجذر المرفوضة/غير الجاهزة تُنتج `Unknown`، و`exists`
+        // بعدها يعيد `false` فيُقرأ «الثنائية غائبة» كذبًا. الحكم هنا يسبق `blockReason` عمدًا،
+        // فلا يُسمَّى العطب `binary_missing` وهو عطب صلاحية.
+        if (daemon == DaemonLiveness.Unknown || companion == CompanionLiveness.Unknown) {
+            problem(
+                "EVENT=WATCHMAN_ROOT_UNAVAILABLE daemon=${daemon.name.lowercase()} " +
+                    "companion=${companion.name.lowercase()}"
+            )
+            return WatchDecision.Wait
+        }
         // **وضع الروم:** لا `customize.sh` يُنشئ مجلّد الإعداد ولا `service.sh` يشغّل الرفيق — فيُجهَّز
         // المجلّد هنا بالجذر قبل أيّ تشغيل (الخادم يخرج إن غابت قائمة الألعاب).
         if (daemon != DaemonLiveness.Alive && RomRuntime.isRom(serviceBin)) {
