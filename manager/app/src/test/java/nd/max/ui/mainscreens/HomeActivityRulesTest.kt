@@ -47,6 +47,18 @@ class HomeActivityRulesTest {
     }
 
     @Test
+    fun `a module written but not rebooted is not active yet`() {
+        assertFalse(
+            "الوحدة المكتوبة من التطبيق لا تعمل قبل الإقلاع — ومدير الجذر يراها فورًا",
+            HomeActivityRules.active(
+                PrivilegeLevel.ROOT,
+                moduleInstalled = true,
+                rebootPending = true,
+            ),
+        )
+    }
+
+    @Test
     fun `shizuku ready is active with or without the module`() {
         assertTrue(HomeActivityRules.active(PrivilegeLevel.SHIZUKU, moduleInstalled = false))
         assertTrue(HomeActivityRules.active(PrivilegeLevel.SHIZUKU, moduleInstalled = true))
@@ -147,6 +159,32 @@ class HomeActivityRulesTest {
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.UNREACHABLE))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.STOPPED))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.UNKNOWN))
+        assertNull(
+            "UNKNOWN ليست نجاحًا ولا فشلًا — سطر محايد",
+            HomeStatusCopy.daemonVerdict(DaemonHealth.UNKNOWN),
+        )
+    }
+
+    @Test
+    fun `the daemon row is asked only in root mode`() {
+        assertNull(
+            "Shizuku يعمل بمساره المباشر — لا سؤال خادم",
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.SHIZUKU, DaemonHealth.RUNNING),
+        )
+        assertNull(
+            "وبلا مسار لا خادم يُسأل",
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.NONE, DaemonHealth.RUNNING),
+        )
+        assertEquals(
+            "وفي وضع الروت يُعرض الخادم الذي لا يجيب",
+            R.string.home_status_row_daemon_unreachable,
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.UNREACHABLE),
+        )
+        assertEquals(
+            "وقبل القياس يُقال «لم تُقس» لا «فشل»",
+            R.string.home_status_row_daemon_unknown,
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.UNKNOWN),
+        )
     }
 
     @Test
@@ -176,8 +214,8 @@ class HomeActivityRulesTest {
             source.contains("stringResource(HomeStatusCopy.bodyRes(active))"),
         )
         assertTrue(
-            "وسطر الخادم من الحالة المقيسة",
-            source.contains("HomeStatusCopy.daemonRowRes(daemonHealth)"),
+            "وسطر الخادم من الحالة المقيسة وفي وضع الروت وحده",
+            source.contains("HomeStatusCopy.daemonRowFor(accessLevel, daemonHealth)"),
         )
         assertFalse(
             "ولا يبقى العنوان الثابت في النافذة",

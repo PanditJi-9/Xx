@@ -50,15 +50,15 @@ object RomRuntime {
  * (المستخدم يفلّش الروم ثم يمنح الإذن من مدير الجذر **بعد** فتح التطبيق). فلو لم يُعَد النظر عند المنح
  * بقي الخادم متوقّفًا والشارة `IDLE` حتى يُقتل التطبيق ويُفتح من جديد.
  *
- * وهو **لا يعمل إلا في وضع الروم** (في الموديول `service.sh` هو المشغّل)، ولا أكثر من مرّة كل دقيقة
- * (`isRootGranted()` يُنادى كثيرًا)، وعلى خيط مستقلّ لأنّ الحارس ينفّذ صدفة ويقيس وينتظر.
+ * **ولا يقتصر على وضع الروم:** في تثبيت الموديول يكون `service.sh` هو المشغّل، لكنّ منح الجذر قد
+ * يقع بعد فشله — فالحارس نفسه هو من يُصلح الحالة، والإقلاع ليس الفرصة الوحيدة. ولا يعمل أكثر من
+ * مرّة كل دقيقة (`isRootGranted()` يُنادى كثيرًا)، وعلى خيط مستقلّ لأنّ الحارس ينفّذ صدفة ويقيس وينتظر.
  */
 object RomRuntimeKick {
     private const val MIN_GAP_MS = 60_000L
     private val lastKickMs = AtomicLong(0L)
 
     fun onRootGranted() {
-        if (!MaxManagerPaths.isRomInstall()) return
         val now = System.nanoTime() / 1_000_000L
         val last = lastKickMs.get()
         if (last != 0L && now - last < MIN_GAP_MS) return

@@ -33,9 +33,19 @@ import nd.max.ui.viewmodel.DaemonHealth
  */
 internal object HomeActivityRules {
 
-    /** هل يعمل مسار الامتياز المختار الآن بشرطيه؟ */
-    fun active(level: PrivilegeLevel, moduleInstalled: Boolean): Boolean = when (level) {
-        PrivilegeLevel.ROOT -> moduleInstalled
+    /**
+     * هل يعمل مسار الامتياز المختار الآن بشرطيه؟
+     *
+     * **والوحدة المكتوبة بلا إقلاع ليست عاملة بعد:** التفعيل من داخل التطبيق يكتب ملفّات
+     * الوحدة مباشرةً، فيراها مدير الجذر فورًا، لكن سكربتاتها لا تعمل إلا في الإقلاع التالي.
+     * فاعتبارها «مفعّلة» قبل الإقلاع ادّعاءٌ كاذب — ولهذا يشترط ألّا يكون هناك تحديث معلّق.
+     */
+    fun active(
+        level: PrivilegeLevel,
+        moduleInstalled: Boolean,
+        rebootPending: Boolean = false,
+    ): Boolean = when (level) {
+        PrivilegeLevel.ROOT -> moduleInstalled && !rebootPending
         PrivilegeLevel.SHIZUKU -> true
         PrivilegeLevel.NONE -> false
     }
@@ -65,20 +75,25 @@ internal object HomeStatusCopy {
         if (active) R.string.home_status_active_body else R.string.home_status_reason_body
 
     /**
-     * سطر الخادم في النافذة — أو `null` حين لم تُقَس حالته بعد.
+     * سطر الخادم في النافذة — أو `null` حين لا يُعرض في هذا الوضع.
      *
-     * ولِمَ `null` لا «لا يجيب»؟ لأن `UNKNOWN` تعني **لم تُسأل بعد**؛ وكتابة «لا يجيب» قبل السؤال
-     * هي نفس الكذب الذي جاء الأمر لإزالته، بمقياس أدقّ.
+     * **ولا يُعرض الخادم إلا في وضع الروت** (أمر المالك ٢٠٢٦-١١-٢٢): في Shizuku/بلا مسار
+     * يكون التطبيق عاملًا بمساره المباشر، وسطر «الخادم لا يجيب» يُوهم بعطبٍ ليس عطبًا.
+     * وفي وضع الروت يصير سؤال «هل يعمل دون مشاكل؟» سؤالًا حقيقيًّا، فتُعرض كل حالاته:
+     * يعمل، أو يرفض هويّة التطبيق، أو لا يجيب، أو لم تُقس حالته بعد.
+     *
+     * و[UNKNOWN] تبقى `null` خارج وضع الروت ولا تُكتب «لا يجيب» قبل السؤال (ADR-07).
+     * وفي وضع الروت تُكتب صراحةً «لم تُقس بعد» — لا نجاحًا ولا فشلًا.
      */
-    fun daemonRowRes(health: DaemonHealth): Int? = when (health) {
-        DaemonHealth.UNKNOWN -> null
+    fun daemonRowRes(health: DaemonHealth, rootMode: Boolean = false): Int? = when (health) {
+        DaemonHealth.UNKNOWN ->
+            if (rootMode) R.string.home_status_row_daemon_unknown else null
         DaemonHealth.RUNNING -> R.string.home_status_row_daemon_running
         DaemonHealth.DENIED -> R.string.home_status_row_daemon_denied
-        // خادمُ الوحدة لا يفتح قناته للتطبيق العاديّ على سياسة النظام، والتطبيق يعمل بمساره المباشر
-        // بجذره — فالسطر يُوهم بعطلٍ غير موجود (أمر المالك ٢٠٢٦-١١-٢٠: «أريد أن يرجع التطبيق للعمل
-        // كما كان»). فلا سطر، كما كانت الإصدارات السابقة. ولا يعني هذا ادّعاء نجاح: الحالة تُقاس
-        // وتُسجَّل، لكنها لا تُعرض عطبًا حين لا يمنع شيئًا.
-        DaemonHealth.UNREACHABLE -> null
+        // في غير وضع الروت لا يُعرض سطر «لا يجيب»: التطبيق يعمل بمساره المباشر، والسطر يُوهم
+        // بعطلٍ غير موجود. وفي وضع الروت يُعرض لأنه عطب حقيقي (أمر المالك ٢٠٢٦-١١-٢٢).
+        DaemonHealth.UNREACHABLE ->
+            if (rootMode) R.string.home_status_row_daemon_unreachable else null
         DaemonHealth.STOPPED -> R.string.home_status_row_daemon_stopped
     }
 
@@ -86,5 +101,20 @@ internal object HomeStatusCopy {
      * علامة الصحّ للخادم شرطٌ واحد: **يردّ ويعمل**.
      * و«يردّ رافضًا هويّة التطبيق» عطبُ هويّة لا فشلُ خادم، ولا «لا يجيب» — ولكلٍّ سطره.
      */
-    fun daemonSatisfied(health: DaemonHealth): Boolean = health == DaemonHealth.RUNNING
+    fun daemonVerdict(health: DaemonHealth): Boolean? = when (health) {
+        DaemonHealth.RUNNING -> true
+        DaemonHealth.UNKNOWN -> null
+        else -> false
+    }
+
+    /** هل الخادم يعمل دون مشاكل؟ — `true` وحدها تعني نعم. */
+    fun daemonSatisfied(health: DaemonHealth): Boolean = daemonVerdict(health) == true
+
+    /**
+     * سطر الخادم كما تعرضه النافذة: **وضع الروت وحده** يسأل عن الخادم.
+     *
+     * دالّة نقيّة لأنها سياسة عرض، لا شكلًا — فتُقاس على JVM بلا Compose ولا جهاز.
+     */
+    fun daemonRowFor(level: PrivilegeLevel, health: DaemonHealth): Int? =
+        if (level == PrivilegeLevel.ROOT) daemonRowRes(health, rootMode = true) else null
 }

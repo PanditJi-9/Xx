@@ -523,6 +523,19 @@ jobs:
           python3 tools/apk_inventory.py --self-test
           python3 tools/apk_xref.py --self-test
           python3 tools/apk_ipc.py --self-test
+          # ── أدوات استخراج/نقل RedLab: كلّها ذات فحص ذاتي بنيوي بلا Android compiler ──
+          #
+          # أُضيفت الأدوات مع `--self-test` لكن لم تُربط بهذه الخطوة، فأسقط عقد
+          # `selftests_wired` التشغيل 45057614650 قبل البناء. تشغيلها هنا هو الإصلاح:
+          # لا استثناء دائم يخفي فحصًا قابلاً للتشغيل، ولا بوابة مسجّلة تصدأ بصمت.
+          python3 tools/apk_resources.py --self-test
+          python3 tools/gt_closure.py --self-test
+          python3 tools/port_frontier.py --self-test
+          python3 tools/port_materials.py --self-test
+          python3 tools/port_repairs.py --self-test
+          python3 tools/port_slice.py --self-test
+          python3 tools/port_triage.py --self-test
+          python3 tools/seal_ported.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
 
       # ── تكافؤ منطق الخادم الأصلي — بلا NDK وبلا جهاز ──

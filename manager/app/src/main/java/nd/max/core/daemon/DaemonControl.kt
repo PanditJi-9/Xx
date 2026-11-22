@@ -132,20 +132,28 @@ object RootDaemonIo : DaemonIo {
  */
 object RootShellDaemonIo : DaemonIo {
 
+    /** اقتباس مسار واحد لصدفة `sh` — نفس القاعدة المستعملة في بقية مسارات الجذر. */
+    private fun quote(value: String): String = "'" + value.replace("'", "'\\''") + "'"
+
     override fun shell(command: String): ShellOutcome = try {
         val result = nd.max.core.privilege.RootCommands.cmd(command).exec()
-        ShellOutcome(
-            if (result.isSuccess) 0 else 1,
-            result.out.joinToString("\n"),
-            result.err.joinToString("\n"),
-        )
+        // رمز الخروج يُحفظ كما هو (`-1` = لم تُنفَّذ/مرفوضة)، فلا يُقلب «مجهول» إلى «ميّت».
+        ShellOutcome(result.code, result.out.joinToString("\n"), result.err.joinToString("\n"))
     } catch (t: Throwable) {
         ShellOutcome(-1, "", t.message.orEmpty())
     }
 
-    override fun readText(path: String): String? = runCatching { File(path).readText() }.getOrNull()
+    /**
+     * القراءة والوجود **بصدفة الجذر** لا بـ`File` في عملية التطبيق: `/data/adb` محجوب عن
+     * `untrusted_app`، فـ`File.exists` هنا يعيد `false` على وحدة موجودة — وهو نفس عطب
+     * «binary_missing» الكاذب. والمخرَج الفارغ من `cat` ملفّ فارغ مشروع، لا فشل.
+     */
+    override fun readText(path: String): String? {
+        val outcome = shell("cat -- ${quote(path)} 2>/dev/null")
+        return if (outcome.exit == 0) outcome.stdout else null
+    }
 
-    override fun exists(path: String): Boolean = File(path).exists()
+    override fun exists(path: String): Boolean = shell("test -e ${quote(path)}").exit == 0
 
     override fun sleep(ms: Long) {
         if (ms > 0) Thread.sleep(ms)

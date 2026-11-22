@@ -195,6 +195,8 @@ fun HomeScreen(
             onShowGuide = restartTour,
             boost = boost,
             onBoost = dashboardViewModel::boostMemory,
+            // `HomeDashboardContent` عرضٌ بلا ViewModel؛ فيُمرَّر الإجراء من الشاشة التي تملكه.
+            onModuleWritten = { homeViewModel.refreshRootStatus(force = true) },
             topPadding = padding.calculateTopPadding(),
             // المسار يمرّ ببوّابة التنقّل نفسها التي تمرّ بها بقية الشاشات، فلا
             // يُنقل نمط `?pkg={pkg}` خامًّا إلى الـNavigator.
@@ -238,6 +240,7 @@ fun HomeDashboardContent(
     onShowGuide: () -> Unit = {},
     boost: nd.max.ui.viewmodel.MemoryBoostState = nd.max.ui.viewmodel.MemoryBoostState(),
     onBoost: () -> Unit = {},
+    onModuleWritten: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     // القائمة تبقى هنا لا في الغطاء: الجولة تطلب تمريرها عبر سجلّ المراسي، فمن يملك القائمة يعرف
@@ -284,6 +287,7 @@ fun HomeDashboardContent(
                     onOpenDeck = onOpenDeck,
                     accessLevel = accessLevel,
                     onAccess = { showAccessDialog = true },
+                    onModuleWritten = onModuleWritten,
                     timeLeftMinutes = timeLeftMinutes,
                     storageCardVisible = storageCardVisible,
                     onHideStorage = onHideStorage,

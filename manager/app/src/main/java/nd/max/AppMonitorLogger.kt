@@ -78,7 +78,21 @@ object AppMonitorLogger {
      */
     fun persist(event: String) {
         val line = "${stamp()} I $event"
-        runCatching { java.io.File(SYS_MON).appendText(line + "\n") }
+        val failure = runCatching { java.io.File(SYS_MON).appendText(line + "\n") }.exceptionOrNull()
+        if (failure == null) return
+        // **ولا يُبتلع الفشل:** `sysmon.log` هو أوّل ما يُطلب عند موت الرفيق، وكانت كتابته
+        // تمرّ في `runCatching` صامت فبقيت الحزمة صفر بايت بلا سبب. البديل ثلاث قنوات
+        // مستقلّة: logcat، وstderr (يُلتقط في sysmon.log عبر إعادة توجيه `service.sh`)،
+        // وملفّ مؤقّت لا يحتاج مجلّد الوحدة. وكلّها best-effort ولا ترمي.
+        runCatching {
+            android.util.Log.w(TAG, "SYSMON_WRITE_FAILED $event :: ${failure.message}")
+        }
+        runCatching {
+            System.err.println("[$TAG] W: SYSMON_WRITE_FAILED $event :: ${failure.message}")
+        }
+        runCatching {
+            java.io.File("/data/local/tmp/ndmax-companion.log").appendText(line + "\n")
+        }
     }
 
     /**
