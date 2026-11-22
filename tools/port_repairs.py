@@ -7,8 +7,10 @@ cast that javac 17 cannot infer through. The compiler is right to refuse these; 
 allowed. Each repair below is one exact string, with the measured error that justified it, so a
 reader can verify the change instead of trusting a generator.
 
-A missing `find` string is an error, never a silent no-op: if jadx output changes, the run must
-say so. A repair whose file is absent is reported as `absent` (the unit may already be sealed).
+A missing `find` string is an error unless a non-empty replacement is already present: if jadx
+output changes, the run must say so. An empty replacement is an exact deletion; its absence alone
+cannot prove it was applied. A repair whose file is absent is reported as `absent` (the unit may
+already be sealed).
 
 Usage:
     python3 tools/port_repairs.py --app GameSpace --run 12345 \\
@@ -44,7 +46,7 @@ def load_registry(path: Path) -> list[dict[str, str]]:
             raise RepairError(f"{path}: repair {index} is not an object")
         for key in ("id", "path", "find", "replace", "reason"):
             value = item.get(key)
-            if not isinstance(value, str) or not value:
+            if not isinstance(value, str) or (key != "replace" and not value):
                 raise RepairError(f"{path}: repair {index} is missing `{key}`")
         if item["id"] in seen:
             raise RepairError(f"{path}: duplicate repair id `{item['id']}`")
@@ -86,7 +88,7 @@ def apply_repairs(sources: Path, repairs: list[dict[str, str]]) -> list[dict[str
         text = target.read_text(encoding="utf-8")
         found = text.count(repair["find"])
         if found == 0:
-            if repair["replace"] in text:
+            if repair["replace"] and repair["replace"] in text:
                 results.append({**result, "status": "already"})
                 continue
             raise RepairError(
@@ -214,6 +216,58 @@ def self_test() -> int:
             check("missing" in str(error), "rejects an incomplete registry")
         else:
             raise SystemExit("self-test failed: an incomplete registry was accepted")
+
+        deletion = {
+            "id": "demo/self-import",
+            "path": "pkg/Demo.java",
+            "find": "import pkg.Demo;\n",
+            "replace": "",
+            "reason": "measured self-import collision",
+        }
+        registry.write_text(json.dumps({"repairs": [deletion]}), encoding="utf-8")
+        deletes = load_registry(registry)
+        check(deletes[0]["replace"] == "", "loads an empty replacement as a deletion")
+        before = "import pkg.Demo;\nclass Demo {}\n"
+        unit.write_text(before, encoding="utf-8")
+        deleted = apply_repairs(sources, deletes)
+        check(deleted[0]["status"] == "applied", "applies an exact deletion")
+        check(unit.read_text(encoding="utf-8") == "class Demo {}\n", "deletes only the measured text")
+
+        for text in ("class Demo {}\n", "class Unrelated {}\n"):
+            unit.write_text(text, encoding="utf-8")
+            try:
+                apply_repairs(sources, deletes)
+            except RepairError as error:
+                check("did not find its measured text" in str(error), "never infers already from empty replacement")
+            else:
+                raise SystemExit("self-test failed: an absent deletion was accepted as already applied")
+            check(unit.read_text(encoding="utf-8") == text, "leaves unmatched deletion source untouched")
+
+        ambiguous = deletion["find"] * 2 + "class Demo {}\n"
+        unit.write_text(ambiguous, encoding="utf-8")
+        try:
+            apply_repairs(sources, deletes)
+        except RepairError as error:
+            check("found 2 times" in str(error), "rejects an ambiguous deletion")
+        else:
+            raise SystemExit("self-test failed: an ambiguous deletion was accepted")
+        check(unit.read_text(encoding="utf-8") == ambiguous, "does not modify an ambiguous deletion")
+
+        invalid_entries = [
+            {key: value for key, value in deletion.items() if key != "replace"},
+            {**deletion, "replace": None},
+            {**deletion, "replace": 0},
+            {**deletion, "find": ""},
+            {**deletion, "replace": deletion["find"]},
+        ]
+        for item in invalid_entries:
+            bad.write_text(json.dumps({"repairs": [item]}), encoding="utf-8")
+            try:
+                load_registry(bad)
+            except RepairError:
+                check(True, "rejects missing/non-string replacement, empty find or unchanged repair")
+            else:
+                raise SystemExit("self-test failed: an invalid deletion registry was accepted")
 
         report = render("Demo", "123", results[:2])
         check("| `demo/dead-register` |" in report, "renders a repair row")

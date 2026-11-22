@@ -190,6 +190,46 @@ jobs:
         working-directory: redlab
         run: ./gradlew :apps:gamespace:assembleDebug :apps:gameassist:assembleDebug --no-daemon --stacktrace
 
+      - name: Verify the pinned resources and generated styleable guards
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import subprocess
+          from pathlib import Path
+
+          module = Path('redlab/apps/gamespace')
+          apk = module / 'build/outputs/apk/debug/gamespace-debug.apk'
+          aapt2 = Path(os.environ['ANDROID_HOME']) / 'build-tools/36.0.0/aapt2'
+          table = subprocess.check_output([str(aapt2), 'dump', 'resources', str(apk)], text=True)
+          if 'Package name=cn.nubia.gamelauncher ' not in table:
+              raise SystemExit('APK resource package is not cn.nubia.gamelauncher')
+          expected = {
+              'layout/game_space_main': 0x7f0d0082,
+              'id/tgk_case_modify_name': 0x7f0a0643,
+              'string/gcs_game_refresh_rate': 0x7f1202b6,
+              'xml/gcs_game_refresh_rate': 0x7f150006,
+          }
+          actual = {name: int(value, 16) for value, name in
+                    re.findall(r'resource (0x[0-9a-fA-F]+) (\S+)', table)}
+          for name, value in expected.items():
+              if actual.get(name) != value:
+                  raise SystemExit(f'{name}: expected {value:#x}, got {actual.get(name)}')
+              print(f'pinned: {name} = {value:#x}')
+
+          count = 0
+          for path in (module / 'build/generated/port-r').rglob('R.java'):
+              arrays = re.findall(r'int\[\]\s+(\w+)\s*=\s*\{([^}]*)\}', path.read_text())
+              for name, body in arrays:
+                  slots = [int(value.strip(), 0) for value in body.split(',') if value.strip()]
+                  if 0 in slots:
+                      raise SystemExit(f'{path}: {name} contains an unsafe zero attribute id')
+                  count += 1
+          if count == 0:
+              raise SystemExit('No generated library styleable arrays were checked')
+          print(f'styleable arrays without zero attribute ids: {count}')
+          PY
+
       # compileOnly proves the units compile; this proves the classes they call are actually in the
       # APK. A DEX string scan is enough here: the descriptor of every packaged library class that
       # is referenced lands in the string table, and a missing one is a runtime NoClassDefFoundError.

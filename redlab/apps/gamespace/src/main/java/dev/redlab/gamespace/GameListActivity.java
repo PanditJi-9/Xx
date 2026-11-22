@@ -6,9 +6,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -46,6 +49,7 @@ public final class GameListActivity extends Activity {
                 android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
         PortLayoutInflater.install(getLayoutInflater());
         setContentView(R.layout.game_lobby_layout);
+        hideSystemBars();
         setTitle(R.string.game_space_app_name);
 
         selectedName = findViewById(R.id.lobby_game_name);
@@ -60,6 +64,32 @@ public final class GameListActivity extends Activity {
         play.setOnClickListener(view -> openSelected());
 
         loadLauncherApps();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            hideSystemBars();
+        }
+    }
+
+    /** Keeps the original immersive lobby, including after returning from a launched game. */
+    private void hideSystemBars() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+            WindowInsetsController controller = getWindow().getInsetsController();
+            if (controller != null) {
+                controller.setSystemBarsBehavior(
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+                controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+            }
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
     }
 
     /** Reads only what the launcher already exposes; no package permission, no vendor call. */

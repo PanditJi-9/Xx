@@ -9,8 +9,8 @@
 
     <!-- The original identity comes from the owner's own APK: the same launcher label and the same
          adaptive icon resources. §0.4 forbids copying a *reference* app's look, not reusing the
-         owner's assets; the package id stays dev.redlab.gamespace because cn.nubia.gamelauncher is
-         already installed as a system app and cannot be replaced without root. -->
+         owner's assets. Gradle installs cn.nubia.gamelauncher as requested; dev.redlab.gamespace
+         is only the source namespace. A stock app signed with a different key cannot be updated. -->
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_adaptive"
