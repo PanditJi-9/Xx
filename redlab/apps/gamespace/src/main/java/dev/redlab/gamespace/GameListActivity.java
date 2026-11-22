@@ -103,11 +103,11 @@ public final class GameListActivity extends Activity {
         // These three icons address Nubia services that are not installed. They stay in place and
         // answer with the measured reason instead of doing nothing.
         findViewById(R.id.lobby_notes).setOnClickListener(view ->
-                vendorToast(R.string.rl_vendor_notes));
+                vendorToast("rl_vendor_notes"));
         findViewById(R.id.lobby_red_time).setOnClickListener(view ->
-                vendorToast(R.string.rl_vendor_red_time));
+                vendorToast("rl_vendor_red_time"));
         findViewById(R.id.lobby_gift_bag).setOnClickListener(view ->
-                vendorToast(R.string.rl_vendor_gift));
+                vendorToast("rl_vendor_gift"));
 
         loadLauncherApps();
     }
@@ -120,7 +120,9 @@ public final class GameListActivity extends Activity {
         startActivity(intent);
     }
 
-    private void vendorToast(int message) {
+    private void vendorToast(String name) {
+        // Owned strings are not members of the sealed original R; resolve the packaged name.
+        int message = getResources().getIdentifier(name, "string", getPackageName());
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 

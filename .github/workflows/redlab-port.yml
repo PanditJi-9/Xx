@@ -172,6 +172,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Assert resources with the runner aapt2
+        run: |
+          python3 tools/resource_compile.py --assert \
+            --include redlab/apps/gamespace/src/main/res \
+            --include redlab/apps/gamespace/materials/res
+
       - name: Read the original package of each app from its decoded manifest
         run: |
           # The package name is apktool's manifest reading, not a constant in this file: a second
@@ -196,6 +202,7 @@ jobs:
           import os
           import re
           import subprocess
+          import xml.etree.ElementTree as ET
           from pathlib import Path
 
           module = Path('redlab/apps/gamespace')
@@ -216,6 +223,15 @@ jobs:
               if actual.get(name) != value:
                   raise SystemExit(f'{name}: expected {value:#x}, got {actual.get(name)}')
               print(f'pinned: {name} = {value:#x}')
+
+          # Owned strings are looked up by name because the sealed original R has no new fields.
+          # Prove they are in the packaged table, not only in the source XML.
+          strings = ET.parse(module / 'src/main/res/values/gamelist.xml').getroot()
+          owned = [item.attrib['name'] for item in strings if item.tag == 'string']
+          for name in owned:
+              if not actual.get(f'string/{name}'):
+                  raise SystemExit(f'Owned string is not packaged: {name}')
+          print(f'owned Game Space strings packaged: {len(owned)}')
 
           count = 0
           for path in (module / 'build/generated/port-r').rglob('R.java'):

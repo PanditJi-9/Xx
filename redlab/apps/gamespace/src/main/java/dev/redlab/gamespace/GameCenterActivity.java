@@ -250,34 +250,34 @@ public final class GameCenterActivity extends Activity {
 
     private void buildSummary(LinearLayout box) {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_game_status));
-        TextView count = addBody(box, getString(R.string.rl_hub_games_count, countLaunchable()));
+        TextView count = addBody(box, getString(stringId("rl_hub_games_count"), countLaunchable()));
         count.setTextColor(Color.WHITE);
-        addBody(box, getString(R.string.rl_hub_summary_note));
+        addBody(box, getString(stringId("rl_hub_summary_note")));
     }
 
     private void buildScreen(LinearLayout box) {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_screen));
-        addAction(box, getString(R.string.rl_hub_system_display), null,
+        addAction(box, getString(stringId("rl_hub_system_display")), null,
                 view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addAction(box, getString(R.string.rl_hub_brightness), null,
+        addAction(box, getString(stringId("rl_hub_brightness")), null,
                 view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addAction(box, getString(R.string.rl_hub_timeout), null,
+        addAction(box, getString(stringId("rl_hub_timeout")), null,
                 view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addSubheading(box, getString(R.string.rl_hub_refresh));
+        addSubheading(box, getString(stringId("rl_hub_refresh")));
         addBody(box, refreshSummary());
-        addBody(box, getString(R.string.rl_hub_refresh_note));
-        addAction(box, getString(R.string.rl_hub_rotation), null,
+        addBody(box, getString(stringId("rl_hub_refresh_note")));
+        addAction(box, getString(stringId("rl_hub_rotation")), null,
                 view -> open(Settings.ACTION_DISPLAY_SETTINGS));
     }
 
     private void buildNetwork(LinearLayout box) {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_network));
-        addBody(box, getString(R.string.rl_hub_network_value, activeNetworkName()));
-        addAction(box, getString(R.string.rl_hub_wifi), null,
+        addBody(box, getString(stringId("rl_hub_network_value"), activeNetworkName()));
+        addAction(box, getString(stringId("rl_hub_wifi")), null,
                 view -> open(Settings.ACTION_WIFI_SETTINGS));
-        addAction(box, getString(R.string.rl_hub_wireless), null,
+        addAction(box, getString(stringId("rl_hub_wireless")), null,
                 view -> open(Settings.ACTION_WIRELESS_SETTINGS));
-        addAction(box, getString(R.string.rl_hub_data), null,
+        addAction(box, getString(stringId("rl_hub_data")), null,
                 view -> open(Settings.ACTION_DATA_USAGE_SETTINGS));
     }
 
@@ -285,21 +285,21 @@ public final class GameCenterActivity extends Activity {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_not_disturb));
         NotificationManager manager = getSystemService(NotificationManager.class);
         boolean granted = manager != null && manager.isNotificationPolicyAccessGranted();
-        String state = getString(R.string.rl_hub_net_none);
+        String state = getString(stringId("rl_hub_net_none"));
         if (manager != null) {
             state = manager.getCurrentInterruptionFilter() == NotificationManager.INTERRUPTION_FILTER_ALL
-                    ? getString(R.string.rl_hub_zen_off)
-                    : getString(R.string.rl_hub_zen_on);
+                    ? getString(stringId("rl_hub_zen_off"))
+                    : getString(stringId("rl_hub_zen_on"));
         }
-        addBody(box, getString(R.string.rl_hub_zen_state, state));
+        addBody(box, getString(stringId("rl_hub_zen_state"), state));
 
         if (!granted) {
-            addAction(box, getString(R.string.rl_hub_zen_grant), null,
+            addAction(box, getString(stringId("rl_hub_zen_grant")), null,
                     view -> open(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
         } else {
-            addAction(box, getString(R.string.rl_hub_zen_toggle), null, view -> toggleZen());
+            addAction(box, getString(stringId("rl_hub_zen_toggle")), null, view -> toggleZen());
         }
-        addBody(box, getString(R.string.rl_hub_zen_note));
+        addBody(box, getString(stringId("rl_hub_zen_note")));
     }
 
     private void toggleZen() {
@@ -329,16 +329,15 @@ public final class GameCenterActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(210)));
         addGap(box, 14);
 
-        addAction(box, getString(R.string.rl_hub_wallpaper_set), null, view -> applyWallpaper());
-        addAction(box, getString(R.string.rl_hub_wallpaper_choose), null, view -> {
+        addAction(box, getString(stringId("rl_hub_wallpaper_set")), null, view -> applyWallpaper());
+        addAction(box, getString(stringId("rl_hub_wallpaper_choose")), null, view -> {
             Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
             openIntent(intent);
         });
-        addBody(box, getString(R.string.rl_hub_wallpaper_note));
+        addBody(box, getString(stringId("rl_hub_wallpaper_note")));
     }
 
     private void applyWallpaper() {
-        Toast.makeText(this, R.string.rl_hub_wallpaper_failed, Toast.LENGTH_SHORT).show();
         new Thread(() -> {
             boolean ok;
             try {
@@ -351,26 +350,26 @@ public final class GameCenterActivity extends Activity {
             boolean result = ok;
             runOnUiThread(() -> Toast.makeText(
                     this,
-                    result ? R.string.rl_hub_wallpaper_done : R.string.rl_hub_wallpaper_failed,
+                    stringId(result ? "rl_hub_wallpaper_done" : "rl_hub_wallpaper_failed"),
                     Toast.LENGTH_SHORT).show());
         }, "set-wallpaper").start();
     }
 
     private void buildOther(LinearLayout box) {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_other_options));
-        addAction(box, getString(R.string.rl_hub_notifications), null, view ->
+        addAction(box, getString(stringId("rl_hub_notifications")), null, view ->
                 openIntent(new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                         .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName())));
-        addAction(box, getString(R.string.rl_hub_app_info), null, view ->
+        addAction(box, getString(stringId("rl_hub_app_info")), null, view ->
                 openIntent(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         .setData(Uri.parse("package:" + getPackageName()))));
-        addAction(box, getString(R.string.rl_hub_accessibility), null,
+        addAction(box, getString(stringId("rl_hub_accessibility")), null,
                 view -> open(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-        addAction(box, getString(R.string.rl_hub_dev_options), null,
+        addAction(box, getString(stringId("rl_hub_dev_options")), null,
                 view -> open(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
         addGap(box, 10);
-        addSubheading(box, getString(R.string.rl_hub_disabled_title));
-        addBody(box, getString(R.string.rl_hub_disabled_body));
+        addSubheading(box, getString(stringId("rl_hub_disabled_title")));
+        addBody(box, getString(stringId("rl_hub_disabled_body")));
     }
 
     private void buildAbout(LinearLayout box) {
@@ -384,19 +383,19 @@ public final class GameCenterActivity extends Activity {
         } catch (PackageManager.NameNotFoundException ignored) {
             // The package is this process's package; the fallback only covers a broken install.
         }
-        addBody(box, getString(R.string.rl_hub_about_body, getPackageName(), version));
-        addAction(box, getString(R.string.rl_hub_app_info), null, view ->
+        addBody(box, getString(stringId("rl_hub_about_body"), getPackageName(), version));
+        addAction(box, getString(stringId("rl_hub_app_info")), null, view ->
                 openIntent(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         .setData(Uri.parse("package:" + getPackageName()))));
         addGap(box, 10);
-        addSubheading(box, getString(R.string.rl_hub_disabled_title));
-        addBody(box, getString(R.string.rl_hub_disabled_body));
+        addSubheading(box, getString(stringId("rl_hub_disabled_title")));
+        addBody(box, getString(stringId("rl_hub_disabled_body")));
     }
 
     private String refreshSummary() {
-        Display display = getDisplay();
+        Display display = getWindowManager().getDefaultDisplay();
         if (display == null) {
-            return getString(R.string.rl_hub_refresh_value, "?");
+            return getString(stringId("rl_hub_refresh_value"), "?");
         }
         Display.Mode current = display.getMode();
         String now = formatMode(current);
@@ -405,8 +404,8 @@ public final class GameCenterActivity extends Activity {
             modes.add(formatMode(mode));
         }
         String list = String.join(" · ", modes);
-        return getString(R.string.rl_hub_refresh_value, now)
-                + "\n" + getString(R.string.rl_hub_refresh_modes, list);
+        return getString(stringId("rl_hub_refresh_value"), now)
+                + "\n" + getString(stringId("rl_hub_refresh_modes"), list);
     }
 
     private static String formatMode(Display.Mode mode) {
@@ -417,20 +416,20 @@ public final class GameCenterActivity extends Activity {
     private String activeNetworkName() {
         ConnectivityManager manager = getSystemService(ConnectivityManager.class);
         if (manager == null) {
-            return getString(R.string.rl_hub_net_none);
+            return getString(stringId("rl_hub_net_none"));
         }
         Network network = manager.getActiveNetwork();
         NetworkCapabilities caps = network == null ? null : manager.getNetworkCapabilities(network);
         if (caps == null) {
-            return getString(R.string.rl_hub_net_none);
+            return getString(stringId("rl_hub_net_none"));
         }
         if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-            return getString(R.string.rl_hub_net_wifi);
+            return getString(stringId("rl_hub_net_wifi"));
         }
         if (caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-            return getString(R.string.rl_hub_net_mobile);
+            return getString(stringId("rl_hub_net_mobile"));
         }
-        return getString(R.string.rl_hub_net_other);
+        return getString(stringId("rl_hub_net_other"));
     }
 
     private int countLaunchable() {
@@ -454,8 +453,13 @@ public final class GameCenterActivity extends Activity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (ActivityNotFoundException | SecurityException missing) {
-            Toast.makeText(this, R.string.rl_hub_disabled_title, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, stringId("rl_hub_disabled_title"), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** The sealed original R has no fields for owned strings, as in MainActivity.text(). */
+    private int stringId(String name) {
+        return getResources().getIdentifier(name, "string", getPackageName());
     }
 
     private TextView addHeading(LinearLayout box, String text) {

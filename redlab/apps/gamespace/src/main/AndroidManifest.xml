@@ -11,6 +11,7 @@
          for notification-policy access before it can change the interruption filter. -->
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- The original identity comes from the owner's own APK: the same launcher label and the same
          adaptive icon resources. §0.4 forbids copying a *reference* app's look, not reusing the
