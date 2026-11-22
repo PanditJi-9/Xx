@@ -35,6 +35,7 @@ public final class GameListActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        PortLayoutInflater.install(getLayoutInflater());
         setContentView(R.layout.game_space_main);
         setTitle(R.string.game_space_app_name);
 

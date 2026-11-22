@@ -105,13 +105,13 @@ python3 tools/port_materials.py --self-test
   موارد — وهو ما تستخدمه المكتبات في `TypedArray.getInt`؛ وخطأ هنا يعطي `IndexOutOfBounds`.
 - **عطب ثانٍ مقيس بعد الأول:** `ClassNotFoundException: cn.nubia.gamelauncher.view.DrawableLeftTextView`
   عند نفخ `game_item_medium`، لأن أدوات البورت أعادت تغليف المصادر إلى `dev.redlab.gamespace.view.*`
-  بينما التخطيط الأصلي يطلب الاسم الأصلي حرفيًا. أُضيف جسر اسم رقيق
-  (`src/main/java/cn/nubia/gamelauncher/view/DrawableLeftTextView.java`) يرث التطبيق المُعاد تغليفه،
-  فبقي التخطيط الأصلي دون تعديل.
+  بينما التخطيط الأصلي يطلب الاسم الأصلي حرفيًا. الحل المُختار: `PortLayoutInflater` — مصنع نفخ
+  يعيد توجيه أي وسم `cn.nubia.gamelauncher.*` إلى `dev.redlab.gamespace.*` وقت النفخ، فبقي التخطيط
+  الأصلي دون تعديل ويغطي كل الشاشات القادمة (جرّب أولًا جسر صنف واحد ثم استُبدل بهذا).
 - **أداة قياس على الجهاز:** `src/debug/AndroidManifest.xml` يصدّر `GameListActivity` في debug فقط
   (release يبقى `exported="false"`)، لأن `input tap` محجوب على هذا الجهاز
   (`SecurityException: INJECT_EVENTS`)، فلا يمكن الوصول للشاشة عبر زر `MainActivity`.
-- **النتيجة المقيسة (rodin · Android 16 · arm64-v8a):** `adb install -r` = **Success**؛
+- **النتيجة المقيسة (rodin · Android 16 · arm64-v8a):** `adb install -r` = **Success** (`PortLayoutInflater` أيضًا)؛
   `am start -W -n dev.redlab.gamespace/.GameListActivity` = **Complete**؛ العملية باقية؛
   `logcat -b crash` فارغ؛ `uiautomator dump` يعرض ١٩+ تطبيقًا بأسمائها العربية (Camera، الإعدادات،
   الآلة الحاسبة…) في شبكة ٤ أعمدة، والعنوان «مساحة الألعاب».
