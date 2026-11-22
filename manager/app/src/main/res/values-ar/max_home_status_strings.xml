@@ -4,8 +4,9 @@
     <string name="home_status_reason_title">لماذا غير مفعّل؟</string>
     <string name="home_status_reason_body">مسار واحد يعمل يكفي ليكون «مفعّلًا»: الجذر مع تثبيت الوحدة، أو Shizuku بإذنه ممنوحًا.</string>
     <!-- الحالة المفعّلة لا تفتح نافذة «لماذا غير مفعّل؟» (أمر المالك ٢٠٢٦-١١-٢٠) -->
-    <string name="home_status_active_title">كل شيء يعمل</string>
-    <string name="home_status_active_body">المسار الذي اخترته يعمل، ولهذا التطبيق مفعّل. السطور التالية تعرض كل قطعة كما هي الآن: الجذر وShizuku طريقان إلى الغاية نفسها، فالطريق الذي لم تسلكه غير مطلوب. والقطعة الناقصة تضيّق ما يستطيعه التطبيق، ولا تعني أنه متوقّف.</string>
+    <!-- «مفعّل» لا «كل شيء يعمل»: سطر الخادم قد يقول «لا يجيب»، وعنوانٌ يَنْقُض سطره كذب (2026-11-22) -->
+    <string name="home_status_active_title">مفعّل</string>
+    <string name="home_status_active_body">المسار الذي اخترته مفعّل. السطور التالية تعرض كل قطعة كما قيست الآن: الجذر وShizuku طريقان إلى الغاية نفسها، فالطريق الذي لم تسلكه غير مطلوب. والقطعة الناقصة تضيّق ما يستطيعه التطبيق؛ وسطر الخادم يقول هل يجيب خادم الخلفية.</string>
     <string name="home_status_row_root">الجذر ممنوح</string>
     <string name="home_status_row_module">الوحدة مثبّتة</string>
     <string name="home_status_row_module_pending">كُتبت الوحدة — أعِد التشغيل لتفعيلها</string>
@@ -14,7 +15,7 @@
     <string name="home_status_row_daemon_running">الخادم يعمل ويردّ</string>
     <string name="home_status_row_daemon_denied">الخادم يعمل لكنه يرفض هويّة هذا التطبيق</string>
     <string name="home_status_row_daemon_stopped">الخادم يردّ لكنه لا يعلن نفسه عاملًا</string>
-    <string name="home_status_row_daemon_unreachable">الخادم لا يعمل</string>
+    <string name="home_status_row_daemon_unreachable">الخادم لا يجيب</string>
     <string name="home_status_row_daemon_unknown">لم تُقس حالة الخادم بعد</string>
     <string name="home_status_close">إغلاق</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
@@ -22,4 +23,6 @@
     <string name="home_status_enable_module_running">جارٍ كتابة الوحدة…</string>
     <string name="home_status_enable_module_written">كُتبت الوحدة — أعِد التشغيل لتعمل</string>
     <string name="home_status_enable_module_failed">تعذّر كتابة الوحدة: %1$s</string>
+    <string name="home_status_enable_module_no_root">لم يُمنح الجذر — لم يُكتب شيء</string>
+    <string name="home_status_enable_module_exists">الوحدة مثبّتة بالفعل — لم يُستبدل شيء</string>
 </resources>

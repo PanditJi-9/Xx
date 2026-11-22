@@ -284,6 +284,7 @@ fun HomeDashboardContent(
                     onOpenDeck = onOpenDeck,
                     accessLevel = accessLevel,
                     onAccess = { showAccessDialog = true },
+                    onModuleWritten = { homeViewModel.refreshRootStatus(force = true) },
                     timeLeftMinutes = timeLeftMinutes,
                     storageCardVisible = storageCardVisible,
                     onHideStorage = onHideStorage,

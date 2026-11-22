@@ -145,6 +145,8 @@ internal fun LegendaryHomeDashboard(
     onHideStorage: () -> Unit = {},
     /** فتح نافذة وضع الوصول من شارة البطل. */
     onAccess: () -> Unit = {},
+    /** بعد كتابة الوحدة بلا إنترنت: تُعاد قراءة الحالة من مصدرها، فلا يبقى الصفّ والزرّ قديمين. */
+    onModuleWritten: () -> Unit = {},
 ) {
     // «مفعّل» إثبات أنّ المسار المختار يعمل بشرطيه، لا زينة بصرية (أمر المالك ٢٠٢٦-١١-١٦):
     // جذر بلا وحدة = نصف منظومة، وShizuku لا يصل هنا إلا بإذنه ممنوحًا. القرار في `HomeActivityRules`.
@@ -164,6 +166,7 @@ internal fun LegendaryHomeDashboard(
             moduleUpdatePending = ui.moduleUpdatePending,
             onReboot = onReboot,
             onShowGuide = onShowGuide,
+            onModuleWritten = onModuleWritten,
         )
         // المرساة تُعلَّق من الجذر (`LocalHomeTourTargets`) لا من وسيط في التوقيع: نفس المرساة
         // تعيش في أربع شاشات، وتوقيعٌ يحملها كان يجعل كل شاشة تعرف بجولة تعرضها أخرى.
@@ -261,6 +264,7 @@ private fun HomeHeader(
     moduleUpdatePending: Boolean,
     onReboot: () -> Unit,
     onShowGuide: () -> Unit,
+    onModuleWritten: () -> Unit,
 ) {
     val p = neuralPalette()
     // نافذة الكتابة تُفتح من الكلمة نفسها، فحالتها هنا.
@@ -311,6 +315,7 @@ private fun HomeHeader(
             daemonHealth = daemonHealth,
             moduleUpdatePending = moduleUpdatePending,
             onClose = { reasonOpen = false },
+            onModuleWritten = onModuleWritten,
         )
     }
 }
@@ -708,14 +713,19 @@ private fun HomeStatusReasonDialog(
     daemonHealth: DaemonHealth,
     moduleUpdatePending: Boolean,
     onClose: () -> Unit,
+    onModuleWritten: () -> Unit,
 ) {
     val p = neuralPalette()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     // الزر لا يُعرض إلا لمن يستطيع الاستفادة: جذر ممنوح، ولا وحدة، وحِمل موجود في الحزمة.
     // ومن لا جذر عنده لا يرى زرًّا يفشل — وهذا نصّ أمر المالك «مراعاة لعدم إزعاج الحالات الأخرى».
-    val canBootstrap = remember {
-        RootUtils.isRootGranted() && !moduleInstalled && ModuleBootstrap.hasPayload(context)
+    // **ومفاتيح `remember` ليست زينة:** بعد كتابة الوحدة تُقرأ الحالة من جديد، ولو بقي الحساب
+    // محفوظًا من أول تركيب لبقي الزرّ معروضًا و«الوحدة مثبّتة» سالبًا بعد نجاح الكتابة.
+    var written by remember { mutableStateOf(false) }
+    val canBootstrap = remember(moduleInstalled, moduleUpdatePending, written) {
+        RootUtils.isRootGranted() && !moduleInstalled && !moduleUpdatePending &&
+            !written && ModuleBootstrap.hasPayload(context)
     }
     var busy by remember { mutableStateOf(false) }
     var outcome by remember { mutableStateOf<String?>(null) }
@@ -759,8 +769,13 @@ private fun HomeStatusReasonDialog(
                         scope.launch {
                             val report = withContext(Dispatchers.IO) { ModuleBootstrap.install(context) }
                             outcome = when (report) {
-                                is ModuleBootstrap.Report.Written ->
+                                is ModuleBootstrap.Report.Written -> {
+                                    // الصدق الفوري: الزرّ يختفي، والحالة تُعاد قراءتها من مصدرها
+                                    // (الوحدة + علامة الإقلاع + الخادم) بدل الاعتماد على نجاح الكتابة.
+                                    written = true
+                                    onModuleWritten()
                                     context.getString(R.string.home_status_enable_module_written)
+                                }
                                 is ModuleBootstrap.Report.Failed -> context.getString(
                                     R.string.home_status_enable_module_failed,
                                     report.detail,
@@ -770,7 +785,9 @@ private fun HomeStatusReasonDialog(
                                     report.reason,
                                 )
                                 ModuleBootstrap.Report.NoRoot ->
-                                    context.getString(R.string.home_status_row_root)
+                                    context.getString(R.string.home_status_enable_module_no_root)
+                                ModuleBootstrap.Report.AlreadyInstalled ->
+                                    context.getString(R.string.home_status_enable_module_exists)
                             }
                             busy = false
                         }

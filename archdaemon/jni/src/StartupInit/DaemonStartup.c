@@ -64,6 +64,27 @@ void verify_system_integrity(void) {
 }
 
 /**
+ * @brief كلمة كاملة داخل سطر أمر بعد استبدال فواصله `'\0'` بمسافات.
+ *
+ * **ولِمَ لا `strstr` وحدها:** البحث النصّي يطابق أي عملية تحمل الاسم ضمن وسائطها — ومنفّذ
+ * `grep sys.maxmanager-appmonitoring` أو `sh -c '...'` يظهر «رفيقًا» وهو ليس كذلك. والاسم هنا
+ * يقع في `argv[0]` (بعد `setArgv0`) أو كوسيط مستقلّ في التشغيل اليدوي؛ فحدّ الكلمة (بداية أو
+ * مسافة قبله، ونهاية أو مسافة بعده) هو الفرق بين العثور على العملية والعثور على ذكرها.
+ */
+static bool cmdline_has_token(const char* line, const char* token) {
+    const size_t token_len = strlen(token);
+    if (token_len == 0) return false;
+    const char* at = line;
+    while ((at = strstr(at, token)) != NULL) {
+        const bool left_boundary = (at == line) || (at[-1] == ' ');
+        const bool right_boundary = (at[token_len] == '\0') || (at[token_len] == ' ');
+        if (left_boundary && right_boundary) return true;
+        at += token_len;
+    }
+    return false;
+}
+
+/**
  * @brief مراقبة وجود الرفيق الـJava بنفسه — لا بقفله.
  *
  * **والفرق بين القياسين هو العطب كله (مقيس من جهاز حقيقي، 2026-10-01):** القفل يُقاس بـ`flock`،
@@ -110,7 +131,7 @@ static bool is_process_cmdline_alive(const char* needle) {
         for (ssize_t index = 0; index < read_bytes; index++) {
             if (buffer[index] == '\0') buffer[index] = ' ';
         }
-        if (strstr(buffer, needle) != NULL) found = true;
+        if (cmdline_has_token(buffer, needle)) found = true;
     }
 
     closedir(proc);
@@ -144,8 +165,15 @@ static bool is_companion_process_alive(void) {
  */
 void wait_for_java_companion(DaemonContext* ctx) {
 #define MAX_JAVA_RETRIES 120
-    /** عدد الفحوص قبل اعتبار غياب العملية موتًا لا تهيّؤًا بطيئًا (ثانية لكل فحص). */
-#define COMPANION_ABSENT_CHECKS 20
+    /**
+     * عدد الفحوص قبل اعتبار غياب العملية موتًا لا تهيّؤًا بطيئًا (ثانية لكل فحص).
+     *
+     * **١٢٠ لا ٢٠ (تصحيح ٢٠٢٦-١١-٢٢):** `service.sh` يعيد تشغيل الرفيق المتأخّر حتى نحو ١٠٠
+     * ثانية. وكان الخروج عند ٢٠ يجعل «إعادة المحاولة المتأخّرة» بلا أثر: الخادم يُعلن الغياب
+     * ويخرج قبل أن يصل الرفيق الذي أعادت الصدفة تشغيله. فصار حدّ الغياب هو السقف نفسه (١٢٠)،
+     * ويبقى الخروج مُسمًّى بسبب مقيس: العملية غير موجودة بعد نافذة الإقلاع كاملة.
+     */
+#define COMPANION_ABSENT_CHECKS 120
 /** كل كم فحصٍ يُسأل `/proc` — الكلفة معلنة ولا تُدفع حيث لا قرار لها. */
 #define COMPANION_PROBE_EVERY 5
 

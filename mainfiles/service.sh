@@ -257,6 +257,7 @@ if [ "$PACKAGE_READY" -eq 1 ] && [ "$COMPANION_READY" -ne 1 ]; then
             # توقّف فور تعطيل الوحدة أو إزالتها: لا عملية تُترك خلف وحدة مطفأة.
             [ -d "$MODDIR" ] || exit 0
             [ -f "$MODDIR/disable" ] && exit 0
+            [ -f "$MODDIR/remove" ] && exit 0
             if companion_alive; then
                 log_recovery "java companion recovered late pid=$(/system/bin/toybox pidof "$COMPANION_NAME" 2>/dev/null | tr ' ' ',')"
                 exit 0

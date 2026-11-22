@@ -44,7 +44,6 @@ import nd.max.core.hardware.RootFileAccess
 
 
 object RootUtils {
-    private const val MODULE_DIR = "/data/adb/modules/MaxManager"
     private const val API_DIR_PATH = "/data/data/nd.max/API"
     private const val PROFILE_FILE_NAME = "current_profile"
     private const val GAMEINFO_FILE_NAME = "gameinfo"
@@ -207,7 +206,9 @@ object RootUtils {
 
     /** موديول مثبّت، **أو** تثبيت مدمج في الروم (ديمون في قسم النظام) — كلاهما «مثبّت» لا «ناقص». */
     fun isModuleInstalled(): Boolean {
-        return nd.max.core.hardware.RootFileAccess.exists(MODULE_DIR) || MaxManagerPaths.isRomInstall()
+        // **`module.prop` لا وجود المجلّد:** مجلّد فارغ أو بقايا محاولة فاشلة ليس وحدة، وكان
+        // يُقرأ «مثبّتة» فيُخفي زرّ التثبيت ويُعلن «مفعّل» بلا سكربتات (عطب مقيس ٢٠٢٦-١١-٢٢).
+        return RootFileAccess.exists(MaxManagerPaths.MODULE_PROP) || MaxManagerPaths.isRomInstall()
     }
 
     fun getServiceStatusRes(): Pair<Int, String> {
