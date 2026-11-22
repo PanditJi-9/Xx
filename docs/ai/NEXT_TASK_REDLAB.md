@@ -201,3 +201,47 @@ python3 tools/port_materials.py --self-test
   · العملية حيّة (`pidof` = 23116).
 - حدّ القياس: بعد الإطلاق عاد تطبيق المالك (Komikku) إلى المقدمة، فلم يُعد قراءة محتوى الشاشة بـ
   `uiautomator` في هذه اللقطة (كان يقرأ نافذة GitHub). الشبكة نفسها مُقاسة في تكملة سابقة (٢٠ نصًا).
+
+## تحديث 2026-11-22 (٦) — دفعة «أظهر كل شيء»: ١٦ تصنيفًا أصليًا + لوحات حقيقية
+
+نُفِّذت الدفعة على `GameCenterActivity` و`GameListActivity`، ومرجعها `plan2.md` في مجلد المشروع.
+
+**١) كل تصنيفات الأصل ظاهرة بترتيب `GameCenterActivity.getShowCategory()`** — ولم يُحذف أي تصنيف بإغلاق
+علم ميزة أو بغياب شريحة Nubia كما كان يفعل `removeCategory` الأصلي:
+
+Profile (ArkBase) · Data (DataManager) · Game Achievements · Divider · Network · Anti-disturbance ·
+Anti-mistouch · Anti-mistouch ZTE · Competitive-off · Wallpaper · Watermark · Streaming · Other options ·
+Game keys lamp · Mirror/host · Screen · Refresh rate · Chicken mode · RedMagic Time · Divider · About.
+
+**٢) لوحات بقيم حقيقية لا بأرقام مُصنَّعة:**
+
+- **Data**: `UsageStatsManager.queryUsageStats(INTERVAL_DAILY, ٧ أيام)` مجمّعة لكل حزمة، مرتّبة تنازليًا،
+  مع مجموع الأسبوع. وبلا صلاحية `android:get_usage_stats` تظهر دعوة لمنحها (تفتح شاشة النظام) — لا صفر
+  مُتظاهر بأنه قياس.
+- **Network details**: النوع، هل الشبكة محدودة، هل الإنترنت مُتحقَّق، خوادم DNS، العناوين، وعرض النطاق
+  التنزيلي/الرفعي — كلها من `NetworkCapabilities` و`LinkProperties` للشبكة النشطة.
+- **Refresh rate**: `Display.getMode()` و`getSupportedModes()` (موجودة سابقًا) + انتقال إلى الشاشة الأصلية
+  `GameRefreshRateActivity` التي كانت غير قابلة للوصول (§٧ من الخطة).
+- **Profile**: طراز الجهاز وإصدار Android وAPI، مع بيان أن ملفّ ArkBase نفسه على خدمة حساب Nubia.
+- **Wallpaper**: الأربع خلفيات الأصلية كما هي.
+
+**٣) شاشات الأصل التي كانت مخفية بعلم ميزة تُعرض كاملة من XML الأصلي** (`gcs_basic_false_touch`,
+`gcs_basic_false_touch_zte`, `gcs_race_key_off`, `gcs_watermark_settings`, `gcs_streaming`,
+`gcs_mirror_host_settings`, `gcs_game_chicken_mode`, `gcs_records_settings`)، ويُذيّلها سطر واحد يوضح
+أن ما لا يملك Android مقابله يحتاج خدمة/عتاد RedMagic. الصفّ يبقى ظاهرًا ويجيب عند لمسه.
+
+**٤) اللوبي لا يُخفي عنصرًا:** `lobby_3a` و`lobby_gift_bag` و`red_magic_point` صارت ظاهرة؛ الأولى تفتح
+شاشة Streaming في المركز وتشرح، والثانية والثالثة تجيبان بالسبب. (`lobby_vip` شارة لكل لعبة ولا مصدر
+بيانات لها، فبقيت `gone` كحالة أصلية لا كحذف.)
+
+**٥) إصلاح تكرار المُصرّف:** أُعيد ظهور ٩ أصناف مكررة من مرحلة `materials/sources` القديمة. نُقلت الثلاثة
+الفريدة (`GameRefreshRateFragment`, `compatible/Preference`, `compatible/PreferenceFragment`) إلى
+`src/ported/java` **المتعقَّب**، وحُذفت المرحلة غير المتعقَّبة، فصار البناء من مستنسخ نظيف لا يعتمد على
+ملفات خارج git.
+
+**القياس في هذه الجولة:** `:apps:gamespace:compileDebugJavaWithJavac` = **exit 0** (٦ تحذيرات فقط) ·
+`:apps:gamespace:assembleDebug` = **exit 0** والـAPK ١٧١MB · `kt_balance --assert` = ٣٨٢٠ ملفًا/٠ عوائق ·
+`code_health --assert` = exit 0 · `i18n_coverage --assert` = ٠ عوائق.
+**غير مُتحقَّق:** لا جهاز متصل الآن (`adb devices` فارغ، وWireless debugging مغلق)، فلم تُقس الشاشات على
+الهاتف ولا لمس أي صفّ — الترجمة والبناء لا يعنيان أن الشاشة تعمل. `resource_compile.py` يبلّغ عن خروج aapt2
+بالرمز -4 على موارد `manager/` و`app/` (خارج redlab) — عطب أداة/بيئة لم يُعالج في هذه الدفعة.

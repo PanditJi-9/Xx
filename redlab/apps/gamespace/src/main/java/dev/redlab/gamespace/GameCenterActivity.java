@@ -1,7 +1,9 @@
 package dev.redlab.gamespace;
 
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.app.NotificationManager;
+import android.app.usage.UsageStatsManager;
 import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
@@ -61,6 +64,8 @@ public final class GameCenterActivity extends Activity {
     /** Opened by the lobby wallpaper control; selects that category instead of the first one. */
     public static final String EXTRA_SECTION = "dev.redlab.gamespace.extra.SECTION";
     public static final String SECTION_WALLPAPER = "wallpaper";
+    /** Opened by the lobby's 3A/PC track, which the original wires to the streaming feature. */
+    public static final String SECTION_STREAMING = "streaming";
 
     private static final String PREFS = "game_space_center";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
@@ -147,9 +152,12 @@ public final class GameCenterActivity extends Activity {
     }
 
     private int sectionIndex(String section) {
-        if (SECTION_WALLPAPER.equals(section)) {
+        Kind wanted = SECTION_WALLPAPER.equals(section) ? Kind.WALLPAPER
+                : SECTION_STREAMING.equals(section) ? Kind.STREAMING
+                : null;
+        if (wanted != null) {
             for (int i = 0; i < rows.size(); i++) {
-                if (rows.get(i).kind == Kind.WALLPAPER) {
+                if (rows.get(i).kind == wanted) {
                     return i;
                 }
             }
@@ -166,16 +174,39 @@ public final class GameCenterActivity extends Activity {
         return 0;
     }
 
+    /**
+     * The original {@code GameCenterActivity.getShowCategory()} order, with none of its removals:
+     * the vendor build dropped a category when a feature flag or a Nubia-only chassis was absent,
+     * and this build deliberately keeps every one of them visible. A category that needs vendor
+     * hardware opens its stock screen and says so, instead of disappearing.
+     */
     private void buildRows() {
+        addCategory(R.drawable.user_login, R.string.gcs_gamecenter_menu_arkbase, Kind.PROFILE);
+        addCategory(R.drawable.data_manager, R.string.gcs_gamecenter_menu_datamanager, Kind.DATA);
         addCategory(R.drawable.user_login, R.string.gcs_gamecenter_menu_game_status, Kind.SUMMARY);
         addDivider();
-        addCategory(R.drawable.screen_settings, R.string.gcs_gamecenter_menu_screen, Kind.SCREEN);
         addCategory(R.drawable.network_settings, R.string.gcs_gamecenter_menu_network, Kind.NETWORK);
         addCategory(R.drawable.not_disturb_settings, R.string.gcs_gamecenter_menu_not_disturb, Kind.ZEN);
-        addCategory(R.drawable.game_space_wallpaper, R.string.gcs_gamecenter_menu_game_wallpaper, Kind.WALLPAPER);
-        addCategory(R.drawable.competitive_lamp, R.string.gamekey_lamp_switch, Kind.LAMP);
-        addDivider();
+        addCategory(R.drawable.false_touch_settings, R.string.gcs_gamecenter_menu_false_touch,
+                Kind.FALSE_TOUCH);
+        addCategory(R.drawable.false_touch_settings, R.string.gcs_gamecenter_menu_false_touch_zte,
+                Kind.FALSE_TOUCH_ZTE);
+        addCategory(R.drawable.competitive_off, R.string.gcs_gamecenter_menu_competitive_off,
+                Kind.RACE_KEY);
+        addCategory(R.drawable.game_space_wallpaper, R.string.gcs_gamecenter_menu_game_wallpaper,
+                Kind.WALLPAPER);
+        addCategory(R.drawable.gcs_watermark_edit_cursor, R.string.gcs_gamecenter_menu_screenshot_mark,
+                Kind.WATERMARK);
+        addCategory(R.drawable.stream_game, stringId("gcs_streaming"), Kind.STREAMING);
         addCategory(R.drawable.other_options, R.string.gcs_gamecenter_menu_other_options, Kind.OTHER);
+        addCategory(R.drawable.competitive_lamp, R.string.gamekey_lamp_switch, Kind.LAMP);
+        addCategory(R.drawable.mirror_host, stringId("gcs_game_mirror_host_mode_title"), Kind.MIRROR);
+        addCategory(R.drawable.screen_settings, R.string.gcs_gamecenter_menu_screen, Kind.SCREEN);
+        addCategory(R.drawable.custom_refreshrate_60hz, R.string.gcs_game_refresh_rate_title,
+                Kind.REFRESH_RATE);
+        addCategory(R.drawable.game_dock_settings, R.string.gcs_game_chicken_mode_title, Kind.CHICKEN);
+        addCategory(R.drawable.gcs_record_settings, R.string.gcs_gamecenter_menu_records, Kind.RECORDS);
+        addDivider();
         addCategory(R.drawable.about_gamespace, R.string.gcs_gamecenter_menu_about, Kind.ABOUT);
     }
 
@@ -235,6 +266,12 @@ public final class GameCenterActivity extends Activity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         switch (row.kind) {
+            case PROFILE:
+                buildProfile(box);
+                break;
+            case DATA:
+                buildData(box);
+                break;
             case SUMMARY:
                 buildSummary(box);
                 break;
@@ -247,11 +284,38 @@ public final class GameCenterActivity extends Activity {
             case ZEN:
                 buildZen(box);
                 break;
+            case FALSE_TOUCH:
+                renderVendorScreen(box, R.xml.gcs_basic_false_touch);
+                break;
+            case FALSE_TOUCH_ZTE:
+                renderVendorScreen(box, R.xml.gcs_basic_false_touch_zte);
+                break;
+            case RACE_KEY:
+                renderVendorScreen(box, R.xml.gcs_race_key_off);
+                break;
             case WALLPAPER:
                 buildWallpaper(box);
                 break;
+            case WATERMARK:
+                renderVendorScreen(box, R.xml.gcs_watermark_settings);
+                break;
+            case STREAMING:
+                renderVendorScreen(box, R.xml.gcs_streaming);
+                break;
             case LAMP:
-                renderOriginalScreen(box, R.xml.gcs_gamekey_lamp_settings);
+                renderVendorScreen(box, R.xml.gcs_gamekey_lamp_settings);
+                break;
+            case MIRROR:
+                renderVendorScreen(box, R.xml.gcs_mirror_host_settings);
+                break;
+            case REFRESH_RATE:
+                buildRefreshRate(box);
+                break;
+            case CHICKEN:
+                renderVendorScreen(box, R.xml.gcs_game_chicken_mode);
+                break;
+            case RECORDS:
+                renderVendorScreen(box, R.xml.gcs_records_settings);
                 break;
             case OTHER:
                 buildOther(box);
@@ -276,6 +340,60 @@ public final class GameCenterActivity extends Activity {
 
     private void buildNetwork(LinearLayout box) {
         renderOriginalScreen(box, R.xml.gcs_net_settings);
+        buildNetworkDetails(box);
+    }
+
+    /** Real values from the active network, not the vendor acceleration service. */
+    private void buildNetworkDetails(LinearLayout box) {
+        addSubheading(box, getString(stringId("rl_hub_net_details_title")));
+        ConnectivityManager manager = getSystemService(ConnectivityManager.class);
+        Network network = manager == null ? null : manager.getActiveNetwork();
+        NetworkCapabilities caps = network == null || manager == null
+                ? null : manager.getNetworkCapabilities(network);
+        if (caps == null) {
+            addBody(box, detail(getString(stringId("rl_hub_net_type")),
+                    getString(stringId("rl_hub_net_none"))));
+            return;
+        }
+        addBody(box, detail(getString(stringId("rl_hub_net_type")), activeNetworkName()));
+        addBody(box, detail(getString(stringId("rl_hub_net_metered")),
+                yesNo(!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED))));
+        addBody(box, detail(getString(stringId("rl_hub_net_verified")),
+                yesNo(caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED))));
+        LinkProperties link = manager.getLinkProperties(network);
+        if (link != null) {
+            addBody(box, detail(getString(stringId("rl_hub_net_dns")),
+                    join(link.getDnsServers())));
+            addBody(box, detail(getString(stringId("rl_hub_net_ipv4")),
+                    join(link.getLinkAddresses())));
+            addBody(box, detail(getString(stringId("rl_hub_net_down")),
+                    caps.getLinkDownstreamBandwidthKbps() + " Kbps"));
+            addBody(box, detail(getString(stringId("rl_hub_net_up")),
+                    caps.getLinkUpstreamBandwidthKbps() + " Kbps"));
+        }
+        addBody(box, getString(stringId("rl_hub_vendor_screen_note")));
+    }
+
+    private String detail(String label, String value) {
+        return getString(stringId("rl_hub_net_detail"), label, value);
+    }
+
+    private String yesNo(boolean value) {
+        return getString(stringId(value ? "rl_hub_yes" : "rl_hub_no"));
+    }
+
+    private static String join(List<?> values) {
+        if (values == null || values.isEmpty()) {
+            return "-";
+        }
+        StringBuilder text = new StringBuilder();
+        for (Object value : values) {
+            if (text.length() > 0) {
+                text.append(", ");
+            }
+            text.append(value);
+        }
+        return text.toString();
     }
 
     private void buildZen(LinearLayout box) {
@@ -299,6 +417,131 @@ public final class GameCenterActivity extends Activity {
         addBody(box, getString(stringId("rl_hub_about_body"), getPackageName(), version));
         addGap(box, 8);
         renderOriginalScreen(box, R.xml.gcs_about);
+    }
+
+    /** ArkBase is a Nubia account profile; the device facts it would show are real here. */
+    private void buildProfile(LinearLayout box) {
+        addHeading(box, getString(R.string.gcs_gamecenter_menu_arkbase));
+        addBody(box, getString(stringId("rl_hub_profile_body"),
+                Build.MANUFACTURER + " " + Build.MODEL,
+                Build.VERSION.RELEASE, Build.VERSION.SDK_INT));
+        addBody(box, getString(stringId("rl_hub_vendor_screen_note")));
+    }
+
+    /**
+     * Data is the vendor's DataManager screen. Its numbers come from the same source Android
+     * exposes to any app the user authorises: {@link UsageStatsManager}. Nothing is invented and
+     * nothing is fabricated when the permission is missing.
+     */
+    private void buildData(LinearLayout box) {
+        addHeading(box, getString(R.string.gcs_gamecenter_menu_datamanager));
+        if (!usageAccessGranted()) {
+            addBody(box, getString(stringId("rl_hub_usage_empty")));
+            addAction(box, getString(stringId("rl_hub_usage_grant")), null,
+                    view -> open(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+            addBody(box, getString(stringId("rl_hub_usage_note")));
+            return;
+        }
+        List<UsageEntry> usage = readUsage();
+        if (usage.isEmpty()) {
+            addBody(box, getString(stringId("rl_hub_usage_empty")));
+        } else {
+            long total = 0;
+            for (UsageEntry entry : usage) {
+                total += entry.millis;
+            }
+            addBody(box, getString(stringId("rl_hub_usage_total"), duration(total)));
+            int shown = 0;
+            for (UsageEntry entry : usage) {
+                if (shown == 10) {
+                    break;
+                }
+                addAction(box, entry.label, duration(entry.millis),
+                        view -> launchPackage(entry.packageName));
+                shown++;
+            }
+        }
+        addBody(box, getString(stringId("rl_hub_usage_note")));
+    }
+
+    private boolean usageAccessGranted() {
+        AppOpsManager ops = getSystemService(AppOpsManager.class);
+        if (ops == null) {
+            return false;
+        }
+        int mode = ops.unsafeCheckOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED;
+    }
+
+    /** Foreground time over the last seven days, the window the vendor DataManager reports. */
+    private List<UsageEntry> readUsage() {
+        List<UsageEntry> result = new ArrayList<>();
+        UsageStatsManager manager = getSystemService(UsageStatsManager.class);
+        if (manager == null) {
+            return result;
+        }
+        long now = System.currentTimeMillis();
+        java.util.Map<String, Long> totals = new java.util.LinkedHashMap<>();
+        for (android.app.usage.UsageStats stats : manager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY, now - 7L * 24 * 60 * 60 * 1000, now)) {
+            if (stats.getTotalTimeInForeground() <= 0) {
+                continue;
+            }
+            Long previous = totals.get(stats.getPackageName());
+            totals.put(stats.getPackageName(),
+                    (previous == null ? 0 : previous) + stats.getTotalTimeInForeground());
+        }
+        for (java.util.Map.Entry<String, Long> entry : totals.entrySet()) {
+            String packageName = entry.getKey();
+            if (getPackageName().equals(packageName)) {
+                continue;
+            }
+            String label;
+            try {
+                label = getPackageManager()
+                        .getApplicationLabel(getPackageManager().getApplicationInfo(packageName, 0))
+                        .toString();
+            } catch (PackageManager.NameNotFoundException gone) {
+                continue;
+            }
+            result.add(new UsageEntry(packageName, label, entry.getValue()));
+        }
+        result.sort((a, b) -> Long.compare(b.millis, a.millis));
+        return result;
+    }
+
+    private String duration(long millis) {
+        long minutes = millis / 60000L;
+        long hours = minutes / 60;
+        minutes %= 60;
+        return hours > 0
+                ? getString(stringId("rl_hub_duration_hours"), (int) hours, (int) minutes)
+                : getString(stringId("rl_hub_duration_minutes"), (int) minutes);
+    }
+
+    private void launchPackage(String packageName) {
+        Intent launch = getPackageManager().getLaunchIntentForPackage(packageName);
+        if (launch != null) {
+            openIntent(launch);
+        }
+    }
+
+    /** The stock refresh-rate screen plus the modes this display really reports. */
+    private void buildRefreshRate(LinearLayout box) {
+        addHeading(box, getString(R.string.gcs_game_refresh_rate_title));
+        addBody(box, refreshSummary());
+        addAction(box, getString(stringId("rl_hub_refresh_open")), null,
+                view -> openIntent(new Intent(this,
+                        cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity.class)));
+        addBody(box, getString(stringId("rl_hub_refresh_note")));
+        renderOriginalScreen(box, R.xml.gcs_game_refresh_rate);
+    }
+
+    /** A stock screen the vendor gated behind hardware or a service: shown whole, then explained. */
+    private void renderVendorScreen(LinearLayout box, int xml) {
+        renderOriginalScreen(box, xml);
+        addBody(box, getString(stringId("rl_hub_vendor_screen_note")));
     }
 
     /**
@@ -675,9 +918,32 @@ public final class GameCenterActivity extends Activity {
         return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
+    private static final class UsageEntry {
+        final String packageName;
+        final String label;
+        final long millis;
+
+        UsageEntry(String packageName, String label, long millis) {
+            this.packageName = packageName;
+            this.label = label;
+            this.millis = millis;
+        }
+    }
+
     private enum Kind {
+        PROFILE,
+        DATA,
         SUMMARY,
         SCREEN,
+        FALSE_TOUCH,
+        FALSE_TOUCH_ZTE,
+        RACE_KEY,
+        WATERMARK,
+        STREAMING,
+        MIRROR,
+        REFRESH_RATE,
+        CHICKEN,
+        RECORDS,
         NETWORK,
         ZEN,
         WALLPAPER,

@@ -91,9 +91,18 @@ public final class GameListActivity extends Activity {
         GamePlayLayout play = findViewById(R.id.lobby_play_view);
         play.setOnClickListener(view -> openSelected());
 
-        // The original hides the 3A/PC track when the stream feature is absent; this phone has no
-        // stream service, so the measured original behaviour is GONE, not a dead label.
-        findViewById(R.id.lobby_3a).setVisibility(View.GONE);
+        // Owner rule: no element is hidden for lacking a vendor service. The 3A/PC track and the
+        // gift bag stay visible, and answer with the measured reason instead of disappearing.
+        View track3a = findViewById(R.id.lobby_3a);
+        track3a.setVisibility(View.VISIBLE);
+        track3a.setOnClickListener(view -> {
+            vendorToast("rl_vendor_3a");
+            openCenter(GameCenterActivity.SECTION_STREAMING);
+        });
+        View gift = findViewById(R.id.lobby_gift_bag);
+        gift.setAlpha(1f);
+        gift.setOnClickListener(view -> vendorToast("rl_vendor_gift"));
+        findViewById(R.id.red_magic_point).setAlpha(1f);
         // The vendor control panel and atmosphere editor are absent. Their universal substitutes
         // are the Game Space Center and its wallpaper section, reached from the same original
         // controls so the lobby keeps its shape.
@@ -106,8 +115,6 @@ public final class GameListActivity extends Activity {
                 vendorToast("rl_vendor_notes"));
         findViewById(R.id.lobby_red_time).setOnClickListener(view ->
                 vendorToast("rl_vendor_red_time"));
-        findViewById(R.id.lobby_gift_bag).setOnClickListener(view ->
-                vendorToast("rl_vendor_gift"));
 
         loadLauncherApps();
     }

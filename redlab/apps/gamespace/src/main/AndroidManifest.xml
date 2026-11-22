@@ -44,6 +44,13 @@
             </intent-filter>
         </activity>
 
+        <!-- The original refresh-rate screen, ported verbatim: 27 lines, one layout, no vendor
+             service. The vendor gated it behind a game key; the center opens it directly. -->
+        <activity
+            android:name="cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity"
+            android:exported="true"
+            android:screenOrientation="sensorLandscape" />
+
         <!-- The original Game Space Center shell and its own original theme. It keeps the stock
              action so it can be opened the same way the vendor build was. -->
         <activity

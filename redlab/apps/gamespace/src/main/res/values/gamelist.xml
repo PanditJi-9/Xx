@@ -43,4 +43,27 @@
     <string name="rl_vendor_notes">Game Notes needs the Nubia notes service, which is not on this phone.</string>
     <string name="rl_vendor_gift">The gift bag needs the Nubia GameCenter account service.</string>
     <string name="rl_vendor_red_time">RedMagic time needs the Nubia GameCenter service.</string>
+
+    <!-- Every stock settings screen is shown whole; this line says why a row may not act. -->
+    <string name="rl_hub_vendor_screen_note">This is the original screen, read from the vendor preference XML. A row acts here only where Android exposes the same control; the rest needs the RedMagic service or hardware, so it stays visible and answers when touched.</string>
+    <string name="rl_hub_profile_body">Device: %1$s\nAndroid %2$s (API %3$d)\nThe ArkBase profile itself lives on the Nubia account service, which this phone does not run.</string>
+    <string name="rl_hub_usage_empty">No usage statistics yet. Android shows app usage only after you grant the usage-access permission to this app.</string>
+    <string name="rl_hub_usage_grant">Allow usage access</string>
+    <string name="rl_hub_usage_total">Foreground time, last 7 days: %1$s</string>
+    <string name="rl_hub_usage_note">Read from the system UsageStats service, the same source the vendor DataManager uses. No value is estimated.</string>
+    <string name="rl_hub_duration_hours">%1$d h %2$d min</string>
+    <string name="rl_hub_duration_minutes">%1$d min</string>
+    <string name="rl_hub_net_details_title">Live network details</string>
+    <string name="rl_hub_net_detail">%1$s: %2$s</string>
+    <string name="rl_hub_net_type">Type</string>
+    <string name="rl_hub_net_metered">Metered</string>
+    <string name="rl_hub_net_verified">Internet verified</string>
+    <string name="rl_hub_net_dns">DNS</string>
+    <string name="rl_hub_net_ipv4">Addresses</string>
+    <string name="rl_hub_net_down">Downstream</string>
+    <string name="rl_hub_net_up">Upstream</string>
+    <string name="rl_hub_yes">Yes</string>
+    <string name="rl_hub_no">No</string>
+    <string name="rl_hub_refresh_open">Open the original refresh-rate screen</string>
+    <string name="rl_vendor_3a">3A / PC games need the RedMagic streaming service, which is not on this phone. The original button stays where it is.</string>
 </resources>

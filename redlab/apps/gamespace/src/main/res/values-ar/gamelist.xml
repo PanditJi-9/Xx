@@ -43,4 +43,27 @@
     <string name="rl_vendor_notes">ملاحظات الألعاب تحتاج خدمة ملاحظات Nubia، وهي غير موجودة على هذا الهاتف.</string>
     <string name="rl_vendor_gift">حقيبة الهدايا تحتاج خدمة حساب GameCenter من Nubia.</string>
     <string name="rl_vendor_red_time">وقت RedMagic يحتاج خدمة GameCenter من Nubia.</string>
+
+    <!-- كل شاشات الأصل تُعرض كاملة؛ هذا السطر يوضح لماذا قد لا ينفّذ صفٌّ ما. -->
+    <string name="rl_hub_vendor_screen_note">هذه شاشة الأصل نفسها مقروءة من ملفّ تفضيلات المصنّع. الصفّ ينفّذ هنا فقط حيث يتيح Android التحكم نفسه؛ وما تبقّى يحتاج خدمة RedMagic أو عتادها، فيبقى ظاهرًا ويجيب عند لمسه.</string>
+    <string name="rl_hub_profile_body">الجهاز: %1$s\nAndroid %2$s (API %3$d)\nملفّ ArkBase نفسه يسكن خدمة حساب Nubia، وهي غير عاملة على هذا الهاتف.</string>
+    <string name="rl_hub_usage_empty">لا توجد إحصاءات استخدام بعد. لا يعرض Android استخدام التطبيقات إلا بعد منح هذا التطبيق صلاحية الوصول إلى الاستخدام.</string>
+    <string name="rl_hub_usage_grant">السماح بالوصول إلى الاستخدام</string>
+    <string name="rl_hub_usage_total">زمن المقدّمة، آخر ٧ أيام: %1$s</string>
+    <string name="rl_hub_usage_note">مقروء من خدمة UsageStats في النظام، وهي المصدر نفسه الذي يستخدمه DataManager الأصلي. لا قيمة مُقدَّرة هنا.</string>
+    <string name="rl_hub_duration_hours">%1$d س %2$d د</string>
+    <string name="rl_hub_duration_minutes">%1$d د</string>
+    <string name="rl_hub_net_details_title">تفاصيل الشبكة الحيّة</string>
+    <string name="rl_hub_net_detail">%1$s: %2$s</string>
+    <string name="rl_hub_net_type">النوع</string>
+    <string name="rl_hub_net_metered">محدودة</string>
+    <string name="rl_hub_net_verified">الإنترنت مُتحقّق</string>
+    <string name="rl_hub_net_dns">DNS</string>
+    <string name="rl_hub_net_ipv4">العناوين</string>
+    <string name="rl_hub_net_down">التنزيل</string>
+    <string name="rl_hub_net_up">الرفع</string>
+    <string name="rl_hub_yes">نعم</string>
+    <string name="rl_hub_no">لا</string>
+    <string name="rl_hub_refresh_open">فتح شاشة معدل التحديث الأصلية</string>
+    <string name="rl_vendor_3a">ألعاب 3A / الكمبيوتر تحتاج خدمة البثّ من RedMagic، وهي غير موجودة على هذا الهاتف. زر الأصل يبقى في مكانه.</string>
 </resources>
