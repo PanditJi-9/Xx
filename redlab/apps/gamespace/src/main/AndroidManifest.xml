@@ -43,14 +43,20 @@
             </intent-filter>
         </activity>
 
-        <!-- The original Game Space Center shell and its own original theme. It is not exported:
-             the lobby is the only entry point, exactly like the stock launcher. -->
+        <!-- The original Game Space Center shell and its own original theme. It keeps the stock
+             action so it can be opened the same way the vendor build was. -->
         <activity
             android:name="dev.redlab.gamespace.GameCenterActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/gcs_gamecenter_title"
+            android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape"
-            android:theme="@style/Theme_gcs_GameCenter.CenterActivityStyle" />
+            android:theme="@style/Theme_gcs_GameCenter.CenterActivityStyle">
+            <intent-filter>
+                <action android:name="cn.nubia.gamecenter.settings.action.GAME_CENTER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>
