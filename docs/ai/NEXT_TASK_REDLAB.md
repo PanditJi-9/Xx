@@ -92,3 +92,29 @@ python3 tools/port_materials.py --self-test
 - تصحيح حزمة التثبيت: `applicationId` صار `dev.redlab.gamespace` بدل `cn.nubia.gamelauncher`؛
   تطبيق النظام لا يُستبدل بلا توقيع المنصّة، فبقاء المعرّف الأصلي يمنع التثبيت على جهاز فيه GameSpace.
   الـAPK أُعيد بناؤه (resources.arsc يحمل المعرّف الجديد)، والأصناف الأربعة مؤكَّدة في dex.
+
+## تحديث 2026-11-22 — إصلاح انهيار قائمة الألعاب: فئات R للمكتبات + جسر أسماء التخطيط
+
+- **العطب المقيس:** فتح `GameListActivity` كان يرمي
+  `NoClassDefFoundError: Failed resolution of: Landroidx/recyclerview/R$attr;` عند
+  `RecyclerView.<init>`. السبب: AARs تأتي `compileOnly`، و`portRuntime` ينسخ `classes.jar` وحده داخل
+  الـAPK، فلا يولّد AGP فئات `R` التي كُتبت ضدها تلك الأصناف.
+- **الإصلاح:** مهمة `generatePortR` في `build.gradle.kts` تقرأ `R.txt` لكل AAR، وتحلّ المعرّفات عبر
+  `materials/res/values/public.xml` (نفس جدول `--stable-ids`)، وتولّد `R.java` تحت
+  `build/generated/port-r` (37 حزمة). صنفت `styleable` **فهارس** داخل المصفوفة (سلوك aapt)، لا معرّفات
+  موارد — وهو ما تستخدمه المكتبات في `TypedArray.getInt`؛ وخطأ هنا يعطي `IndexOutOfBounds`.
+- **عطب ثانٍ مقيس بعد الأول:** `ClassNotFoundException: cn.nubia.gamelauncher.view.DrawableLeftTextView`
+  عند نفخ `game_item_medium`، لأن أدوات البورت أعادت تغليف المصادر إلى `dev.redlab.gamespace.view.*`
+  بينما التخطيط الأصلي يطلب الاسم الأصلي حرفيًا. أُضيف جسر اسم رقيق
+  (`src/main/java/cn/nubia/gamelauncher/view/DrawableLeftTextView.java`) يرث التطبيق المُعاد تغليفه،
+  فبقي التخطيط الأصلي دون تعديل.
+- **أداة قياس على الجهاز:** `src/debug/AndroidManifest.xml` يصدّر `GameListActivity` في debug فقط
+  (release يبقى `exported="false"`)، لأن `input tap` محجوب على هذا الجهاز
+  (`SecurityException: INJECT_EVENTS`)، فلا يمكن الوصول للشاشة عبر زر `MainActivity`.
+- **النتيجة المقيسة (rodin · Android 16 · arm64-v8a):** `adb install -r` = **Success**؛
+  `am start -W -n dev.redlab.gamespace/.GameListActivity` = **Complete**؛ العملية باقية؛
+  `logcat -b crash` فارغ؛ `uiautomator dump` يعرض ١٩+ تطبيقًا بأسمائها العربية (Camera، الإعدادات،
+  الآلة الحاسبة…) في شبكة ٤ أعمدة، والعنوان «مساحة الألعاب».
+- **الحدود:** القياس على جهاز Nubia واحد؛ «يعمل على كل الهاتف» لم يُقس. مسار النقر من `MainActivity`
+  لم يُقس في هذه البيئة (الحقن محجوب)، لكن الشاشة نفسها تعمل عند بدئها مباشرة. release APK لا يُبنى
+  محليًا (يحتاج `KS_PWD`).

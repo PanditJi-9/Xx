@@ -2,6 +2,7 @@ import org.gradle.api.artifacts.transform.InputArtifact
 import org.gradle.api.artifacts.transform.TransformAction
 import org.gradle.api.artifacts.transform.TransformOutputs
 import org.gradle.api.artifacts.transform.TransformParameters
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.attributes.Attribute
 import org.gradle.api.file.FileSystemLocation
 import org.gradle.api.provider.Provider
@@ -205,3 +206,154 @@ dependencies {
     }
     implementation(portRuntime.incoming.files)
 }
+
+
+// ---------------------------------------------------------------------------------------------
+// Library R classes.
+//
+// The AARs are `compileOnly`, and `portRuntime` copies only their classes.jar into the APK, so
+// AGP never generates the R classes those classes were compiled against. Measured on the phone:
+// opening the game list crashed with NoClassDefFoundError androidx/recyclerview/R$attr. Rebuild
+// those R classes from each AAR's R.txt, resolving ids through the original table
+// (materials/res/values/public.xml), the same table --stable-ids pins for the app.
+// ---------------------------------------------------------------------------------------------
+val portAars: Configuration = configurations.create("portAars") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies { portLibraries.forEach { add("portAars", it) } }
+
+val portRDir = layout.buildDirectory.dir("generated/port-r")
+
+val generatePortR = tasks.register("generatePortR") {
+    val publicXml = file("materials/res/values/public.xml")
+    val aarFiles = portAars.incoming.artifactView {
+        attributes { attribute(artifactType, "aar") }
+    }.files
+    inputs.file(publicXml)
+    inputs.files(aarFiles)
+    outputs.dir(portRDir)
+    doLast {
+        val out = portRDir.get().asFile
+        out.deleteRecursively()
+        if (!publicXml.isFile) return@doLast
+
+        val known = HashMap<String, Int>()
+        Regex("<public type=\"([^\"]+)\" name=\"([^\"]+)\" id=\"(0x[0-9a-fA-F]+)\"")
+            .findAll(publicXml.readText())
+            .forEach { match ->
+                val type = match.groupValues[1]
+                var name = match.groupValues[2]
+                if (name.startsWith('$')) name = "rl_" + name.substring(1)
+                val id = match.groupValues[3].removePrefix("0x").toLong(16).toInt()
+                known[type + "/" + name] = id
+                known[type + "/" + name.replace('.', '_')] = id
+            }
+        fun idOf(type: String, name: String): Int =
+            known[type + "/" + name] ?: known[type + "/" + name.replace('.', '_')] ?: 0
+        fun number(value: String): Int {
+            val text = value.trim()
+            return text.toIntOrNull()
+                ?: text.removePrefix("0x").removePrefix("0X").toLong(16).toInt()
+        }
+
+        aarFiles.files.filter { it.extension == "aar" }.forEach { aar ->
+            ZipFile(aar).use { zip ->
+                val manifestEntry = zip.getEntry("AndroidManifest.xml") ?: return@use
+                val manifest = zip.getInputStream(manifestEntry).bufferedReader().use { it.readText() }
+                val packageName = Regex("package=\"([^\"]+)\"").find(manifest)?.groupValues?.get(1)
+                    ?: return@use
+                val rtxtEntry = zip.getEntry("R.txt") ?: return@use
+                val lines = zip.getInputStream(rtxtEntry).bufferedReader().use { it.readLines() }
+
+                val arrays = LinkedHashMap<String, List<Int>>()
+                val arrayPattern = Regex("^int\\[\\] styleable (\\S+) \\{([^}]*)}")
+                lines.forEach { line ->
+                    val match = arrayPattern.find(line.trim()) ?: return@forEach
+                    arrays[match.groupValues[1]] = match.groupValues[2]
+                        .split(',').map { it.trim() }.filter { it.isNotEmpty() }.map { number(it) }
+                }
+
+                val styleableFields = ArrayList<Pair<String, Int>>()
+                val byArray = HashMap<String, MutableMap<Int, String>>()
+                lines.forEach { line ->
+                    val text = line.trim()
+                    if (!text.startsWith("int styleable ")) return@forEach
+                    val parts = text.removePrefix("int styleable ").trim().split(Regex("\\s+"))
+                    if (parts.size < 2) return@forEach
+                    val field = parts[0]
+                    val index = number(parts[1])
+                    val owner = arrays.keys.filter { field.startsWith(it + "_") }.maxByOrNull { it.length }
+                    if (owner != null) {
+                        val attr = field.removePrefix(owner + "_")
+                        byArray.getOrPut(owner) { HashMap() }[index] = attr
+                        styleableFields.add(field to index)
+                    }
+                }
+
+                val scalars = LinkedHashMap<String, MutableList<Pair<String, Int>>>()
+                lines.forEach { line ->
+                    val text = line.trim()
+                    if (!text.startsWith("int ") || text.startsWith("int[] ") || text.startsWith("int styleable ")) {
+                        return@forEach
+                    }
+                    val parts = text.removePrefix("int ").trim().split(Regex("\\s+"))
+                    if (parts.size < 2) return@forEach
+                    val type = parts[0]
+                    val name = parts[1]
+                    scalars.getOrPut(type) { ArrayList() }.add(name to idOf(type, name))
+                }
+
+                if (arrays.isEmpty() && scalars.isEmpty()) return@use
+
+                val source = StringBuilder()
+                source.append("package ").append(packageName).append(";\n\n")
+                source.append("public final class R {\n")
+
+                if (arrays.isNotEmpty() || styleableFields.isNotEmpty()) {
+                    source.append("    public static final class styleable {\n")
+                    arrays.forEach { (name, values) ->
+                        val ids = IntArray(values.size) { values[it] }
+                        byArray[name]?.forEach { (index, attr) ->
+                            if (index in ids.indices) {
+                                val resolved = idOf("attr", attr)
+                                if (resolved != 0) ids[index] = resolved
+                            }
+                        }
+                        source.append("        public static final int[] ").append(name).append(" = { ")
+                            .append(ids.joinToString(", ") { "0x" + Integer.toHexString(it) })
+                            .append(" };\n")
+                    }
+                    // Styleable fields are *indices* into the array above (aapt semantics),
+                    // not attr resource ids: library code calls a.getInt(R.styleable.X_attr, ...).
+                    styleableFields.forEach { (field, position) ->
+                        source.append("        public static final int ").append(field)
+                            .append(" = ").append(position).append(";\n")
+                    }
+                    source.append("    }\n")
+                }
+
+                scalars.forEach { (type, fields) ->
+                    source.append("    public static final class ").append(type).append(" {\n")
+                    fields.forEach { (name, id) ->
+                        source.append("        public static final int ").append(name)
+                            .append(" = 0x").append(Integer.toHexString(id)).append(";\n")
+                    }
+                    source.append("    }\n")
+                }
+                source.append("}\n")
+
+                val target = out.resolve(packageName.replace('.', '/')).resolve("R.java")
+                target.parentFile.mkdirs()
+                target.writeText(source.toString())
+            }
+        }
+    }
+}
+
+android { sourceSets["main"].java.srcDir("build/generated/port-r") }
+tasks.matching { it.name.startsWith("compile") }.configureEach { dependsOn(generatePortR) }
+tasks.withType<JavaCompile>().configureEach { dependsOn(generatePortR) }
+// The generated R sources sit in the java source set, which Kotlin also scans; make that order explicit.
+tasks.matching { it.name.startsWith("compile") && it.name.endsWith("Kotlin") }
+    .configureEach { dependsOn(generatePortR) }
