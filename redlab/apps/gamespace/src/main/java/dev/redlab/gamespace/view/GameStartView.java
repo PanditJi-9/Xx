@@ -14,6 +14,7 @@ import android.widget.ImageView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import dev.redlab.gamespace.PortLayoutInflater;
 import dev.redlab.gamespace.R;
 import dev.redlab.gamespace.anim.AnimBean;
 import dev.redlab.gamespace.anim.AnimHelper;
@@ -52,7 +53,12 @@ public final class GameStartView extends ConstraintLayout implements View.OnTouc
     }
 
     private void initChild(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.game_start_button, this);
+        // The activity's inflater carries the tag redirect; LayoutInflater.from() makes a fresh
+        // one, so the original <cn.nubia.gamelauncher.view.MarqueeTextView> tag would otherwise
+        // fail to resolve to its ported class.
+        LayoutInflater inflater = LayoutInflater.from(context).cloneInContext(context);
+        PortLayoutInflater.install(inflater);
+        inflater.inflate(R.layout.game_start_button, this);
         mLeft = findViewById(R.id.game_start_left);
         mRight = findViewById(R.id.game_start_right);
         mText = findViewById(R.id.game_start_text);
