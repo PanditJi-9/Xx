@@ -118,3 +118,18 @@ python3 tools/port_materials.py --self-test
 - **الحدود:** القياس على جهاز Nubia واحد؛ «يعمل على كل الهاتف» لم يُقس. مسار النقر من `MainActivity`
   لم يُقس في هذه البيئة (الحقن محجوب)، لكن الشاشة نفسها تعمل عند بدئها مباشرة. release APK لا يُبنى
   محليًا (يحتاج `KS_PWD`).
+
+## تحديث 2026-11-22 (٢) — قياس الشاشتين الأصليتين التاليتين: عائق المضيف لا عائق الصنف
+
+- أُعلنت `GameRecordActivity` و`GameManualActivity` في **debug فقط** ثم بدئتا بـ`am start`:
+  `GameRecordActivity` = `FATAL EXCEPTION` → `InflateException` (سطر 4 في `gcs_gamecenter_game_settings_main`)
+  → `Fragment$InstantiationException` → `ClassNotFoundException: cn.nubia.gamecenter.settings.recordSettings.RecordSettingsFragment`.
+  أي أن الصنف ببساطة غير مبورت (جبهة الوحدات الـ165)، لا عطب موارد.
+- استُخرجت السلسلة بـ`jadx --single-class` (٩ أصناف، ~١٥ ثانية للصنف) ونجح الاستخراج. **لكن قراءة
+  المصدر تكشف عائقًا أكبر:** `compatible.PreferenceFragment` يرث `androidx.preference.PreferenceFragmentCompat`،
+  بينما التخطيط الأصلي يستخدم `<fragment android:name=...>` (وسم Framework) داخل `android.app.Activity`.
+  نفخ وسم `<fragment>` يطلب `android.app.Fragment` حصرًا، فلا يكفي إضافة الأصناف: يلزم مضيف
+  `FragmentActivity` **وتغيير التخطيط** إلى `FragmentContainerView` (أو إعادة تأهيل النشاط).
+  لم يُقس هذا الجزء لأنه لم يُبلغه التنفيذ؛ هو استنتاج من المصدر، ويُعلن كذلك.
+- لذلك أُزيل إعلان الشاشتين من مانيفست debug، ولم يُدَّع أي نجاح. القرار المطلوب: هل نعدّل التخطيطات
+  الأصلية لهذه السلسلة، أم نبني شاشة الإعدادات بأنفسنا فوق موارد الأصل، أم نؤجلها للأوضاع الثلاثة.
