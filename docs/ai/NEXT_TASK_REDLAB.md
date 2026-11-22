@@ -189,3 +189,15 @@ python3 tools/port_materials.py --self-test
 
 **الحالة بعد القياس:** الشجرة نظيفة (`git status` = ٠) وتُترجم (`compileDebugJavaWithJavac` = exit 0)،
 والمسوّدة الكاملة (١٢٩ ملفًا، ٢٥٢KB) في `/tmp/gamespace-settings-draft.tgz`. لا نجاح مُدّعى لأي شاشة.
+
+## تحديث 2026-11-22 (٥) — قائمة الألعاب صارت شاشة الدخول (مقيسة)
+
+- `AndroidManifest.xml`: نيّة `MAIN`/`LAUNCHER` انتقلت من `MainActivity` إلى `GameListActivity`
+  (و`MainActivity` صارت `exported="false"`، وشاشة الحالة تبقى للقياس لا للاستخدام). أُزيل تجاوز
+  debug القديم الذي كان يصدّر القائمة، فصار المانيفستان متّسقين.
+- **مقيس على rodin · Android 16:** `assembleDebug` = exit 0 · `adb install -r` = Success ·
+  `am start -W -a MAIN -c LAUNCHER -n dev.redlab.gamespace/.GameListActivity` = **Status: ok،
+  Activity: GameListActivity، TotalTime: 154ms** · `mCurrentFocus` على القائمة · مخزن الانهيار **فارغ**
+  · العملية حيّة (`pidof` = 23116).
+- حدّ القياس: بعد الإطلاق عاد تطبيق المالك (Komikku) إلى المقدمة، فلم يُعد قراءة محتوى الشاشة بـ
+  `uiautomator` في هذه اللقطة (كان يقرأ نافذة GitHub). الشبكة نفسها مُقاسة في تكملة سابقة (٢٠ نصًا).

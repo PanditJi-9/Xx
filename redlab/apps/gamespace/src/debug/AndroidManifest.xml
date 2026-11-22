@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Debug-only: lets the harness start GameListActivity directly with `am start` so the screen
-     can be measured on a device (shell lacks INJECT_EVENTS here, so taps are unavailable).
-     Release keeps android:exported="false" from the main manifest. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-    <application>
-        <activity
-            android:name=".GameListActivity"
-            android:exported="true"
-            tools:replace="android:exported" />
-    </application>
+<!-- The game list is the launcher entry in the main manifest, so debug no longer needs to export
+     anything. Kept as an empty application element so the source set stays explicit. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application />
 </manifest>

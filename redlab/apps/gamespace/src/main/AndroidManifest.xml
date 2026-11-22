@@ -22,16 +22,18 @@
             android:name="dev.redlab.gamespace.ProofActivity"
             android:exported="true" />
 
+        <!-- The games are the app: the screen that lists them is the launcher entry. The status
+             screen stays reachable for measurements but is no longer what a user lands on. -->
         <activity
             android:name="dev.redlab.gamespace.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name="dev.redlab.gamespace.GameListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="dev.redlab.gamespace.GameListActivity"
-            android:exported="false" />
     </application>
 </manifest>
