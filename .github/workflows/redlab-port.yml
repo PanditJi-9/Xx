@@ -169,14 +169,21 @@ jobs:
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
             "platforms;android-36" "build-tools;36.0.0" > /dev/null
 
+      - name: Assert the resources the build will compile
+        run: |
+          # Only the owned res tree: the materials tree carries the vendor's original table, whose
+          # `values/public.xml` declares 41 drawable names beginning with `$` (AnimatedVectorDrawable
+          # internals). A standalone `aapt2 compile --dir` refuses those names, while the build's own
+          # resource pipeline accepts them — measured here with build-tools 36, 37 and Debian 2.19 —
+          # so asserting on materials would fail a build that succeeds. The build step below stays the
+          # authority for materials. The binary is pinned to the one Gradle uses: the runner image also
+          # ships a newer build-tools, and a gate must not invent a refusal the build would not make.
+          python3 tools/resource_compile.py --assert \
+            --aapt2 /usr/local/lib/android/sdk/build-tools/36.0.0/aapt2 \
+            --include redlab/apps/gamespace/src/main/res
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Assert resources with the runner aapt2
-        run: |
-          python3 tools/resource_compile.py --assert \
-            --include redlab/apps/gamespace/src/main/res \
-            --include redlab/apps/gamespace/materials/res
 
       - name: Read the original package of each app from its decoded manifest
         run: |

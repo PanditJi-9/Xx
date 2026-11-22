@@ -53,7 +53,7 @@ ERROR_LINE = re.compile(r"^(?P<file>[^:]+):(?P<line>\d+): error: (?P<message>.+)
 FAILED_FILE = re.compile(r"^(?P<file>[^:]+): error: file failed to compile\.$")
 # Some refusals carry no file or line at all — measured: `ERROR: '$' is not a valid file-based
 # resource name character`. Dropping them is what let the assay report "1 refusal" without a name.
-BARE_ERROR = re.compile(r"^ERROR: (?P<message>.+)$")
+BARE_ERROR = re.compile(r"^(?:ERROR|error): (?P<message>.+)$")
 
 
 def find_aapt2() -> str | None:
@@ -133,9 +133,13 @@ def offenders(aapt2: str, directory: str, root: str) -> list[str]:
         # aapt2 returns 1 for resource errors, and something else when it did not run at all
         # (measured here: exit 132, SIGILL, with no output on stderr). An empty problem list then
         # means "no judgement", not "all good" — and a gate that reads a crash as a pass is worse
-        # than no gate, because it is quoted as evidence.
+        # than no gate, because it is quoted as evidence. aapt2 also refuses whole classes of
+        # input without a `file:line: error:` prefix (measured in run 45050806839: exit 1, no
+        # parseable line), so its own words ride along — a verdict with no message cannot be acted on.
+        tail = [line.strip() for line in stderr.splitlines() if line.strip()][-6:]
+        evidence = f" — {tail[0][:300]}" if tail else " وبلا رسالة"
         problems.append(
-            f"{os.path.relpath(directory, root)}: aapt2 خرج بـ{code} بلا خطأ مورد — الحكم غير متاح"
+            f"{os.path.relpath(directory, root)}: aapt2 خرج بـ{code} بلا خطأ مورد{evidence}"
         )
     return problems
 
@@ -229,6 +233,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--self-test", action="store_true", help="يقيس الأداة نفسها")
     parser.add_argument("--root", default=REPO, help="جذر المستودع (للفحص الذاتي)")
     parser.add_argument(
+        "--aapt2",
+        default=os.environ.get("AAPT2") or None,
+        metavar="PATH",
+        help="aapt2 محدَّد بالمسار — يُمرَّر من CI ليكون نفس الملفّ الذي يبني به Gradle",
+    )
+    parser.add_argument(
         "--include",
         action="append",
         default=[],
@@ -241,7 +251,12 @@ def main(argv: list[str] | None = None) -> int:
         return self_test()
 
     root = os.path.abspath(args.root)
-    aapt2 = find_aapt2()
+    aapt2 = args.aapt2 or find_aapt2()
+    if args.aapt2 and not os.access(args.aapt2, os.X_OK):
+        # An explicitly named binary that cannot run is a broken invocation, not a missing tool:
+        # passing here would hide the gate instead of measuring it.
+        print(f"✗ aapt2 المطلوب غير قابل للتنفيذ: {args.aapt2}")
+        return 2
     if not aapt2:
         print("⚠️ لا `aapt2` في هذه البيئة ⇒ ترجمة الموارد **غير مُتحقَّقة** (لا يُقال «تمرّ»)")
         if args.json:
