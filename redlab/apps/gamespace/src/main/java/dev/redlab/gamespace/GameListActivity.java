@@ -15,7 +15,8 @@ import android.view.WindowInsetsController;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -24,20 +25,33 @@ import java.util.List;
 
 import dev.redlab.gamespace.recycler.BannerRecyclerView;
 import dev.redlab.gamespace.view.GamePlayLayout;
+import dev.redlab.gamespace.view.SelectedScaleView;
 
 /**
  * The original lobby shape, filled with the apps this phone can launch.
  *
- * <p>It inflates the original {@code game_lobby_layout} verbatim: background, title, side
- * controls, Lottie frame, {@link BannerRecyclerView} and the play slot all come from the RedMagic
- * resources. Only the play slot is replaced by {@link GamePlayLayout}, which needs no Nubia
- * service. No layout file is edited.
+ * <p>It inflates the original {@code game_lobby_layout} verbatim and uses the lobby's full banner
+ * mode: a vertical {@link LinearLayoutManager} over the original {@code game_item_full} cards.
+ * The banner geometry is the measured original one ({@code BannerManager.updateParamsWithNormal}
+ * with full mode on): 1700 px wide, 144 px from the top, 16 px from the left, pinned from top to
+ * bottom of the parent. The original stream feature is absent on a stock phone, so the measured
+ * 15 px bottom margin becomes 0, exactly as that method computes it.
+ *
+ * <p>The play slot is the owned {@link GamePlayLayout}, and the card is the owned
+ * {@link SelectedScaleView}; both keep the original resources and need no Nubia service. No layout
+ * file is edited.
  */
 public final class GameListActivity extends Activity {
+
+    /** Measured in BannerManager.updateParamsWithNormal(true). */
+    private static final int BANNER_WIDTH_PX = 1700;
+    private static final int BANNER_TOP_MARGIN_PX = 144;
+    private static final int BANNER_LEFT_MARGIN_PX = 16;
 
     private final List<Entry> entries = new ArrayList<>();
     private GameAdapter adapter;
     private TextView selectedName;
+    private int selectedPosition = -1;
     private Entry selected;
 
     @Override
@@ -56,7 +70,20 @@ public final class GameListActivity extends Activity {
 
         BannerRecyclerView list = findViewById(R.id.game_list);
         list.setAlpha(1f);
-        list.setLayoutManager(new GridLayoutManager(this, 4));
+        list.setHasFixedSize(true);
+        list.setLayoutManager(new LinearLayoutManager(this));
+        // The XML card stops above lobby_3a for the card-track mode; full mode pins the list to the
+        // parent instead, so replace the inflated params with the measured ones.
+        ConstraintLayout.LayoutParams params =
+                new ConstraintLayout.LayoutParams(BANNER_WIDTH_PX, 0);
+        params.leftToLeft = 0;
+        params.topToTop = 0;
+        params.bottomToBottom = 0;
+        params.leftMargin = BANNER_LEFT_MARGIN_PX;
+        params.topMargin = BANNER_TOP_MARGIN_PX;
+        params.bottomMargin = 0;
+        list.setLayoutParams(params);
+
         adapter = new GameAdapter();
         list.setAdapter(adapter);
 
@@ -115,17 +142,32 @@ public final class GameListActivity extends Activity {
             runOnUiThread(() -> {
                 entries.clear();
                 entries.addAll(found);
-                adapter.notifyDataSetChanged();
-                if (!entries.isEmpty()) {
-                    select(entries.get(0));
+                if (entries.isEmpty()) {
+                    selectedPosition = -1;
+                    selected = null;
+                } else {
+                    selectedPosition = 0;
+                    selected = entries.get(0);
+                    selectedName.setText(selected.label);
                 }
+                adapter.notifyDataSetChanged();
             });
         }, "game-list").start();
     }
 
-    private void select(Entry entry) {
-        selected = entry;
-        selectedName.setText(entry.label);
+    /** The original adapter selects through the card position; the selected card does not launch. */
+    private void select(int position) {
+        if (position < 0 || position >= entries.size() || position == selectedPosition) {
+            return;
+        }
+        int previous = selectedPosition;
+        selectedPosition = position;
+        selected = entries.get(position);
+        selectedName.setText(selected.label);
+        if (previous >= 0) {
+            adapter.notifyItemChanged(previous);
+        }
+        adapter.notifyItemChanged(position);
     }
 
     private void openSelected() {
@@ -162,21 +204,30 @@ public final class GameListActivity extends Activity {
 
         @Override
         public GameHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View card = getLayoutInflater().inflate(R.layout.game_item_medium, parent, false);
+            View card = getLayoutInflater().inflate(R.layout.game_item_full, parent, false);
             return new GameHolder(card);
         }
 
         @Override
         public void onBindViewHolder(GameHolder holder, int position) {
             Entry entry = entries.get(position);
-            holder.label.setText(entry.label);
-            holder.label.setVisibility(View.VISIBLE);
             holder.icon.setImageDrawable(entry.icon);
-            holder.icon.setVisibility(View.VISIBLE);
-            holder.itemView.setOnClickListener(view -> select(entry));
+            holder.name.setText(entry.label);
+            holder.card.setSupportProperty(false);
+            holder.card.setType(position == selectedPosition ? 0 : 1);
+
+            holder.itemView.setOnClickListener(view -> {
+                int current = holder.getBindingAdapterPosition();
+                if (current != RecyclerView.NO_POSITION) {
+                    select(current);
+                }
+            });
             holder.itemView.setOnLongClickListener(view -> {
-                select(entry);
-                open(entry.packageName);
+                int current = holder.getBindingAdapterPosition();
+                if (current != RecyclerView.NO_POSITION) {
+                    select(current);
+                    open(entries.get(current).packageName);
+                }
                 return true;
             });
         }
@@ -188,18 +239,18 @@ public final class GameListActivity extends Activity {
     }
 
     private static final class GameHolder extends RecyclerView.ViewHolder {
+        final SelectedScaleView card;
         final ImageView icon;
-        final TextView label;
+        final TextView name;
 
         GameHolder(View card) {
             super(card);
-            // The original card carries a banner slot and a glossy mask meant for downloaded
-            // artwork; a launchable app has only an icon, so those two stay hidden and the icon
-            // fills the slot. The card itself keeps the original size, colour and corner radius.
-            card.findViewById(R.id.game_banner).setVisibility(View.GONE);
-            card.findViewById(R.id.card_mask).setVisibility(View.GONE);
-            icon = card.findViewById(R.id.icon);
-            label = card.findViewById(R.id.game_name);
+            this.card = (SelectedScaleView) card;
+            this.icon = card.findViewById(R.id.icon);
+            this.name = card.findViewById(R.id.full_item_game_name);
+            // A launchable app has no download progress; the original adapter hides this view for
+            // every item that is not a download.
+            card.findViewById(R.id.icon_progress).setVisibility(View.GONE);
         }
     }
 }
