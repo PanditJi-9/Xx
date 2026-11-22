@@ -42,6 +42,7 @@ public class SelectedScaleView extends ConstraintLayout {
     private TextView mName;
     private TextView mSize;
     private TextView mTime;
+    private boolean mInitialized;
     private boolean mIsSelected;
     private boolean mIsSupportProperty;
 
@@ -85,9 +86,12 @@ public class SelectedScaleView extends ConstraintLayout {
 
     @Override
     public void setSelected(boolean selected) {
-        if (this.mIsSelected == selected) {
+        // Every bind must reach onSelected at least once: the XML starts with the property
+        // placeholders visible, and only onSelected(false) hides them on an unselected card.
+        if (this.mInitialized && this.mIsSelected == selected) {
             return;
         }
+        this.mInitialized = true;
         this.mIsSelected = selected;
         onSelected(selected);
     }
