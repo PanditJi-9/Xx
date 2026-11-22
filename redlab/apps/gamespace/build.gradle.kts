@@ -230,6 +230,16 @@ val portAars: Configuration = configurations.create("portAars") {
 }
 dependencies { portLibraries.forEach { add("portAars", it) } }
 
+// The original table only covers the 1.1.3 ConstraintLayout attrs. Other libraries pull newer
+// ConstraintLayout transitively, and Gradle would resolve the highest version, putting sentinel
+// ids back into the styleable array. Force the version whose whole attribute set the original
+// public.xml can name, so the packaged classes and the generated R stay the same version.
+listOf("portAars", "portRuntime").forEach { name ->
+    configurations.named(name) {
+        resolutionStrategy.force("androidx.constraintlayout:constraintlayout:1.1.3")
+    }
+}
+
 val portRDir = layout.buildDirectory.dir("generated/port-r")
 
 val generatePortR = tasks.register("generatePortR") {

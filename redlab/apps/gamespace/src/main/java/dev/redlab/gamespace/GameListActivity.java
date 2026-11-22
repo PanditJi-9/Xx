@@ -214,7 +214,9 @@ public final class GameListActivity extends Activity {
             holder.icon.setImageDrawable(entry.icon);
             holder.name.setText(entry.label);
             holder.card.setSupportProperty(false);
-            holder.card.setType(position == selectedPosition ? 0 : 1);
+            // setType() leaves the view's own selection flag untouched, so re-selecting a card
+            // after another was chosen would not restore its frame. Drive the real selected state.
+            holder.card.setSelected(position == selectedPosition);
 
             holder.itemView.setOnClickListener(view -> {
                 int current = holder.getBindingAdapterPosition();

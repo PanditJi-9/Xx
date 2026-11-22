@@ -228,6 +228,22 @@ jobs:
           if count == 0:
               raise SystemExit('No generated library styleable arrays were checked')
           print(f'styleable arrays without zero attribute ids: {count}')
+
+          # A sentinel id is not in the resource table. If one reaches the ConstraintLayout
+          # styleable, obtainStyledAttributes drops the whole array and every constraint child
+          # silently collapses to 0,0 (measured on the banner lobby). This is the exact version
+          # that has to stay whole: 1.1.3 is the only candidate whose attributes all exist in the
+          # original public.xml.
+          constraint = module / 'build/generated/port-r/androidx/constraintlayout/widget/R.java'
+          if not constraint.is_file():
+              raise SystemExit('androidx.constraintlayout.widget.R.java was not generated')
+          match = re.search(r'int\[\]\s+ConstraintLayout_Layout\s*=\s*\{([^}]*)\}',
+                            constraint.read_text())
+          if match is None:
+              raise SystemExit('ConstraintLayout_Layout styleable is missing')
+          if '0x7f70' in match.group(1):
+              raise SystemExit('ConstraintLayout_Layout still has unresolved sentinel attribute ids')
+          print('ConstraintLayout_Layout styleable: no sentinel ids')
           PY
 
       # compileOnly proves the units compile; this proves the classes they call are actually in the
