@@ -37,8 +37,9 @@
     <string name="rl_hub_games_count">Launchable apps: %1$d</string>
     <string name="rl_hub_summary_note">Detailed achievements need the Nubia GameCenter database, which is not available on this phone.</string>
     <string name="rl_hub_about_body">Package: %1$s\nVersion: %2$s\nThis build reuses the original Game Space resources under the owner package name and runs without Nubia system services.</string>
-    <string name="rl_hub_disabled_title">Not available on this phone</string>
-    <string name="rl_hub_disabled_body">Controller panel, gift bag, Game Notes, RedMagic time, 3A/PC mode, recordings and network acceleration need Nubia system services. They are shown here with their reason instead of a working switch.</string>
+    <string name="rl_hw_only">This setting needs the original RedMagic hardware.</string>
+    <string name="rl_hub_up_to_date">Game Space is up to date.</string>
+    <string name="rl_open_failed">This system does not provide this screen.</string>
     <string name="rl_vendor_notes">Game Notes needs the Nubia notes service, which is not on this phone.</string>
     <string name="rl_vendor_gift">The gift bag needs the Nubia GameCenter account service.</string>
     <string name="rl_vendor_red_time">RedMagic time needs the Nubia GameCenter service.</string>

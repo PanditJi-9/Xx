@@ -2,10 +2,12 @@ package dev.redlab.gamespace;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.XmlResourceParser;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -27,6 +29,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,15 +51,21 @@ import cn.nubia.gamecenter.settings.GcsAnimationUtil;
  *
  * <p>It inflates the original {@code gcs_gamecenter_main}, {@code gcs_gamecenter_titlebar},
  * {@code gcs_category_item} and {@code gcs_divider} resources unchanged, keeps the original
- * category icons, strings and colours, and hosts owned panels instead of the vendor fragments.
- * Every action here either calls a standard Android surface (system settings, notification
- * policy, wallpaper manager) or states in place why the Nubia-only feature is not available.
+ * category icons, strings and colours, and renders each section from the original
+ * {@code res/xml/gcs_*} preference screen, so the rows, order and wording are the stock ones.
+ * A row does real work through a standard Android API where one exists; a hardware-only row
+ * keeps its stock appearance and says once, when touched, that it needs the RedMagic hardware.
  */
 public final class GameCenterActivity extends Activity {
 
     /** Opened by the lobby wallpaper control; selects that category instead of the first one. */
     public static final String EXTRA_SECTION = "dev.redlab.gamespace.extra.SECTION";
     public static final String SECTION_WALLPAPER = "wallpaper";
+
+    private static final String PREFS = "game_space_center";
+    private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
+    private static final int[] WALLPAPERS = {
+            R.mipmap.wallpaper_0, R.mipmap.wallpaper_1, R.mipmap.wallpaper_2, R.mipmap.wallpaper_3};
 
     private final List<Row> rows = new ArrayList<>();
 
@@ -162,6 +173,7 @@ public final class GameCenterActivity extends Activity {
         addCategory(R.drawable.network_settings, R.string.gcs_gamecenter_menu_network, Kind.NETWORK);
         addCategory(R.drawable.not_disturb_settings, R.string.gcs_gamecenter_menu_not_disturb, Kind.ZEN);
         addCategory(R.drawable.game_space_wallpaper, R.string.gcs_gamecenter_menu_game_wallpaper, Kind.WALLPAPER);
+        addCategory(R.drawable.competitive_lamp, R.string.gamekey_lamp_switch, Kind.LAMP);
         addDivider();
         addCategory(R.drawable.other_options, R.string.gcs_gamecenter_menu_other_options, Kind.OTHER);
         addCategory(R.drawable.about_gamespace, R.string.gcs_gamecenter_menu_about, Kind.ABOUT);
@@ -238,6 +250,9 @@ public final class GameCenterActivity extends Activity {
             case WALLPAPER:
                 buildWallpaper(box);
                 break;
+            case LAMP:
+                renderOriginalScreen(box, R.xml.gcs_gamekey_lamp_settings);
+                break;
             case OTHER:
                 buildOther(box);
                 break;
@@ -256,124 +271,22 @@ public final class GameCenterActivity extends Activity {
     }
 
     private void buildScreen(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_screen));
-        addAction(box, getString(stringId("rl_hub_system_display")), null,
-                view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addAction(box, getString(stringId("rl_hub_brightness")), null,
-                view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addAction(box, getString(stringId("rl_hub_timeout")), null,
-                view -> open(Settings.ACTION_DISPLAY_SETTINGS));
-        addSubheading(box, getString(stringId("rl_hub_refresh")));
-        addBody(box, refreshSummary());
-        addBody(box, getString(stringId("rl_hub_refresh_note")));
-        addAction(box, getString(stringId("rl_hub_rotation")), null,
-                view -> open(Settings.ACTION_DISPLAY_SETTINGS));
+        renderOriginalScreen(box, R.xml.gcs_screen_settings);
     }
 
     private void buildNetwork(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_network));
-        addBody(box, getString(stringId("rl_hub_network_value"), activeNetworkName()));
-        addAction(box, getString(stringId("rl_hub_wifi")), null,
-                view -> open(Settings.ACTION_WIFI_SETTINGS));
-        addAction(box, getString(stringId("rl_hub_wireless")), null,
-                view -> open(Settings.ACTION_WIRELESS_SETTINGS));
-        addAction(box, getString(stringId("rl_hub_data")), null,
-                view -> open(Settings.ACTION_DATA_USAGE_SETTINGS));
+        renderOriginalScreen(box, R.xml.gcs_net_settings);
     }
 
     private void buildZen(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_not_disturb));
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        boolean granted = manager != null && manager.isNotificationPolicyAccessGranted();
-        String state = getString(stringId("rl_hub_net_none"));
-        if (manager != null) {
-            state = manager.getCurrentInterruptionFilter() == NotificationManager.INTERRUPTION_FILTER_ALL
-                    ? getString(stringId("rl_hub_zen_off"))
-                    : getString(stringId("rl_hub_zen_on"));
-        }
-        addBody(box, getString(stringId("rl_hub_zen_state"), state));
-
-        if (!granted) {
-            addAction(box, getString(stringId("rl_hub_zen_grant")), null,
-                    view -> open(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
-        } else {
-            addAction(box, getString(stringId("rl_hub_zen_toggle")), null, view -> toggleZen());
-        }
-        addBody(box, getString(stringId("rl_hub_zen_note")));
-    }
-
-    private void toggleZen() {
-        NotificationManager manager = getSystemService(NotificationManager.class);
-        if (manager == null || !manager.isNotificationPolicyAccessGranted()) {
-            return;
-        }
-        int next = manager.getCurrentInterruptionFilter() == NotificationManager.INTERRUPTION_FILTER_ALL
-                ? NotificationManager.INTERRUPTION_FILTER_PRIORITY
-                : NotificationManager.INTERRUPTION_FILTER_ALL;
-        try {
-            manager.setInterruptionFilter(next);
-        } catch (SecurityException denied) {
-            open(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-        }
-        renderCurrent();
-    }
-
-    private void buildWallpaper(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_game_wallpaper));
-
-        ImageView preview = new ImageView(this);
-        preview.setImageResource(R.mipmap.wallpaper_0);
-        preview.setAdjustViewBounds(true);
-        preview.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        box.addView(preview, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(210)));
-        addGap(box, 14);
-
-        addAction(box, getString(stringId("rl_hub_wallpaper_set")), null, view -> applyWallpaper());
-        addAction(box, getString(stringId("rl_hub_wallpaper_choose")), null, view -> {
-            Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-            openIntent(intent);
-        });
-        addBody(box, getString(stringId("rl_hub_wallpaper_note")));
-    }
-
-    private void applyWallpaper() {
-        new Thread(() -> {
-            boolean ok;
-            try {
-                android.app.WallpaperManager manager = android.app.WallpaperManager.getInstance(this);
-                manager.setBitmap(BitmapFactory.decodeResource(getResources(), R.mipmap.wallpaper_0));
-                ok = true;
-            } catch (IOException | SecurityException | OutOfMemoryError failed) {
-                ok = false;
-            }
-            boolean result = ok;
-            runOnUiThread(() -> Toast.makeText(
-                    this,
-                    stringId(result ? "rl_hub_wallpaper_done" : "rl_hub_wallpaper_failed"),
-                    Toast.LENGTH_SHORT).show());
-        }, "set-wallpaper").start();
+        renderOriginalScreen(box, R.xml.gcs_not_disturb_settings);
     }
 
     private void buildOther(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_other_options));
-        addAction(box, getString(stringId("rl_hub_notifications")), null, view ->
-                openIntent(new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName())));
-        addAction(box, getString(stringId("rl_hub_app_info")), null, view ->
-                openIntent(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .setData(Uri.parse("package:" + getPackageName()))));
-        addAction(box, getString(stringId("rl_hub_accessibility")), null,
-                view -> open(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-        addAction(box, getString(stringId("rl_hub_dev_options")), null,
-                view -> open(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
-        addGap(box, 10);
-        addSubheading(box, getString(stringId("rl_hub_disabled_title")));
-        addBody(box, getString(stringId("rl_hub_disabled_body")));
+        renderOriginalScreen(box, R.xml.gcs_other_options_settings);
     }
 
     private void buildAbout(LinearLayout box) {
-        addHeading(box, getString(R.string.gcs_gamecenter_menu_about));
         String version = "?";
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -384,12 +297,231 @@ public final class GameCenterActivity extends Activity {
             // The package is this process's package; the fallback only covers a broken install.
         }
         addBody(box, getString(stringId("rl_hub_about_body"), getPackageName(), version));
-        addAction(box, getString(stringId("rl_hub_app_info")), null, view ->
-                openIntent(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .setData(Uri.parse("package:" + getPackageName()))));
-        addGap(box, 10);
-        addSubheading(box, getString(stringId("rl_hub_disabled_title")));
-        addBody(box, getString(stringId("rl_hub_disabled_body")));
+        addGap(box, 8);
+        renderOriginalScreen(box, R.xml.gcs_about);
+    }
+
+    /**
+     * The stock screens are PreferenceScreens in res/xml, so they are built from the exact files
+     * the vendor build used: same rows, order, titles, summaries and icons. Only the interaction
+     * is ours, so a row can do real work on a phone that is not a RedMagic.
+     */
+    private void renderOriginalScreen(LinearLayout box, int xml) {
+        try (XmlResourceParser parser = getResources().getXml(xml)) {
+            while (parser.next() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+                String tag = parser.getName();
+                if ("PreferenceScreen".equals(tag)) {
+                    continue;
+                }
+                String title = text(parser, "title");
+                if (title == null || title.isEmpty()) {
+                    // Rows without a title are decorative pieces of the stock screen.
+                    continue;
+                }
+                String summary = text(parser, "summary");
+                String key = parser.getAttributeValue(ANDROID_NS, "key");
+                if (tag.endsWith("SwitchPreference")) {
+                    addSwitchRow(box, key, title, summary);
+                } else {
+                    addPreferenceRow(box, key, title, summary);
+                }
+            }
+        } catch (Exception unreadable) {
+            android.util.Log.w("GameCenter",
+                    "cannot read " + getResources().getResourceName(xml), unreadable);
+        }
+    }
+
+    private String text(XmlResourceParser parser, String name) {
+        int id = parser.getAttributeResourceValue(ANDROID_NS, name, 0);
+        return id != 0 ? getString(id) : parser.getAttributeValue(ANDROID_NS, name);
+    }
+
+    private void addSwitchRow(LinearLayout box, String key, String title, String summary) {
+        View row = getLayoutInflater().inflate(R.layout.gcs_switch_preference, box, false);
+        bindRowText(row, title, summary);
+        ViewGroup frame = row.findViewById(android.R.id.widget_frame);
+        View widget = getLayoutInflater().inflate(R.layout.gcs_preference_widget_switch, frame, false);
+        frame.addView(widget);
+        ToggleButton toggle = widget.findViewById(R.id.gamespace_switch);
+        toggle.setAlpha(1.0f);
+        toggle.setClickable(false);
+        toggle.setFocusable(false);
+        hideSwitchDecor(widget);
+        toggle.setChecked(switchState(key));
+        row.setOnClickListener(view -> {
+            boolean next = !toggle.isChecked();
+            if (applyKey(key, next)) {
+                toggle.setChecked(next);
+                getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(key, next).apply();
+            } else {
+                hardwareOnly();
+            }
+        });
+        box.addView(row);
+    }
+
+    private void addPreferenceRow(LinearLayout box, String key, String title, String summary) {
+        View row = getLayoutInflater().inflate(R.layout.gcs_preference, box, false);
+        bindRowText(row, title, summary);
+        row.setOnClickListener(view -> {
+            if (!applyAction(key)) {
+                hardwareOnly();
+            }
+        });
+        box.addView(row);
+    }
+
+    private void bindRowText(View row, String title, String summary) {
+        ((TextView) row.findViewById(android.R.id.title)).setText(title);
+        TextView summaryView = row.findViewById(android.R.id.summary);
+        if (summary == null || summary.isEmpty()) {
+            summaryView.setVisibility(View.GONE);
+        } else {
+            summaryView.setText(summary);
+        }
+    }
+
+    private void hideSwitchDecor(View widget) {
+        int[] ids = {R.id.switch_button_bg, R.id.switch_button_track_black,
+                R.id.switch_button_track_gray, R.id.switch_button_thumb_red,
+                R.id.switch_button_thumb_black};
+        for (int id : ids) {
+            View layer = widget.findViewById(id);
+            if (layer != null) {
+                layer.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private boolean switchState(String key) {
+        if ("key_call_widonw".equals(key) || "key_new_message_remind".equals(key)) {
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null && manager.isNotificationPolicyAccessGranted()) {
+                int flag = "key_call_widonw".equals(key)
+                        ? NotificationManager.Policy.PRIORITY_CATEGORY_CALLS
+                        : NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES;
+                return (manager.getNotificationPolicy().priorityCategories & flag) != 0;
+            }
+        }
+        return getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean(key, false);
+    }
+
+    private boolean applyKey(String key, boolean checked) {
+        if ("key_call_widonw".equals(key) || "key_new_message_remind".equals(key)) {
+            return setPriorityCategory("key_call_widonw".equals(key)
+                    ? NotificationManager.Policy.PRIORITY_CATEGORY_CALLS
+                    : NotificationManager.Policy.PRIORITY_CATEGORY_MESSAGES, checked);
+        }
+        if ("gamemode_fix_light".equals(key)) {
+            return setFixedBrightness(checked);
+        }
+        return false;
+    }
+
+    private boolean applyAction(String key) {
+        if ("gcs_privacy_policy".equals(key)) {
+            openIntent(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(getString(R.string.zte_privacy_policy_url))));
+            return true;
+        }
+        if ("gcs_system_update".equals(key)) {
+            Toast.makeText(this, stringId("rl_hub_up_to_date"), Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean setPriorityCategory(int flag, boolean allow) {
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        if (manager == null) {
+            return false;
+        }
+        if (!manager.isNotificationPolicyAccessGranted()) {
+            open(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+            return false;
+        }
+        NotificationManager.Policy policy = manager.getNotificationPolicy();
+        int categories = allow
+                ? policy.priorityCategories | flag
+                : policy.priorityCategories & ~flag;
+        try {
+            manager.setNotificationPolicy(new NotificationManager.Policy(categories,
+                    policy.priorityCallSenders, policy.priorityMessageSenders,
+                    policy.suppressedVisualEffects));
+        } catch (SecurityException denied) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean setFixedBrightness(boolean fixed) {
+        if (!Settings.System.canWrite(this)) {
+            try {
+                startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:" + getPackageName())));
+            } catch (ActivityNotFoundException missing) {
+                open(Settings.ACTION_SETTINGS);
+            }
+            return false;
+        }
+        return Settings.System.putInt(getContentResolver(),
+                Settings.System.SCREEN_BRIGHTNESS_MODE,
+                fixed ? Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+                        : Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
+    }
+
+    private void hardwareOnly() {
+        Toast.makeText(this, stringId("rl_hw_only"), Toast.LENGTH_SHORT).show();
+    }
+
+    private void buildWallpaper(LinearLayout box) {
+        int selected = getSharedPreferences(PREFS, MODE_PRIVATE).getInt("wallpaper_choice", 0);
+        for (int index = 0; index < WALLPAPERS.length; index++) {
+            View item = getLayoutInflater().inflate(R.layout.gcs_wallpaper_item, box, false);
+            ImageView preview = item.findViewById(R.id.wallpaper_preview);
+            preview.setImageResource(WALLPAPERS[index]);
+            preview.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            item.findViewById(R.id.preview_selected_bg)
+                    .setVisibility(index == selected ? View.VISIBLE : View.GONE);
+            item.findViewById(R.id.preview_selected_mark)
+                    .setVisibility(index == selected ? View.VISIBLE : View.GONE);
+            item.findViewById(R.id.live_label).setVisibility(View.GONE);
+            item.findViewById(R.id.live_label_text).setVisibility(View.GONE);
+            item.findViewById(R.id.title).setVisibility(View.GONE);
+            int choice = index;
+            item.setOnClickListener(view -> applyWallpaper(choice));
+            box.addView(item);
+            addGap(box, 10);
+        }
+        addBody(box, getString(stringId("rl_hub_wallpaper_note")));
+    }
+
+    private void applyWallpaper(int index) {
+        new Thread(() -> {
+            boolean ok;
+            try {
+                WallpaperManager manager = WallpaperManager.getInstance(this);
+                manager.setBitmap(BitmapFactory.decodeResource(getResources(), WALLPAPERS[index]));
+                ok = true;
+            } catch (IOException | SecurityException | OutOfMemoryError failed) {
+                ok = false;
+            }
+            boolean result = ok;
+            runOnUiThread(() -> {
+                if (result) {
+                    getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                            .putInt("wallpaper_choice", index).apply();
+                    renderCurrent();
+                }
+                Toast.makeText(this, stringId(result
+                        ? "rl_hub_wallpaper_done" : "rl_hub_wallpaper_failed"),
+                        Toast.LENGTH_SHORT).show();
+            });
+        }, "set-wallpaper").start();
     }
 
     private String refreshSummary() {
@@ -453,7 +585,7 @@ public final class GameCenterActivity extends Activity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (ActivityNotFoundException | SecurityException missing) {
-            Toast.makeText(this, stringId("rl_hub_disabled_title"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, stringId("rl_open_failed"), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -549,6 +681,7 @@ public final class GameCenterActivity extends Activity {
         NETWORK,
         ZEN,
         WALLPAPER,
+        LAMP,
         OTHER,
         ABOUT
     }

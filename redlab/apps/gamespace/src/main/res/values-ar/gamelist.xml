@@ -37,8 +37,9 @@
     <string name="rl_hub_games_count">التطبيقات القابلة للتشغيل: %1$d</string>
     <string name="rl_hub_summary_note">الإنجازات التفصيلية تحتاج قاعدة بيانات GameCenter من Nubia، وهي غير متاحة على هذا الهاتف.</string>
     <string name="rl_hub_about_body">الحزمة: %1$s\nالإصدار: %2$s\nيعيد هذا البناء استخدام موارد Game Space الأصلية تحت حزمة المالك ويعمل دون خدمات Nubia.</string>
-    <string name="rl_hub_disabled_title">غير متاح على هذا الهاتف</string>
-    <string name="rl_hub_disabled_body">لوحة التحكم، حقيبة الهدايا، ملاحظات الألعاب، وقت RedMagic، وضع 3A/PC، التسجيلات وتسريع الشبكة تحتاج خدمات Nubia. تُعرض هنا مع سببها بدل مفتاح يعمل.</string>
+    <string name="rl_hw_only">هذا الإعداد يحتاج عتاد RedMagic الأصلي.</string>
+    <string name="rl_hub_up_to_date">Game Space محدّث.</string>
+    <string name="rl_open_failed">هذا النظام لا يوفر هذه الشاشة.</string>
     <string name="rl_vendor_notes">ملاحظات الألعاب تحتاج خدمة ملاحظات Nubia، وهي غير موجودة على هذا الهاتف.</string>
     <string name="rl_vendor_gift">حقيبة الهدايا تحتاج خدمة حساب GameCenter من Nubia.</string>
     <string name="rl_vendor_red_time">وقت RedMagic يحتاج خدمة GameCenter من Nubia.</string>
