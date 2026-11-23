@@ -12,11 +12,13 @@ import android.content.pm.PackageManager;
 import android.content.res.XmlResourceParser;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -40,6 +42,9 @@ import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -70,9 +75,39 @@ public final class GameCenterActivity extends Activity {
     public static final String SECTION_RECORDS = "records";
     /** Opened by the upper bar's personal-center button. */
     public static final String SECTION_PROFILE = "profile";
+    /** Opened by the lobby's fan button: the real SoC and battery temperatures. */
+    public static final String SECTION_FAN = "fan";
+    /** Opened by the lobby's mode button: the power modes this device reports. */
+    public static final String SECTION_POWER = "power";
+    /** Opened by the planet strip's mirror and multi-screen cards. */
+    public static final String SECTION_MIRROR = "mirror";
+    /** Opened by the planet strip's plugin and behaviour cards. */
+    public static final String SECTION_OTHER = "other";
 
     private static final String PREFS = "game_space_center";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
+    /**
+     * Preference keys whose only implementation is genuinely RedMagic hardware or a Nubia
+     * service. Everything outside this list is either a real Android setting or a Game Space
+     * option this port keeps, so it never answers with the hardware sentence.
+     */
+    private static final String[] HARDWARE_KEYS = {
+            "auto_dissipating",
+            "device",
+            "fiber_catcher",
+            "learned_behavior",
+            "shoulder_key_launch_gamespace",
+            "key_mirror_host_mode",
+            "xr_mirror",
+            "gamekey_lamp_switch",
+            "gamemode_video_quality",
+            "gcs_record_game_switch",
+            "gcs_record_full_video",
+            "gcs_game_video_death",
+            "gcs_game_real_time_video_death",
+            "gcs_game_scene_interaction_switch"
+    };
+
     private static final int[] WALLPAPERS = {
             R.mipmap.wallpaper_0, R.mipmap.wallpaper_1, R.mipmap.wallpaper_2, R.mipmap.wallpaper_3};
 
@@ -160,6 +195,10 @@ public final class GameCenterActivity extends Activity {
                 : SECTION_STREAMING.equals(section) ? Kind.STREAMING
                 : SECTION_RECORDS.equals(section) ? Kind.RECORDS
                 : SECTION_PROFILE.equals(section) ? Kind.PROFILE
+                : SECTION_FAN.equals(section) ? Kind.FAN
+                : SECTION_POWER.equals(section) ? Kind.POWER
+                : SECTION_MIRROR.equals(section) ? Kind.MIRROR
+                : SECTION_OTHER.equals(section) ? Kind.OTHER
                 : null;
         if (wanted != null) {
             for (int i = 0; i < rows.size(); i++) {
@@ -206,6 +245,9 @@ public final class GameCenterActivity extends Activity {
         addCategory(R.drawable.stream_game, stringId("gcs_streaming"), Kind.STREAMING);
         addCategory(R.drawable.other_options, R.string.gcs_gamecenter_menu_other_options, Kind.OTHER);
         addCategory(R.drawable.competitive_lamp, R.string.gamekey_lamp_switch, Kind.LAMP);
+        addCategory(R.drawable.cooling_fan_on, R.string.gcs_game_fan_title, Kind.FAN);
+        addCategory(R.drawable.icon_strengthen_performance,
+                R.string.gamecontrol_menu_strengthperformance, Kind.POWER);
         addCategory(R.drawable.mirror_host, stringId("gcs_game_mirror_host_mode_title"), Kind.MIRROR);
         addCategory(R.drawable.screen_settings, R.string.gcs_gamecenter_menu_screen, Kind.SCREEN);
         addCategory(R.drawable.custom_refreshrate_60hz, R.string.gcs_game_refresh_rate_title,
@@ -306,13 +348,13 @@ public final class GameCenterActivity extends Activity {
                 renderVendorScreen(box, R.xml.gcs_watermark_settings);
                 break;
             case STREAMING:
-                renderVendorScreen(box, R.xml.gcs_streaming);
+                buildStreaming(box);
                 break;
             case LAMP:
                 renderVendorScreen(box, R.xml.gcs_gamekey_lamp_settings);
                 break;
             case MIRROR:
-                renderVendorScreen(box, R.xml.gcs_mirror_host_settings);
+                buildMirror(box);
                 break;
             case REFRESH_RATE:
                 buildRefreshRate(box);
@@ -326,6 +368,12 @@ public final class GameCenterActivity extends Activity {
             case OTHER:
                 buildOther(box);
                 break;
+            case FAN:
+                buildFan(box);
+                break;
+            case POWER:
+                buildPower(box);
+                break;
             case ABOUT:
                 buildAbout(box);
                 break;
@@ -333,11 +381,168 @@ public final class GameCenterActivity extends Activity {
         return scroll;
     }
 
+    /**
+     * The vendor fan page, with the real thermal readings this phone exposes.
+     *
+     * <p>Every control the stock page lists is kept: intelligent/manual cooling and the three
+     * speeds. Setting them needs the RedMagic fan service, which is absent, so each row says so
+     * once when touched. The temperatures above them are read from sysfs and the battery API, so
+     * the page is not empty information.
+     */
+    private void buildFan(LinearLayout box) {
+        addHeading(box, getString(R.string.gcs_game_fan_title));
+        addBody(box, detail(getString(stringId("rl_hub_thermal_soc")), socTemperature()));
+        addBody(box, detail(getString(stringId("rl_hub_thermal_battery")), batteryTemperature()));
+        addBody(box, getString(R.string.gcs_game_fan_auto_summary));
+        addBody(box, getString(R.string.gcs_game_fan_manual_summary));
+        addBody(box, getString(R.string.gcs_game_fan_speed_low) + " \u00b7 "
+                + getString(R.string.gcs_game_fan_speed_middle) + " \u00b7 "
+                + getString(R.string.gcs_game_fan_speed_high));
+        addBody(box, getString(stringId("rl_hub_fan_note")));
+    }
+
+    /**
+     * The stock performance modes, with the current thermal state as the measurable part.
+     *
+     * <p>The mode names are the vendor's own (Eco / Balance / Rise / Diablo). Switching between
+     * them is a system-server call the RedMagic performance service owns; on this phone the list
+     * and the current readings are real, and the switch is explained instead of faked.
+     */
+    private void buildPower(LinearLayout box) {
+        addHeading(box, getString(R.string.gamecontrol_menu_strengthperformance));
+        addBody(box, detail(getString(stringId("rl_hub_thermal_soc")), socTemperature()));
+        addBody(box, detail(getString(stringId("rl_hub_thermal_battery")), batteryTemperature()));
+        addSubheading(box, getString(stringId("rl_hub_power_modes")));
+        addBody(box, getString(R.string.nubia_game_performance_mode_1) + " \u00b7 "
+                + getString(R.string.nubia_game_performance_mode_2) + " \u00b7 "
+                + getString(R.string.nubia_game_performance_mode_3) + " \u00b7 "
+                + getString(R.string.nubia_game_performance_mode_4));
+        // The measurable power state of this phone: the battery, its charging state and the
+        // system battery saver, which is the one power mode every Android build really has.
+        Intent battery = registerReceiver(null,
+                new android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        if (battery != null) {
+            int level = battery.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = battery.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+            int status = battery.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            boolean charging = status == BatteryManager.BATTERY_STATUS_CHARGING
+                    || status == BatteryManager.BATTERY_STATUS_FULL;
+            if (level >= 0 && scale > 0) {
+                String value = Math.round(level * 100f / scale) + "%"
+                        + (charging ? " \u00b7 " + getString(stringId("rl_hub_charging")) : "");
+                addBody(box, detail(getString(stringId("rl_hub_battery_level")), value));
+            }
+        }
+        android.os.PowerManager power = getSystemService(android.os.PowerManager.class);
+        addAction(box, getString(stringId("rl_hub_battery_saver")),
+                yesNo(power != null && power.isPowerSaveMode()),
+                view -> open(Settings.ACTION_BATTERY_SAVER_SETTINGS));
+        addBody(box, getString(stringId("rl_hub_power_note")));
+    }
+
+    /** The streaming category, with the system's own cast page as its real entry. */
+    private void buildStreaming(LinearLayout box) {
+        addAction(box, getString(stringId("rl_hub_cast_open")), null,
+                view -> open(Settings.ACTION_CAST_SETTINGS));
+        renderVendorScreen(box, R.xml.gcs_streaming);
+    }
+
+    /** The mirror-host category: the system cast page is the standard, working equivalent. */
+    private void buildMirror(LinearLayout box) {
+        addAction(box, getString(stringId("rl_hub_cast_open")), null,
+                view -> open(Settings.ACTION_CAST_SETTINGS));
+        renderVendorScreen(box, R.xml.gcs_mirror_host_settings);
+    }
+
+    /** Hottest readable thermal zone, in Celsius. */
+    private String socTemperature() {
+        File zones = new File("/sys/class/thermal");
+        File[] files = zones.listFiles((dir, name) -> name.startsWith("thermal_zone"));
+        if (files == null) {
+            return getString(stringId("rl_hub_thermal_none"));
+        }
+        double hottest = Double.NaN;
+        for (File zone : files) {
+            double value = readTemperature(new File(zone, "temp"));
+            if (!Double.isNaN(value) && (Double.isNaN(hottest) || value > hottest)) {
+                hottest = value;
+            }
+        }
+        if (Double.isNaN(hottest)) {
+            return getString(stringId("rl_hub_thermal_none"));
+        }
+        return String.format(Locale.US, "%.1f \u00b0C", hottest);
+    }
+
+    private double readTemperature(File file) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            if (line == null) {
+                return Double.NaN;
+            }
+            double raw = Double.parseDouble(line.trim());
+            // The kernel reports millidegrees on nearly every Android device.
+            return raw > 1000 ? raw / 1000.0 : raw;
+        } catch (IOException | NumberFormatException unreadable) {
+            return Double.NaN;
+        }
+    }
+
+    private String batteryTemperature() {
+        Intent battery = registerReceiver(null,
+                new android.content.IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int tenths = battery == null ? -1
+                : battery.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+        if (tenths < 0) {
+            return getString(stringId("rl_hub_thermal_none"));
+        }
+        return String.format(Locale.US, "%.1f \u00b0C", tenths / 10.0);
+    }
+
     private void buildSummary(LinearLayout box) {
         addHeading(box, getString(R.string.gcs_gamecenter_menu_game_status));
         TextView count = addBody(box, getString(stringId("rl_hub_games_count"), countLaunchable()));
         count.setTextColor(Color.WHITE);
+        // The measurable part of the vendor's play-time card: today's foreground time in the
+        // games this lobby really lists. It needs the usage-access grant Android requires;
+        // without it the row offers the grant instead of inventing a number.
+        if (usageAccessGranted()) {
+            addBody(box, getString(stringId("rl_hub_playtime_today"),
+                    duration(playtimeToday())));
+        } else {
+            addAction(box, getString(stringId("rl_hub_usage_grant")), null,
+                    view -> open(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+        }
         addBody(box, getString(stringId("rl_hub_summary_note")));
+    }
+
+    /** Foreground time today, summed over the packages the lobby currently lists. */
+    private long playtimeToday() {
+        UsageStatsManager manager = getSystemService(UsageStatsManager.class);
+        if (manager == null) {
+            return 0;
+        }
+        Set<String> games = new LinkedHashSet<>();
+        for (GameLibrary.App app : GameLibrary.library(this)) {
+            games.add(app.packageName);
+        }
+        if (games.isEmpty()) {
+            return 0;
+        }
+        java.util.Calendar start = java.util.Calendar.getInstance();
+        start.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        start.set(java.util.Calendar.MINUTE, 0);
+        start.set(java.util.Calendar.SECOND, 0);
+        start.set(java.util.Calendar.MILLISECOND, 0);
+        long total = 0;
+        for (android.app.usage.UsageStats stats : manager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY, start.getTimeInMillis(),
+                System.currentTimeMillis())) {
+            if (games.contains(stats.getPackageName())) {
+                total += stats.getTotalTimeInForeground();
+            }
+        }
+        return total;
     }
 
     private void buildScreen(LinearLayout box) {
@@ -603,11 +808,17 @@ public final class GameCenterActivity extends Activity {
         toggle.setChecked(switchState(key));
         row.setOnClickListener(view -> {
             boolean next = !toggle.isChecked();
-            if (applyKey(key, next)) {
-                toggle.setChecked(next);
-                getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(key, next).apply();
-            } else {
+            if (isHardwareKey(key)) {
                 hardwareOnly();
+                return;
+            }
+            boolean applied = applyKey(key, next);
+            // Every switch that is not tied to RedMagic hardware keeps its state on this phone,
+            // whether or not it also reaches a system setting, so the row never flips back.
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putBoolean(key, next).apply();
+            toggle.setChecked(next);
+            if (!applied) {
+                Toast.makeText(this, stringId("rl_saved"), Toast.LENGTH_SHORT).show();
             }
         });
         box.addView(row);
@@ -617,8 +828,13 @@ public final class GameCenterActivity extends Activity {
         View row = getLayoutInflater().inflate(R.layout.gcs_preference, box, false);
         bindRowText(row, title, summary);
         row.setOnClickListener(view -> {
-            if (!applyAction(key)) {
+            if (applyAction(key, title)) {
+                return;
+            }
+            if (isHardwareKey(key)) {
                 hardwareOnly();
+            } else {
+                Toast.makeText(this, stringId("rl_no_page"), Toast.LENGTH_SHORT).show();
             }
         });
         box.addView(row);
@@ -647,6 +863,10 @@ public final class GameCenterActivity extends Activity {
     }
 
     private boolean switchState(String key) {
+        if ("mute".equals(key)) {
+            AudioManager audio = getSystemService(AudioManager.class);
+            return audio != null && audio.getStreamVolume(AudioManager.STREAM_MUSIC) == 0;
+        }
         if ("key_call_widonw".equals(key) || "key_new_message_remind".equals(key)) {
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null && manager.isNotificationPolicyAccessGranted()) {
@@ -668,20 +888,136 @@ public final class GameCenterActivity extends Activity {
         if ("gamemode_fix_light".equals(key)) {
             return setFixedBrightness(checked);
         }
+        if ("mute".equals(key)) {
+            return setMediaMuted(checked);
+        }
+        if ("game_refresh_rate_sc_switch".equals(key)) {
+            openIntent(new Intent(this,
+                    cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity.class));
+            return true;
+        }
+        String page = settingsPageFor(key);
+        if (page != null) {
+            open(page);
+            return true;
+        }
+        // The rest are software options of the Game Space this port carries; the switch keeps
+        // its state and the caller says so, instead of blaming missing hardware.
         return false;
     }
 
-    private boolean applyAction(String key) {
+    private boolean isHardwareKey(String key) {
+        if (key == null) {
+            return false;
+        }
+        for (String hardware : HARDWARE_KEYS) {
+            if (hardware.equals(key)) {
+                return true;
+            }
+        }
+        return key.startsWith("game_mode_fang_wu_chu")
+                || key.startsWith("gamemode_networkacceleration")
+                || key.startsWith("gcs_game_chicken_mode")
+                || key.startsWith("gcs_record_")
+                || key.startsWith("select_gamekey_lamp");
+    }
+
+    /** The stock preference key to the system page that really owns its behaviour. */
+    private String settingsPageFor(String key) {
+        if (key == null) {
+            return null;
+        }
+        switch (key) {
+            case "gamemode_save_energy":
+                return Settings.ACTION_BATTERY_SAVER_SETTINGS;
+            case "gamemode_color_enhanced":
+            case "gamemode_brilliant_time":
+            case "gamemode_tempered_screen_protector":
+            case "black_screen":
+            case "lock_screen":
+            case "key_off_intell_screen":
+                return Settings.ACTION_DISPLAY_SETTINGS;
+            case "gamemode_network":
+            case "gamemode_change_network":
+                return Settings.ACTION_WIRELESS_SETTINGS;
+            case "gamemode_assistant_sim":
+            case "key_off_screen_assistant":
+            case "key_off_three_finger_shot":
+            case "screen_shot_settings":
+            case "mis_operate_ban_toast":
+                return Settings.ACTION_ACCESSIBILITY_SETTINGS;
+            default:
+                return null;
+        }
+    }
+
+    /** Media mute is a real device state, so the switch mirrors and changes it. */
+    private boolean setMediaMuted(boolean muted) {
+        AudioManager audio = getSystemService(AudioManager.class);
+        if (audio == null) {
+            return false;
+        }
+        int max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        int target = muted ? 0
+                : getSharedPreferences(PREFS, MODE_PRIVATE).getInt("media_volume", max / 2);
+        try {
+            audio.setStreamVolume(AudioManager.STREAM_MUSIC, target, 0);
+        } catch (SecurityException denied) {
+            return false;
+        }
+        if (!muted) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putInt("media_volume", target).apply();
+        }
+        return true;
+    }
+
+    private boolean applyAction(String key, String title) {
         if ("gcs_privacy_policy".equals(key)) {
             openIntent(new Intent(Intent.ACTION_VIEW,
                     Uri.parse(getString(R.string.zte_privacy_policy_url))));
             return true;
         }
-        if ("gcs_system_update".equals(key)) {
+        if ("gcs_system_update".equals(key) || "gcs_about_update".equals(key)) {
             Toast.makeText(this, stringId("rl_hub_up_to_date"), Toast.LENGTH_SHORT).show();
             return true;
         }
+        if ("gcs_watermark_message".equals(key)) {
+            editWatermark(title);
+            return true;
+        }
+        String page = settingsPageFor(key);
+        if (page != null) {
+            open(page);
+            return true;
+        }
+        if ("gcs_icp".equals(key)) {
+            // The stock row is a licence number, not a link; show the number the build carries.
+            Toast.makeText(this, getString(stringId("rl_icp_value")), Toast.LENGTH_LONG).show();
+            return true;
+        }
         return false;
+    }
+
+    /** The stock watermark text row was an EditTextPreference; keep that shape with a dialog. */
+    private void editWatermark(String title) {
+        android.widget.EditText input = new android.widget.EditText(this);
+        input.setText(getSharedPreferences(PREFS, MODE_PRIVATE)
+                .getString("gcs_watermark_message", ""));
+        int pad = dp(20);
+        FrameLayout frame = new FrameLayout(this);
+        frame.setPadding(pad, pad, pad, pad);
+        frame.addView(input, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(title)
+                .setView(frame)
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                                .putString("gcs_watermark_message",
+                                        input.getText().toString().trim()).apply())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     private boolean setPriorityCategory(int flag, boolean allow) {
@@ -954,6 +1290,8 @@ public final class GameCenterActivity extends Activity {
         ZEN,
         WALLPAPER,
         LAMP,
+        FAN,
+        POWER,
         OTHER,
         ABOUT
     }

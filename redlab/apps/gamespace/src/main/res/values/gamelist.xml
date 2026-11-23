@@ -78,4 +78,19 @@
     <string name="rl_vendor_mode">Performance mode needs the RedMagic performance service.</string>
     <string name="rl_vendor_planet">RedMagic Planet needs the Nubia content service.</string>
     <string name="rl_vendor_top_game">Top games need the Nubia store feed.</string>
+    <string name="rl_hub_thermal_soc">SoC temperature</string>
+    <string name="rl_hub_thermal_battery">Battery temperature</string>
+    <string name="rl_hub_thermal_none">Not exposed by this phone</string>
+    <string name="rl_hub_power_modes">Stock modes</string>
+    <string name="rl_hub_power_note">Switching these modes is a RedMagic performance-service call. This phone does not expose that service, so the current readings are shown and the stock mode list is kept in place.</string>
+    <string name="rl_hub_fan_note">The fan and its speeds need the RedMagic fan service. The stock rows keep their place and the temperatures above are read from this phone.</string>
+    <string name="rl_tab_planet">RedMagic Planet</string>
+    <string name="rl_saved">Saved on this phone.</string>
+    <string name="rl_no_page">This option has no separate screen on this phone; its row keeps the choice.</string>
+    <string name="rl_icp_value">ICP filing: this build carries no licence number.</string>
+    <string name="rl_hub_battery_level">Battery level</string>
+    <string name="rl_hub_charging">charging</string>
+    <string name="rl_hub_battery_saver">Battery saver</string>
+    <string name="rl_hub_cast_open">Cast this screen to a TV or monitor</string>
+    <string name="rl_hub_playtime_today">Time in games today: %1$s</string>
 </resources>

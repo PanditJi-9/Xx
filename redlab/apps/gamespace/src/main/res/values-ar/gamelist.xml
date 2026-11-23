@@ -78,4 +78,19 @@
     <string name="rl_vendor_mode">وضع الأداء يحتاج خدمة الأداء من RedMagic.</string>
     <string name="rl_vendor_planet">RedMagic Planet تحتاج خدمة محتوى Nubia.</string>
     <string name="rl_vendor_top_game">أفضل الألعاب تحتاج تغذية متجر Nubia.</string>
+    <string name="rl_hub_thermal_soc">حرارة المعالج</string>
+    <string name="rl_hub_thermal_battery">حرارة البطارية</string>
+    <string name="rl_hub_thermal_none">لا يكشفها هذا الهاتف</string>
+    <string name="rl_hub_power_modes">الأوضاع الأصلية</string>
+    <string name="rl_hub_power_note">تبديل هذه الأوضاع نداء لخدمة الأداء من RedMagic. هذا الهاتف لا يكشف تلك الخدمة، لذلك تُعرض القراءات الحالية وتبقى قائمة الأوضاع الأصلية في مكانها.</string>
+    <string name="rl_hub_fan_note">المروحة وسرعاتها تحتاج خدمة المروحة من RedMagic. صفوف الأصل تبقى في مكانها، ودرجات الحرارة أعلاه تُقرأ من هذا الهاتف.</string>
+    <string name="rl_tab_planet">ريدماجيك بلانت</string>
+    <string name="rl_saved">حُفظ على هذا الهاتف.</string>
+    <string name="rl_no_page">هذا الخيار ليس له شاشة مستقلة على هذا الهاتف، وصفّه يحفظ اختيارك.</string>
+    <string name="rl_icp_value">رقم الترخيص: هذه النسخة لا تحمل رقمًا.</string>
+    <string name="rl_hub_battery_level">مستوى البطارية</string>
+    <string name="rl_hub_charging">قيد الشحن</string>
+    <string name="rl_hub_battery_saver">توفير الطاقة</string>
+    <string name="rl_hub_cast_open">بث هذه الشاشة إلى تلفاز أو شاشة</string>
+    <string name="rl_hub_playtime_today">وقت اللعب اليوم: %1$s</string>
 </resources>

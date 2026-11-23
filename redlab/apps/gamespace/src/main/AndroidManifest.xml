@@ -44,6 +44,13 @@
             </intent-filter>
         </activity>
 
+        <!-- The stock Add Games screen: original layout, title bar and list item, backed by the
+             on-device library choices instead of the vendor account service. -->
+        <activity
+            android:name="dev.redlab.gamespace.AppAddActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
+
         <!-- The original refresh-rate screen, ported verbatim: 27 lines, one layout, no vendor
              service. The vendor gated it behind a game key; the center opens it directly. -->
         <activity
