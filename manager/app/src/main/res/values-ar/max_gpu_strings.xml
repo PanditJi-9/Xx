@@ -45,7 +45,7 @@
 
     <string name="max_gpu_review_title">تغيير قيد المراجعة</string>
     <string name="max_gpu_review_intent">الهدف: %1$s</string>
-    <string name="max_gpu_review_current">الحدود الحالية: %1$s</string>
+    <string name="max_gpu_review_current">الحالي: %1$s</string>
     <string name="max_gpu_review_requested">المطلوب: %1$s</string>
     <string name="max_gpu_review_release">المطلوب: تحرير القفل والعودة إلى التحجيم الديناميكي</string>
     <string name="max_gpu_apply">تطبيق والتحقق</string>
@@ -60,10 +60,9 @@
     <string name="max_gpu_advanced_title">المختبر المتقدّم</string>
     <string name="max_gpu_advanced_desc">لا يظهر هنا إلا ما يعلنه الدرافر ويمكننا التحقق منه.</string>
     <string name="max_gpu_fixed_title">تردد ثابت</string>
-    <string name="max_gpu_fixed_on_desc">يطلب ترددًا واحدًا للمراجعة. لا يزال «تطبيق والتحقق» مطلوبًا؛ وقد تختلف الساعة الحيّة إذا رفضت النواة الطلب أو تدخّلت الحدود الحرارية.</string>
-    <string name="max_gpu_fixed_off_desc">يطلب حدًا أدنى وحدًا أعلى للمراجعة. بعد التطبيق، يظل المشغّل مسؤولًا عن الساعة الحيّة وتبقى الحماية الحرارية فعّالة.</string>
-    <string name="max_gpu_fixed_value">التردد المطلوب</string>
-    <string name="max_gpu_single_frequency_desc">المشغّل يعلن ترددًا واحدًا. اختره لتجهيز طلب تثبيت؛ ولا يزال «تطبيق والتحقق» مطلوبًا.</string>
+    <string name="max_gpu_fixed_on_desc">يُثبَّت تردد واحد بعينه، ولا يعود الحاكم يحجّم المعالج الرسومي.</string>
+    <string name="max_gpu_fixed_off_desc">يُضبط حدّ أدنى وحدّ أعلى، ويحجّم الحاكم بينهما.</string>
+    <string name="max_gpu_fixed_value">التردد المثبَّت</string>
     <string name="max_gpu_range_min">الحد الأدنى</string>
     <string name="max_gpu_range_max">الحد الأقصى</string>
     <string name="max_gpu_no_writable_range">لم تُثبت قائمة OPP قابلة للكتابة، فأُخفي النطاق والقفل.</string>
@@ -102,7 +101,7 @@
     <string name="max_gpu_notice_reset_partial_detail">أُعيد GPU إلى مدى المنصّة، لكن مفتاحًا محفوظًا واحدًا على الأقل لم يُمحَ وسيُعاد تطبيقه عند الإقلاع التالي. أعد المحاولة قبل إعادة التشغيل.</string>
     <string name="max_gpu_reset_defaults">استعادة افتراضي المنصّة</string>
     <string name="max_gpu_reset_defaults_desc">يحرّر قفل GPU الثابت المحفوظ، ويعيد المدى المعلن، ويمحو الإعدادات التي يعيد التطبيق تطبيقها عند الإقلاع.</string>
-    <string name="max_gpu_range_desc">حدّ أدنى وحدّ أعلى قيد المراجعة؛ ولا يسريان إلا بعد التطبيق والتحقق.</string>
+    <string name="max_gpu_range_desc">يُضبط حدّ أدنى وحدّ أعلى، ويحجّم الحاكم بينهما.</string>
     <string name="max_gpu_governor_staged_desc">حاكم آخر قيد المراجعة، ويسري مع بقية الطلب.</string>
 
     <string name="max_gpu_reason_unsupported_frequency">الدرافر لا يعلن هذا التردد.</string>
@@ -117,8 +116,7 @@
     <string name="max_gpu_reason_ambiguous_unit">وحدة التردد غير قابلة للحسم بثقة، فلا تُحاول أي كتابة.</string>
     <string name="max_gpu_reason_provider_ambiguous">أكثر من مزوّد GPU تطابق؛ ولا تُحاول أي كتابة.</string>
     <string name="max_gpu_reason_provider_disappeared">مزوّد GPU الذي رُوجع التغيير عليه لم يعد موجودًا.</string>
-    <string name="max_gpu_reason_pin_clock_mismatch">الساعة المقاسة لم تطابق تردد التثبيت المطلوب. راجع القيم الحيّة ونتيجة الاستعادة.</string>
-    <string name="max_gpu_reason_fixed_clock_unreadable">تعذّر قياس ساعة GPU الحيّة، فلم يُتحقّق من تردد التثبيت.</string>
+    <string name="max_gpu_reason_pin_clock_mismatch">كُتب فهرس التثبيت، لكن الساعة المقاسة لم تطابقه، فأُعيدت الحالة السابقة.</string>
     <string name="max_gpu_reason_empty_request">لم يُطلب شيء.</string>
     <string name="max_gpu_reason_unknown">تعذّر تنفيذ الطلب بأمان.</string>
     <string name="max_gpu_reason_technical">كود السبب</string>

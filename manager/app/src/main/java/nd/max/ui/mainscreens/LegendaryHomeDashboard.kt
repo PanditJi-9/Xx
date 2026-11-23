@@ -400,9 +400,11 @@ private fun GpuPulseCard(
         floorMhz = dashboard.gpuMinMhz,
         samples = dashboard.loadSamples,
         isGpu = true,
-        // Current clock, dynamic ceiling and declared capability each keep their own label.
-        topMhz = dashboard.gpuFreqMhz,
-        topLabel = stringResource(R.string.home_freq_now),
+        // الثلاثة التي طلبها المالك محفوظة كلها، وكلٌّ منها صار **موسومًا**: «السقف» أعلى البطاقة
+        // (الحدّ الحيّ مثل 754)، و«الأقصى» أسفلها من كتالوج الدرجات (مثل 1300)، و«الأدنى» في
+        // الطرف المقابل. والتردد الجاري (مثل 260) في الموجة وحدها — لا يُخلط بسقفٍ ولا مدعوم.
+        topMhz = dashboard.gpuCeilingMhz,
+        topLabel = stringResource(R.string.home_gpu_max_freq),
         rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
         accent = neuralPalette().accentAlt,
         onClick = onClick,
@@ -468,7 +470,7 @@ private fun FrequencyMetricCard(
     } else emptyList()
     val floor = floorMhz?.takeIf { it > 0 }
     val floorFraction = floor?.toFloat()?.div(rangeCeiling)?.takeIf { it.isFinite() }?.coerceIn(0f, 1f)
-    val rangeMax = if (isGpu) rangeMaxMhz?.takeIf { it > 0 } else ceilingMhz?.takeIf { it > 0 }
+    val rangeMax = rangeMaxMhz?.takeIf { it > 0 } ?: ceilingMhz?.takeIf { it > 0 }
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     val unknown = "\u2014"
 
@@ -521,7 +523,8 @@ private fun FrequencyMetricCard(
                 ticker = false,
             )
         }
-        // Both cards name the measured current clock. A missing labelled value has no fallback.
+        // سطر التردد: الصدر موسوم دائمًا — «السقف» للـGPU (الحدّ الحيّ) و«الآن» للـCPU (التردد
+        // الجاري لأنويتها العليا). بلا التسمية كان الرقم المجرّد يُقرأ كأنه حالة البطاقة نفسها.
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             if (topLabel != null) {
                 Text(
@@ -533,30 +536,12 @@ private fun FrequencyMetricCard(
                 Spacer(Modifier.width(MaxSpace.xs))
             }
             NeuralValue(
-                formatHardwareFrequency(topMhz?.takeIf { it > 0 }),
+                formatHardwareFrequency(topMhz?.takeIf { it > 0 } ?: current),
                 style = MonoValueStyleFrequency,
                 color = p.text,
                 maxLines = 1,
                 ticker = false,
             )
-        }
-        if (isGpu) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                Text(
-                    stringResource(R.string.home_gpu_max_freq),
-                    color = p.muted,
-                    style = MaterialTheme.typography.labelSmall,
-                    maxLines = 1,
-                )
-                Spacer(Modifier.width(MaxSpace.xs))
-                NeuralValue(
-                    formatHardwareFrequency(ceilingMhz),
-                    style = MonoValueStyleSmall,
-                    color = p.text,
-                    maxLines = 1,
-                    ticker = false,
-                )
-            }
         }
         // فاصل شعريّ يفصل القراءة عن الرسم.
         Box(Modifier.fillMaxWidth().height(MaxSize.hairlineBorder).background(p.border))

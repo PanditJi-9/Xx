@@ -158,15 +158,15 @@ data class DashboardState(
      * تردّد الرسوم الجاري بالـMHz، أو null حين لا يُقرأ.
      *
      * ومصدره **عقدة العتاد** عبر `GpuHardwareBackend` — عينها التي تعرضها شاشة GPU؛
-     * The backend's measured clock is the only source; an unreadable selected
-     * provider never falls back to a different vendor parser or a requested value.
+     * ومسار البائع (`MtkUtils.getCurrentGpuFreq`) احتياطٌ وحده. والسبب مقيَّد في `readGpu`.
      */
     val gpuFreqMhz: Int? = null,
     /**
      * سقف تردّد الرسوم بالـMHz، أو null حين لا تُعلنه هذه النواة.
      *
-     * Read from the selected provider's live max_freq every GPU sample. Neither
-     * a cached boot range nor the capability catalogue substitutes for a failed read.
+     * ويُقرأ أولًا من `GpuHardwareBackend` — نفس مصدر شاشة الرسوم — ثم من عقدة `devfreq`
+     * (`max_freq` ثم `available_frequencies`) أو جدول OPP كاحتياط، ويُحفظ بعد أول قراءة:
+     * هو خاصية مدى الإقلاع، لا قياس يتغيّر كل دورتين.
      */
     val gpuCeilingMhz: Int? = null,
 
@@ -292,9 +292,19 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
      */
     private var coreTopology: List<CpuCoreState>? = null
 
-    /** Only provider identity and declared capability are cached, never live limits. */
-    private var gpuProviderResolved: Boolean = false
-    private var gpuMaxSupportedCacheMhz: Int? = null
+    /**
+     * سقف تردّد GPU: خاصية مدى إقلاع لا قياس لحظي، فتُقرأ مرة واحدة.
+     *
+     * وقراءتها كل دورتين تعني ثلاث نداءات إلى العقدة في الدقيقة بلا نتيجة جديدة، ونداءً
+     * لجدول OPP في كل مرة على جهاز حساس للحرارة. والقيمة `null` محفوظة كما هي: «لا سقف
+     * معلَن» نتيجة نهائية، لا «لم نجرب بعد».
+     */
+    private var gpuCeilingCacheMhz: Int? = null
+    private var gpuCeilingResolved: Boolean = false
+
+    /** مدى تردّد الرسوم الحقيقي ومسار عقدته: يُحلّان مرة واحدة لكل إقلاع. */
+    private var gpuRangeResolved: Boolean = false
+    private var gpuRangeCache: Triple<Int?, Int?, Int?> = Triple(null, null, null)
     private var gpuPathCache: String? = null
 
     /**
@@ -581,15 +591,16 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun publishGpu(gpu: Pair<Int?, Int?>) {
+        val range = gpuRange()
+        // الحدّان الديناميكيان من الحيّ كل دورة؛ الكتالوج (القدرة) يبقى مخزَّنًا لأنه لا يتغيّر.
         val live = gpuLiveBounds()
-        val capabilityMax = gpuCapabilityMax()
         _dashboardState.update {
             it.copy(
                 gpuLoadPercent = gpu.first,
                 gpuFreqMhz = gpu.second,
-                gpuCeilingMhz = live.second,
-                gpuMinMhz = live.first,
-                gpuMaxSupportedMhz = capabilityMax,
+                gpuCeilingMhz = live.second ?: range.second ?: gpuCeiling(),
+                gpuMinMhz = live.first ?: range.first,
+                gpuMaxSupportedMhz = range.third,
             )
         }
     }
@@ -716,13 +727,36 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
         }.sortedBy { it.cpu }
     }
 
-    /** GPU load and the same measured clock used by GPU Studio; missing reads stay null. */
+    /**
+     * GPU busy percentage and clock, read from the same hardware node that backs
+     * the GPU screens (the vendor string is a fallback only, so the two screens
+     * cannot disagree about one number). Returns nulls (never zeros) when the
+     * kernel exposes nothing usable, so the UI can hide the widget instead of
+     * claiming the GPU is idle.
+     */
     private fun readGpu(): Pair<Int?, Int?> {
-        val load = runCatching {
-            LEADING_INTEGER.find(MtkUtils.getGpuLoad())
+        return try {
+            // Both helpers hand back preformatted strings ("47%", "1200 MHz")
+            // or "N/A"; take the leading integer rather than trusting a suffix.
+            val load = LEADING_INTEGER.find(MtkUtils.getGpuLoad())
                 ?.value?.toIntOrNull()?.coerceIn(0, 100)
-        }.getOrNull()
-        return load to gpuCurrentFromHardware()
+            // **والترتيب مُقلوب بطلب المالك، ودليله رقمه:** البطاقة كانت تعرض `260 MHz`
+            // في صدرها والتردّد الفعليّ `754 MHz` — لأن مسار البائع (نصّ GED الجاهز)
+            // كان **مُقدَّمًا** على عقدة العتاد. والعقدة هي ما تعرضه شاشة GPU (`device.currentFreq`
+            // في `GpuStudioScreen.kt:245`) فهي **مصدر واحد** للرقمين لا مصدران يفترقان على أوّل
+            // جهاز يخالف مفترضات أحدهما (وهو ما جرى: ٢٦٠ في الرئيسية و٧٥٤ في شاشة الرسوم
+            // في اللحظة نفسها).
+            //
+            // ومسار البائع يبقى **احتياطًا** لا يُحذف: على أجهزة لا تُحلّ فيها عقدةٌ موثوقة
+            // (وحدة بالميغاهرتز غير محسومة ⇒ `frequencyMHz` تُرجع null) هو القارئ الوحيد
+            // المتاح، وغيابه كان يعني رسمًا فارغًا في بطاقة GPU — وهو العطب الأقدم المسجّل هنا.
+            val freq = gpuCurrentFromHardware()
+                ?: LEADING_INTEGER.find(MtkUtils.getCurrentGpuFreq())
+                    ?.value?.toIntOrNull()?.takeIf { it > 0 }
+            load to freq
+        } catch (_: Exception) {
+            null to null
+        }
     }
 
     /**
@@ -739,34 +773,62 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
             val device = gpuDevice?.takeIf { it.path == path && now - gpuDeviceAtMs < GPU_DEVICE_REFRESH_MS }
                 ?: GpuHardwareBackend.refresh(path)?.also { gpuDevice = it; gpuDeviceAtMs = now }
                 ?: return null
-            GpuHardwareBackend.currentFrequencyHz(device)
-                ?.div(1_000_000L)?.toInt()?.takeIf { it > 0 }
+            val raw = RootFileAccess.read("$path/cur_freq")?.trim()?.toLongOrNull()
+            GpuHardwareBackend.frequencyMHz(device, raw)?.toInt()?.takeIf { it > 0 }
         } catch (_: Exception) {
             null
         }
     }
 
-    /** Declared capability and provider path share one discovery; neither is a live ceiling. */
-    private fun gpuCapabilityMax(): Int? {
-        if (!gpuProviderResolved) {
-            gpuProviderResolved = true
-            gpuMaxSupportedCacheMhz = try {
+    /**
+     * مسار عقدة الرسوم ومداها الحقيقي (أدنى/أعلى بالميغاهرتز)، يُحلّان مرة واحدة لكل إقلاع.
+     *
+     * والمصدر هو `GpuHardwareBackend` — لا قارئ ثانٍ. وكانت الرئيسية تقرأ السقف بصدفة
+     * `devfreq` مباشرة بينما شاشة الرسوم تعرف المدى كاملًا من العتاد، فافترق المصدران على أول
+     * جهاز يخالف مفترضات أحدهما. والواحد `AMBIGUOUS` يُرفض ولا يُخمَّن (`frequencyMHz` تُرجع
+     * null حين لا تثق الوحدة)، فتبقى البطاقة بلا مدى بدل مدى مصنوع.
+     */
+    private fun gpuRange(): Triple<Int?, Int?, Int?> {
+        if (!gpuRangeResolved) {
+            gpuRangeResolved = true
+            gpuRangeCache = try {
                 val device = GpuHardwareBackend.selection().device
                 gpuPathCache = device?.path
-                gpuDevice = device
-                gpuDeviceAtMs = SystemClock.elapsedRealtime()
-                device?.let { GpuHardwareBackend.frequencyMHz(it, it.provenMaxFreq) }
-                    ?.toInt()?.takeIf { it > 0 }
+                if (device == null || !device.unitTrusted) {
+                    Triple(null, null, null)
+                } else {
+                    // **والحدّان من الحيّ لا من كُتالوج الدرجات:** الكتالوج يسرد ما "يستطيعه"
+                    // المعالج، و`min_freq`/`max_freq` يقولان ما **يُسمح** به الآن — فمن قرأ
+                    // السقف من الكتالوج عرض `1.3 GHz` على جهاز مُقيَّد عند `754 MHz`
+                    // (وهو نفس العطب الذي كُتبت من أجله `configurableMaxFrequency` لمسار
+                    // Per-App). وبالأرضية كذلك: `min_freq` الحيّة هي حدّ المقياس الفعلي.
+                    val min = GpuHardwareBackend.frequencyMHz(device, device.minFreq ?: device.provenMinFreq)
+                    val max = GpuHardwareBackend.frequencyMHz(
+                        device,
+                        GpuHardwareBackend.configurableMaxFrequency(device),
+                    )
+                    // **وأمّا الرقم الثالث فالكتالوج مصدره لا الحيّ:** «أقصى مدعوم» = أعلى
+                    // درجة تُعلنها الدرجات (`provenMaxFreq`) — ما يستطيعه الرسّام لا ما يُسمح
+                    // به الآن. وهذا بالضبط الرقم الذي حذّر التعليق أعلاه من عرضه سقفًا (1300
+                    // مقابل 754) — يُعرض اليوم في بطاقة الرئيسية في موضعه المُسمّى فلا يعود
+                    // الخلط بينهما ممكنًا.
+                    val supportedMax = GpuHardwareBackend.frequencyMHz(device, device.provenMaxFreq)
+                    Triple(
+                        min?.toInt()?.takeIf { it > 0 },
+                        max?.toInt()?.takeIf { it > 0 },
+                        supportedMax?.toInt()?.takeIf { it > 0 },
+                    )
+                }
             } catch (_: Exception) {
-                null
+                Triple(null, null, null)
             }
         }
-        return gpuMaxSupportedCacheMhz
+        return gpuRangeCache
     }
 
     /** مسار عقدة الرسوم المُحلّ، أو null إن لم يُوجد (ولا يُسأل مرة أخرى). */
     private fun gpuNodePath(): String? {
-        gpuCapabilityMax()
+        gpuRange()
         return gpuPathCache
     }
 
@@ -778,13 +840,57 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
     private fun gpuLiveBounds(): Pair<Int?, Int?> {
         val path = gpuNodePath() ?: return null to null
         val device = gpuDevice?.takeIf { it.path == path } ?: return null to null
+        val minRaw = RootFileAccess.read("$path/min_freq")?.trim()?.toLongOrNull()
+        val maxRaw = RootFileAccess.read("$path/max_freq")?.trim()?.toLongOrNull()
+        return GpuHardwareBackend.frequencyMHz(device, minRaw)?.toInt()?.takeIf { it > 0 } to
+            GpuHardwareBackend.frequencyMHz(device, maxRaw)?.toInt()?.takeIf { it > 0 }
+    }
+
+    /** سقف GPU مرة واحدة لكل إقلاع؛ ما بعده يُقرأ من الذاكرة. */
+    private fun gpuCeiling(): Int? {
+        if (!gpuCeilingResolved) {
+            gpuCeilingResolved = true
+            gpuCeilingCacheMhz = readGpuCeilingMhz()
+        }
+        return gpuCeilingCacheMhz
+    }
+
+    /**
+     * سقف تردّد الرسوم، من المصادر الثلاثة التي يملكها هذا المسار بهذا الترتيب:
+     *
+     * 1. **`max_freq` في عقدة `devfreq`** — تصريح النواة الصريح (بالكيلوهرتز).
+     * 2. **`available_frequencies`** — سلّم العقدة؛ أعلاه هو ما تقدر عليه فعلاً. يُقرأ حين
+     *    لا يوجد `max_freq`، لأن قفل التردّد على بعض أنوية MTK يخفي الحدّ الأعلى ويُبقي السلّم.
+     * 3. **جدول OPP** — للمسار GED/MTK وحده، ومفاتيحه بالهرتز لا بالـMHz (لهذا تُقسم على
+     *    1_000_000؛ أخذ الرقم كما هو يعطي «2400000 MHz»).
+     *
+     * وما لم يُقرأ شيء منها فهي `null` صريحة: الشاشة تعرض التردّد **بلا مدرّج** بدل أن
+     * تخترع سقفًا من أعلى قيمة رآها التطبيق — وهو ليس مدى الشريحة.
+     */
+    private fun readGpuCeilingMhz(): Int? {
         return try {
-            val minRaw = RootFileAccess.read("$path/min_freq")?.trim()?.toLongOrNull()
-            val maxRaw = RootFileAccess.read("$path/max_freq")?.trim()?.toLongOrNull()
-            GpuHardwareBackend.frequencyMHz(device, minRaw)?.toInt()?.takeIf { it > 0 } to
-                GpuHardwareBackend.frequencyMHz(device, maxRaw)?.toInt()?.takeIf { it > 0 }
+            val node = MtkUtils.getGpuDevfreqNode()
+            val declaredKhz = node?.let { path ->
+                RootFileAccess.read("$path/max_freq")?.toLongOrNull()?.takeIf { it > 0L }
+            }
+            declaredKhz?.div(1_000L)?.toInt()?.takeIf { it > 0 }?.let { return it }
+
+            val ladderKhz = node?.let { path ->
+                RootFileAccess.read("$path/available_frequencies")
+                    ?.split(Regex("\\s+"))
+                    ?.mapNotNull { it.toLongOrNull() }
+                    ?.filter { it > 0L }
+                    ?.maxOrNull()
+            }
+            ladderKhz?.div(1_000L)?.toInt()?.takeIf { it > 0 }?.let { return it }
+
+            MtkUtils.oppFrequenciesHz()
+                .maxOrNull()
+                ?.div(1_000_000L)
+                ?.toInt()
+                ?.takeIf { it > 0 }
         } catch (_: Exception) {
-            null to null
+            null
         }
     }
 
