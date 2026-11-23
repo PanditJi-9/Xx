@@ -773,8 +773,13 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
             val device = gpuDevice?.takeIf { it.path == path && now - gpuDeviceAtMs < GPU_DEVICE_REFRESH_MS }
                 ?: GpuHardwareBackend.refresh(path)?.also { gpuDevice = it; gpuDeviceAtMs = now }
                 ?: return null
-            val raw = RootFileAccess.read("$path/cur_freq")?.trim()?.toLongOrNull()
-            GpuHardwareBackend.frequencyMHz(device, raw)?.toInt()?.takeIf { it > 0 }
+            // **نفس قارئ شاشة GPU** (`measuredFrequency`: GED ثم `cur_freq` ثم `gpuclk` مع تطبيع
+            // بالحجم). وكانت الرئيسية تقرأ `cur_freq` وتمرّره إلى `frequencyMHz` الذي يثق بوحدة
+            // الجهاز المعلنة (HZ على MTK بينما العقدة بالكيلوهرتز) فيرجع null أو رقمًا آخر — وهو
+            // مصدر «الخارج ≠ الداخل». فصار الرقم من دالة واحدة، والاختلاف لا يُشخَّص بالحدس.
+            GpuHardwareBackend.measuredFrequency(device)
+                ?.let { (it.hz / 1_000_000L).toInt() }
+                ?.takeIf { it > 0 }
         } catch (_: Exception) {
             null
         }

@@ -400,11 +400,13 @@ private fun GpuPulseCard(
         floorMhz = dashboard.gpuMinMhz,
         samples = dashboard.loadSamples,
         isGpu = true,
-        // الثلاثة التي طلبها المالك محفوظة كلها، وكلٌّ منها صار **موسومًا**: «السقف» أعلى البطاقة
-        // (الحدّ الحيّ مثل 754)، و«الأقصى» أسفلها من كتالوج الدرجات (مثل 1300)، و«الأدنى» في
-        // الطرف المقابل. والتردد الجاري (مثل 260) في الموجة وحدها — لا يُخلط بسقفٍ ولا مدعوم.
-        topMhz = dashboard.gpuCeilingMhz,
-        topLabel = stringResource(R.string.home_gpu_max_freq),
+        // **التردد الجاري هو الرقم الأول، والسقف بجانبه موسومًا.** كان الصدر يعرض السقف وحده
+        // (520) فقرأه المالك على أنه «التردد الحالي» وقارنه بـ260 في شاشة GPU فبدا الرقمان
+        // متناقضين — وهما كمّيتان مختلفتان. صار الصدر «الآن 260» ثم «السقف 520» في صفٍّ واحد.
+        topMhz = dashboard.gpuFreqMhz.takeIf { it > 0 },
+        topLabel = stringResource(R.string.home_freq_now),
+        secondaryTopMhz = dashboard.gpuCeilingMhz.takeIf { it > 0 },
+        secondaryTopLabel = stringResource(R.string.home_gpu_max_freq),
         rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
         accent = neuralPalette().accentAlt,
         onClick = onClick,
@@ -450,6 +452,8 @@ private fun FrequencyMetricCard(
     topMhz: Int? = null,
     topLabel: String? = null,
     rangeMaxMhz: Int? = null,
+    secondaryTopMhz: Int? = null,
+    secondaryTopLabel: String? = null,
 ) {
     val p = neuralPalette()
     val current = frequencyMhz?.takeIf { it > 0 }
@@ -542,6 +546,25 @@ private fun FrequencyMetricCard(
                 maxLines = 1,
                 ticker = false,
             )
+            // قراءة ثانية موسومة في **نفس الصفّ**: «الآن» و«السقف» معًا بدل رقم واحد يُقرأ على
+            // أنه الآخر. بهذا تعرض الرئيسية التردد الجاري (كما شاشة GPU) ولا يبقى السقف وحده.
+            if (secondaryTopLabel != null) {
+                Spacer(Modifier.weight(1f))
+                Text(
+                    secondaryTopLabel,
+                    color = p.muted,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                )
+                Spacer(Modifier.width(MaxSpace.xs))
+                NeuralValue(
+                    formatHardwareFrequency(secondaryTopMhz?.takeIf { it > 0 }),
+                    style = MonoValueStyleFrequency,
+                    color = p.text,
+                    maxLines = 1,
+                    ticker = false,
+                )
+            }
         }
         // فاصل شعريّ يفصل القراءة عن الرسم.
         Box(Modifier.fillMaxWidth().height(MaxSize.hairlineBorder).background(p.border))

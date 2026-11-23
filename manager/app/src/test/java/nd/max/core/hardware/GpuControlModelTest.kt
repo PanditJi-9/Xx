@@ -25,6 +25,7 @@ class GpuControlModelTest {
         private val clockPath: String? = null,
         private val clockByIndex: Map<String, String> = emptyMap(),
         private val baselineClock: String? = null,
+        private val advanceClockOnEqualRange: Boolean = true,
     ) : GpuHardwareBackend.Io {
         val writes = mutableListOf<Pair<String, String>>()
         var invariantViolated = false
@@ -52,6 +53,14 @@ class GpuControlModelTest {
                 }
             }
             values[path] = value
+            // `min == max` على devfreq تثبيتٌ حقيقي: الحاكِم يلتزم بالحدّين فتتبع الساعة. وبدون
+            // محاكاة ذلك يقيس فحص التردد الثابت ساعة قديمة فيرفض تثبيتًا صحيحًا.
+            if (advanceClockOnEqualRange && (path.endsWith("/min_freq") || path.endsWith("/max_freq"))) {
+                val base = path.substringBeforeLast('/')
+                val lo = values["$base/min_freq"]?.toLongOrNull()
+                val hi = values["$base/max_freq"]?.toLongOrNull()
+                if (lo != null && lo == hi) values["$base/cur_freq"] = lo.toString()
+            }
             // عقدة القفل تحكم الساعة الحقيقية في العتاد: كتابتها تغيّر `cur_freq` أيضًا،
             // وإلا قاس الفحص الجديد ساعة قديمة وحكم على تثبيتٍ صحيح بالفشل.
             if (path == lockPath && clockPath != null) {
@@ -147,7 +156,7 @@ class GpuControlModelTest {
      * وهذا بالضبط ما كان يُبطل كل شيء: الشرط القديم `rangeWritable = … && mtkFixedIndexPath == null`
      * كان يجعل المسار الوحيد المتاح هو **تثبيت** درجة واحدة (تجميد)، ويُسقط سقف المصنّع من القراءة.
      */
-    private fun mtkCeilingIo(activeIndex: String = "-1"): FakeIo {
+    private fun mtkCeilingIo(activeIndex: String = "-1", advanceClock: Boolean = true): FakeIo {
         val base = "/sys/class/devfreq/mali0"
         val lock = "/proc/gpufreqv2/fix_target_opp_index"
         return FakeIo(
@@ -172,6 +181,7 @@ class GpuControlModelTest {
                 "2" to "200000000",
             ),
             baselineClock = "400000000",
+            advanceClockOnEqualRange = advanceClock,
         )
     }
 
@@ -532,12 +542,48 @@ class GpuControlModelTest {
         assertEquals(listOf(false to false), fake.vendorCeilingCalls)
     }
 
-    @Test fun anExactPinAsksForBothTheReleaseAndTheDvfsHold() {
+    @Test fun anExactPinReleasesTheCeilingWithoutTurningDvfsOff() {
+        // التثبيت بـ`min == max` وحده. و`lock = true` كان يُطفئ DVFS **قبل** الكتابة فيجمّد OPP
+        // السائد لحظتها — وهو الفرق المقيس بين المدى (يعمل) والثابت (لا يعمل).
         val fake = io()
         val device = GpuHardwareBackend.selection(fake).device!!
         val request = GpuHardwareBackend.Request(400_000_000L, 400_000_000L, releaseVendorCeiling = true)
         assertTrue(GpuHardwareBackend.apply(device, request, fake).verified)
-        assertEquals(listOf(true to true), fake.vendorCeilingCalls)
+        assertEquals(listOf(false to true), fake.vendorCeilingCalls)
+    }
+
+    @Test fun mtkExactFrequencyUsesEqualDevfreqBoundsInsteadOfTheOppLock() {
+        // الشكل المقيس على rodin: مدى devfreq قابل للكتابة **و** مسار قفل OPP موجود. الطلب المتساوي
+        // كان يذهب إلى الفهرس فيفشل (`apply-not-verified-baseline-restored`)؛ والمدى نفسه يعمل.
+        val fake = mtkCeilingIo()
+        val base = "/sys/class/devfreq/mali0"
+        val lock = "/proc/gpufreqv2/fix_target_opp_index"
+        val device = GpuHardwareBackend.selection(fake).device!!
+        val request = GpuHardwareBackend.Request(650_000_000L, 650_000_000L)
+        assertTrue(GpuHardwareBackend.apply(device, request, fake).verified)
+        assertEquals("650000000", fake.value("$base/min_freq"))
+        assertEquals("650000000", fake.value("$base/max_freq"))
+        assertTrue("لا تُكتب عقدة الفهرس في مسار المدى", fake.writes.none { it.first == lock })
+        assertEquals(listOf(false to true), fake.vendorCeilingCalls)
+        assertFalse(fake.invariantViolated)
+    }
+
+    @Test fun anExactFrequencyWhoseClockDoesNotMoveIsRejected() {
+        // العقدة تقبل الحدّين ويُقرأ المدى كما طُلب — والساعة تبقى على 400. هذا بالضبط «نجاح مزعوم»،
+        // فيُرفض ويُتراجع، ويُعلن السبب `pin-clock-mismatch` لا نجاحًا.
+        val fake = mtkCeilingIo(advanceClock = false)
+        val base = "/sys/class/devfreq/mali0"
+        val device = GpuHardwareBackend.selection(fake).device!!
+        val result = GpuHardwareBackend.apply(
+            device,
+            GpuHardwareBackend.Request(650_000_000L, 650_000_000L),
+            fake,
+        )
+        assertFalse(result.verified)
+        assertEquals("pin-clock-mismatch", result.error)
+        assertTrue(result.rollbackAttempted)
+        assertEquals("260000000", fake.value("$base/min_freq"))
+        assertEquals("754000000", fake.value("$base/max_freq"))
     }
 
     @Test fun conflictingOppIndicesAreNotGuessed() {
