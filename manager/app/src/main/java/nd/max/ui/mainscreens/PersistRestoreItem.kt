@@ -250,7 +250,13 @@ fun PersistRestoreItem() {
                 resetFailure = null
                 scope.launch {
                     val outcome = PlatformDefaultsReset.reset()
-                    resetFailure = outcome.failed.joinToString(", ") { it.name }
+                    // الخطوات تُسمّى بلغة الواجهة لا بمفاتيحها البرمجية (`cpu-ranges`)،
+                    // و`0` يعني خطوة بلا اسم مترجم فيُعرض مفتاحها كما هو بدل أن يختفي.
+                    resetFailure = outcome.failed
+                        .joinToString(", ") { step ->
+                            val label = stepLabel(step.name)
+                            if (label == 0) step.name else context.getString(label)
+                        }
                         .takeIf { it.isNotEmpty() }
                     resetDone = outcome.allOk
                     resetting = false
@@ -270,4 +276,20 @@ fun PersistRestoreItem() {
             )
         }
     }
+}
+
+/**
+ * اسم مقروء لخطوة في [PlatformDefaultsReset]: مفتاح الخطوة برمجيّ بالإنجليزية
+ * (`cpu-ranges`)، وعرضه خامًا داخل جملة عربية يجعل الرسالة تبدو خطأً لا تفسيرًا.
+ * و`0` تعني «لا ترجمة معلومة» فيعرض المنادي المفتاح نفسه بدل أن يبتلع الخطوة.
+ */
+private fun stepLabel(name: String): Int = when (name) {
+    "locks" -> R.string.persist_reset_step_locks
+    "cpu-ranges" -> R.string.persist_reset_step_cpu_ranges
+    "manual-session" -> R.string.persist_reset_step_manual_session
+    "saved-overrides" -> R.string.persist_reset_step_saved_overrides
+    "gpu" -> R.string.persist_reset_step_gpu
+    "gpu-saved" -> R.string.persist_reset_step_gpu_saved
+    "profile" -> R.string.persist_reset_step_profile
+    else -> 0
 }

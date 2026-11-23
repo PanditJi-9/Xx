@@ -2196,6 +2196,13 @@
     <string name="persist_reset_platform_confirm_title">Reset hardware to platform defaults?</string>
     <string name="persist_reset_platform_confirm_body">This removes MaxManager CPU/GPU/I/O limits and saved governor choices, releases any fixed GPU lock and vendor ceiling, and returns the saved profile to balanced. It does not factory-reset Android, does not delete your files, and does not change app choices. Device thermal throttling may return to stock and feel slower.</string>
     <string name="persist_reset_platform_confirm_action">Reset now</string>
+    <string name="persist_reset_step_locks">manual locks</string>
+    <string name="persist_reset_step_cpu_ranges">CPU frequency limits</string>
+    <string name="persist_reset_step_manual_session">manual CPU session flag</string>
+    <string name="persist_reset_step_saved_overrides">saved governors and limiter</string>
+    <string name="persist_reset_step_gpu">GPU lock and vendor ceiling</string>
+    <string name="persist_reset_step_gpu_saved">saved GPU settings</string>
+    <string name="persist_reset_step_profile">saved Max AI profile</string>
     <string name="persist_fast_boots_title">Fast reboots in a row</string>
     <string name="persist_fast_boots_desc">%1$d counted by the boot guard. Two in a row trip it.</string>
     <string name="persist_fast_boots_tripped">The guard tripped: automatic application of advanced tweaks is held back until you turn it back on.</string>

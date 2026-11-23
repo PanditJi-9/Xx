@@ -21,11 +21,13 @@ import nd.max.AppMonitorLogger
 import nd.max.MaxManagerProps
 import nd.max.core.audio.AudioSoundPreset
 import nd.max.core.hardware.ControlOwnership
+import nd.max.core.hardware.CpuHardwareBackend
 import nd.max.core.hardware.DevfreqCeilingContracts
 import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.hardware.GpuTweakPersistence
 import nd.max.core.hardware.HardwareControlArbiter
 import nd.max.core.hardware.HardwareControlKey
+import nd.max.core.hardware.ManualControlLocks
 import nd.max.core.hardware.MemoryUfsHardwareBackend
 import nd.max.core.hardware.MemoryUfsTuningStore
 import nd.max.core.hardware.RootFileAccess
@@ -367,8 +369,18 @@ object PersistRestorer {
      */
     private fun restoreCpuAndIo(): Pair<PersistStatus, String> {
         val tally = Tally()
-        val governor = PropertyUtils.get(MaxManagerProps.Governor.CPU_CUSTOM_DEFAULT).trim()
-            .ifEmpty { PropertyUtils.get(MaxManagerProps.Governor.CPU_DEFAULT).trim() }
+        // **حدود المستخدم اليدوية تعود قبل أي شيء آخر** (بلاغ SHARK: «حدودي تُمسح بعد
+        // إعادة التشغيل»). عقد sysfs تعود لافتراضي النواة بعد الـreboot، و`binprofiles`
+        // يعيد خطته لأن علم الجلسة `sys.maxmanager.manual_freq_session` غير دائم. فتُقرأ
+        // الأقفال الدائمة وتُكتب `min:max` من جديد ثم يُرفع العلم؛ وحين يوجد قفل لا يُكتب
+        // حاكم محفوظ فوق حدود المستخدم.
+        val manual = restoreManualCpuLimits()
+        val governor = if (manual == null) {
+            PropertyUtils.get(MaxManagerProps.Governor.CPU_CUSTOM_DEFAULT).trim()
+                .ifEmpty { PropertyUtils.get(MaxManagerProps.Governor.CPU_DEFAULT).trim() }
+        } else {
+            ""
+        }
         if (governor.isNotEmpty()) {
             RootFileAccess.globDirectories("/sys/devices/system/cpu/cpufreq/*").forEach { policy ->
                 val available = RootFileAccess.read("$policy/scaling_available_governors")
@@ -391,7 +403,49 @@ object PersistRestorer {
                     }
                 }
         }
-        return tally.verdict()
+        val verdict = tally.verdict()
+        return when {
+            manual == null -> verdict
+            manual.first == PersistStatus.Failed -> manual
+            verdict.first == PersistStatus.Failed ->
+                PersistStatus.Failed to "${manual.second}+${verdict.second}"
+            else -> manual
+        }
+    }
+
+    /**
+     * حدود المعالج اليدوية **تعود عند الإقلاع** من الأقفال الدائمة لا من جلسة الشاشة.
+     *
+     * القفل يحفظ `min:max` لكل سياسة، لكن عقد sysfs تعود لافتراضي النواة بعد كل إعادة
+     * تشغيل — فلا يكفي رفع علم الجلسة وحده: لا بدّ من كتابة الحدود ثم رفع العلم، وإلا
+     * وجد `binprofiles` عقدةً افتراضية وعلمًا مرتفعًا فحفظ «الافتراضي» مكان اختيار المستخدم.
+     *
+     * ويعود `null` حين لا قفل CPU دائم، فيمضي مسار الحاكم المحفوظ كما كان.
+     */
+    private fun restoreManualCpuLimits(): Pair<PersistStatus, String>? {
+        val policies = CpuHardwareBackend.policies()
+        val locks = ManualControlLocks.lockedKeys()
+            .filter(HardwareControlKey::isCpuLimits)
+            .mapNotNull { key -> ManualControlLocks.find(key) }
+        if (locks.isEmpty()) {
+            // لا مالك يدوي: يبقى العلم صفرًا فلا يمنع `binprofiles` خطته بلا سبب.
+            PropertyUtils.setAndConfirm(MaxManagerProps.CoreControl.MANUAL_FREQ_SESSION, "0")
+            return null
+        }
+        val flag = PropertyUtils.setAndConfirm(MaxManagerProps.CoreControl.MANUAL_FREQ_SESSION, "1")
+        val restored = locks.all { lock ->
+            val policy = policies.firstOrNull { HardwareControlKey.cpuLimits(it.name) == lock.key }
+                ?: return@all false
+            val parts = lock.desired.split(":")
+            val min = parts.getOrNull(0)?.trim()?.toLongOrNull() ?: return@all false
+            val max = parts.getOrNull(1)?.trim()?.toLongOrNull() ?: return@all false
+            CpuHardwareBackend.setPolicyLimits(policy.path, min, max).verified
+        }
+        return when {
+            restored && flag -> PersistStatus.Applied to "manual-cpu-limits"
+            restored -> PersistStatus.Failed to "manual-cpu-flag-not-set"
+            else -> PersistStatus.Failed to "manual-cpu-limits-refused"
+        }
     }
 
     /**

@@ -31,6 +31,7 @@ done
 rm -rf \
     "/data/adb/.config/MaxManager" \
     "/data/MaxManager" \
+    "/data/adb/maxmanager" \
     "/data/data/nd.max"
 : > "/data/adb/modules/MaxManager/remove"
 

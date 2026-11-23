@@ -1132,6 +1132,13 @@
     <string name="persist_reset_platform_confirm_title">إعادة العتاد إلى افتراضي المنصّة؟</string>
     <string name="persist_reset_platform_confirm_body">هذا يزيل حدود المعالج والرسوميات وI/O وخيارات الحاكم المحفوظة في MaxManager، ويحرّر أي قفل رسوميات ثابت وسقف المصنّع، ويعيد الملف الشخصي المحفوظ إلى المتوازن. لا يُعيد ضبط أندرويد ولا يحذف ملفاتك ولا يغيّر اختيارات التطبيق. وقد يعود خنق الحرارة الأصلي فيبدو الجهاز أبطأ.</string>
     <string name="persist_reset_platform_confirm_action">أعِد الآن</string>
+    <string name="persist_reset_step_locks">الأقفال اليدوية</string>
+    <string name="persist_reset_step_cpu_ranges">حدود تردد المعالج</string>
+    <string name="persist_reset_step_manual_session">علم جلسة المعالج اليدوية</string>
+    <string name="persist_reset_step_saved_overrides">الحكام والحدود المحفوظة</string>
+    <string name="persist_reset_step_gpu">قفل الرسوميات وسقف المزوّد</string>
+    <string name="persist_reset_step_gpu_saved">إعدادات الرسوميات المحفوظة</string>
+    <string name="persist_reset_step_profile">ملف Max AI المحفوظ</string>
     <string name="persist_fast_boots_title">إقلاعات سريعة متتالية</string>
     <string name="persist_fast_boots_desc">%1$d أحصاها حارس الإقلاع. اثنان متتاليان يُشغّلانه.</string>
     <string name="persist_fast_boots_tripped">اشتغل الحارس: التطبيق التلقائي للإعدادات المتقدمة موقوف حتى تعيد تشغيله.</string>

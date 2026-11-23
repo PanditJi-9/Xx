@@ -294,8 +294,11 @@ class CpuCoreControlViewModel @Inject constructor(
     }
 
     private fun setManualSessionProp(enabled: Boolean) {
+        val value = if (enabled) "1" else "0"
+        // `set` يرسل الأمر ولا يقرأ مرتجعًا، وعلمٌ لم يُكتب يجعل `binprofiles` يمسح
+        // حدود المستخدم في القرار التالي بلا أثر في الشاشة. `setAndConfirm` تقرأ بعده.
         runCatching {
-            PropertyUtils.set(MaxManagerProps.CoreControl.MANUAL_FREQ_SESSION, if (enabled) "1" else "0")
+            PropertyUtils.setAndConfirm(MaxManagerProps.CoreControl.MANUAL_FREQ_SESSION, value)
         }
     }
 
