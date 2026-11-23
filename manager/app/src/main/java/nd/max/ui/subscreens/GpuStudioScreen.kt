@@ -284,7 +284,9 @@ private fun GpuHero(
                 value = shownMhz?.toString(),
                 unit = "MHz",
                 trust = if (shownMhz != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
-                source = device.path,
+                // العقدة التي قِيست فعلًا (GED أو `cur_freq` أو `gpuclk`)، لا مسار المزوّد:
+                // نسبة قراءةٍ إلى عقدة لم تُقرأ ادّعاءُ مصدرٍ كاذب.
+                source = state.liveSource,
             ),
             size = MaxMetricSize.Large,
         )
@@ -943,7 +945,12 @@ private fun noticeCondition(notice: GpuNotice): MaxCondition {
         // «استعادة الافتراضي» ليست طلبًا جديدًا، لكنها **فعل ناجح مقيس**: القفل حُرِّر
         // والمدى قرأ نفسه مرتجِعًا. ولا تُصنَّف Applying وإلا بقيت الشاشة تقول «جارٍ»
         // بعد أن انتهى الفعل.
-        GpuNoticeKind.RESET -> MaxConditionKind.Applied
+        GpuNoticeKind.RESET -> if (notice.reason == null) {
+            MaxConditionKind.Applied
+        } else {
+            // العتاد عاد والمفاتيح لم تُمحَ: الإقلاع التالي سيعيدها، فلا تُعرض نجاحًا.
+            MaxConditionKind.Failed
+        }
 
         GpuNoticeKind.REFUSED,
         GpuNoticeKind.ROLLBACK_FAILED,

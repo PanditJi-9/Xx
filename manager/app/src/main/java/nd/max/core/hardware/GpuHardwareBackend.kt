@@ -201,6 +201,17 @@ object GpuHardwareBackend {
          * تُستبدل في الاختبارات، فالوصول إلى العتاد من داخل دالة تُختبر بمُوجّه وهمي يُبطل الوهم.
          */
         fun permitVendorCeiling(lock: Boolean, release: Boolean): Boolean = false
+
+        /**
+         * لقطة سقف المنصّة قبل تعديله — ليعود كما كان عند تراجع تثبيت فاشل.
+         *
+         * والافتراضيّ `null`: كاتب وهميّ في الاختبار لا يلمس سلطة حقيقية، و`null` يعني
+         * «لا شيء محفوظ»، فيُترك [restoreVendorCeiling] بلا فعل. و[SystemIo] وحده يلتقط فعلًا.
+         */
+        fun captureVendorCeiling(): PlatformCeilingAuthority.CeilingCapture? = null
+
+        /** يُعيد السقف الملتقط؛ `true` حين لا شيء محفوظ أو حين نجحت إعادة كل قيمة مقروءة. */
+        fun restoreVendorCeiling(capture: PlatformCeilingAuthority.CeilingCapture): Boolean = true
     }
 
     object SystemIo : Io {
@@ -212,6 +223,10 @@ object GpuHardwareBackend {
         override fun listDirectories(path: String) = RootFileAccess.listDirectories(path)
         override fun permitVendorCeiling(lock: Boolean, release: Boolean): Boolean =
             PlatformCeilingAuthority.permitGpu(lock = lock, release = release).anyChannel
+        override fun captureVendorCeiling(): PlatformCeilingAuthority.CeilingCapture =
+            PlatformCeilingAuthority.captureGpuCeiling()
+        override fun restoreVendorCeiling(capture: PlatformCeilingAuthority.CeilingCapture): Boolean =
+            PlatformCeilingAuthority.restoreGpuCeiling(capture)
     }
 
     data class Device(
@@ -629,22 +644,45 @@ object GpuHardwareBackend {
     }
 
     /**
-     * التردد الذي **يجري عليه الجهاز فعلًا** — لا ما نظنّ أننا كتبناه.
+     * تردد GPU الجاري **ومصدره** — لا ما نظنّ أننا كتبناه.
      *
-     * وله موضعان لسبيين: عقدة GED هي ما يبلّغ به MTK عن تردد الGPU الجاري، وعقدة `cur_freq` هي
-     * البديل العام. ولا يُخترع تردد: قيمة لا تطابق أي درجة مُعلنة تُعاد `null` (قد تكون وحدة أخرى
-     * لا نعرفها)، ولا يُبنى عليها حكم — بل يُقال «لم يُقس». وهذا ما يجعل فرقًا بين «ثبّتنا الفهرس»
-     * و«الجهاز يعمل عليه» مرئيًّا بدل أن يبقى صدى النواة هو الدليل الوحيد.
+     * المصدر الأول GED (بلا وحدة معلنة)، ثم `cur_freq`، ثم `gpuclk`. والوحدة تُستنتج من المقدار
+     * ([magnitudeToHz]) لأن العقد نفسها لا تعلنها، ولأن `frequencyUnit` المعلنة للجهاز تصف
+     * **المدى المُطبَّع** لا العقدة الخام: على MTK `cur_freq` بالكيلوهرتز بينما `frequencyUnit = HZ`.
+     *
+     * **ولا تُشترط العضوية في السلّم المعلن:** التردد الخامل (26 MHz على rodin) أدنى من أدنى
+     * درجة معلنة (260 MHz)، ورفضه كان يجعل قفلًا قديمًا (832) يبدو صحيحًا. والحدّ الأعلى قدرة
+     * الجهاز ×2 فلا يُقبل رقم من عقدة أخرى، والحدّ الأدنى 1 MHz.
+     *
+     * و`null` تعني «لم يُقس» — ولا يُبنى عليها حكم، بل يُقال ذلك صراحةً.
      */
-    fun currentFrequencyHz(device: Device, io: Io = SystemIo): Long? {
-        val advertised = device.frequencies.filter { it > 0L }
+    fun measuredFrequency(device: Device, io: Io = SystemIo): MeasuredFrequency? {
+        val capabilityMaxHz = if (device.frequencyUnit == FrequencyUnit.AMBIGUOUS) {
+            0L
+        } else {
+            device.frequencies.filter { it > 0L }.maxOrNull()?.times(device.frequencyUnit.hzMultiplier) ?: 0L
+        }
+        val upperHz = capabilityMaxHz.takeIf { it > 0L }?.times(2L) ?: 10_000_000_000L
         for (path in listOf(GED_CURRENT_FREQUENCY, "${device.path}/cur_freq", "${device.path}/gpuclk")) {
             val raw = io.read(path)?.trim()?.toLongOrNull() ?: continue
             if (raw <= 0L) continue
-            normalizeToAdvertisedHz(raw, advertised)?.let { return it }
+            val hz = magnitudeToHz(raw)
+            if (hz in 1_000_000L..upperHz) return MeasuredFrequency(hz, path)
         }
         return null
     }
+
+    /** التردد الجاري بالهرتز — غلاف رقمي لـ[measuredFrequency] عند من لا يحتاج المصدر. */
+    fun currentFrequencyHz(device: Device, io: Io = SystemIo): Long? = measuredFrequency(device, io)?.hz
+
+    private fun magnitudeToHz(raw: Long): Long = when {
+        raw >= 10_000_000L -> raw
+        raw > 1_300L -> raw * 1_000L
+        else -> raw * 1_000_000L
+    }
+
+    /** تردد مقيس مع العقدة التي أعطته — كي لا يُنسب رقم إلى مصدر لا يملكه. */
+    data class MeasuredFrequency(val hz: Long, val source: String)
 
     /**
      * Maps a requested frequency to a real OPP that the provider can currently
@@ -870,19 +908,42 @@ object GpuHardwareBackend {
      * إقلاع. وما لا يُقرأ أو لا يُكتب يُقال `false`، ولا يُدَّعى نجاح.
      */
     fun resetToPlatformDefaults(io: Io = SystemIo): Boolean {
-        val device = selection(io).device ?: return false
+        val selected = selection(io)
+        // لا استعادة على مزوّد غير جاهز: الشاشة نفسها لا تُظهر كتابةً عليه، والاستعادة
+        // ليست استثناءً يفتح باب كتابةٍ أغلقته القراءة.
+        if (selected.state != SelectionState.READY) return false
+        val device = selected.device ?: return false
         val lockPath = device.mtkFixedIndexPath
-        if (lockPath != null && !MtkGpuOppTable.isReleased(device, io)) {
+        val lockActive = lockPath != null && !MtkGpuOppTable.isReleased(device, io)
+        if (lockActive) {
+            // لا يُدَّعى تحرير قفل على عقدة غير قابلة للكتابة: الرفض قبل أي كتابة.
+            if (!device.mtkLockWritable) return false
             val released = MtkGpuFixedIndex.release(device, Request(releaseLock = true), io)
             if (!released.verified) return false
+        } else if (!MtkGpuFixedIndex.restoreDynamicScaling(io)) {
+            // القفل محرَّر (أو لا قفل)، لكن DVFS قد يكون موقوفًا من جلسة أقدم. «نجاح» بلا
+            // هذه الخطوة يمحو الإعدادات المحفوظة ويُبقي التردد مجمّدًا — وهو أسوأ من الفشل.
+            return false
         }
         val after = refresh(device.path, io) ?: return false
-        val min = after.frequencies.filter { it > 0L }.minOrNull() ?: return false
-        val max = after.frequencies.filter { it > 0L }.maxOrNull() ?: return false
+        // لا كتابة مدى على وحدة غامضة: القراءة المرتجعة لا تُثبت الوحدة، وكتابة تخمين
+        // على جهاز لا يعلنها عطبٌ لا استعادة. وغياب مدى قابل للكتابة لا يجعل التحرير
+        // فاشلًا: إن كان القفل قد حُرِّر فعلًا فالمنصّة هي التي تدير المدى الآن.
+        if (!after.unitTrusted) return false
+        if (!after.devfreqCeilingWritable) {
+            return lockPath == null || MtkGpuOppTable.isReleased(after, io)
+        }
+        val advertised = after.frequencies.filter { it > 0L }
+        val min = advertised.minOrNull() ?: return false
+        val max = advertised.maxOrNull() ?: return false
         if (after.minFreq == min && after.maxFreq == max) return true
         if (!writeRange(after, min, max, io)) return false
         val verified = refresh(after.path, io) ?: return false
-        return verified.minFreq == min && verified.maxFreq == max
+        // المنصّة قد تقصّ الأعلى (سقف GED أو حراري)، فلا تُشترط المساواة بالقدرة:
+        // المطلوب أن يعود المدى **ديناميكيًّا** لا أن يثبت على درجة واحدة. وأما
+        // رفض الكتابة نفسها فيُعلن فشلًا قبل هذه القراءة.
+        return verified.minFreq != null && verified.maxFreq != null &&
+            verified.minFreq < verified.maxFreq
     }
 
     private fun applyDevfreq(live: Device, request: Request, io: Io): TransactionResult {

@@ -55,10 +55,15 @@ object GpuTweakPersistence {
      * والعائد `false` إن بقي مفتاح يحمل قيمة بعد المحاولة: `setAndConfirm` تقرأ مرتجِعًا،
      * فلا يُقال «مُحي» لمجرد أن أمر الكتابة أُرسل.
      */
-    fun clearSaved(): Boolean = listOf(
-        MaxManagerProps.GpuStudio.MODE,
-        MaxManagerProps.GpuStudio.MIN_FREQ,
-        MaxManagerProps.GpuStudio.MAX_FREQ,
-        MaxManagerProps.GpuStudio.GOVERNOR,
-    ).all { key -> PropertyUtils.setAndConfirm(key, "") }
+    fun clearSaved(): Boolean {
+        // `all` تقصّر عند أول فشل، فيبقى مفتاح لم تُحاوَل كتابته أصلًا. المحو فعل واحد
+        // على أربعة مفاتيح، فتُحاوَل كلها ثم يُحكم عليها مجتمعةً.
+        val cleared = listOf(
+            MaxManagerProps.GpuStudio.MODE,
+            MaxManagerProps.GpuStudio.MIN_FREQ,
+            MaxManagerProps.GpuStudio.MAX_FREQ,
+            MaxManagerProps.GpuStudio.GOVERNOR,
+        ).map { key -> PropertyUtils.setAndConfirm(key, "") }
+        return cleared.all { it }
+    }
 }

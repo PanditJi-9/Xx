@@ -21,6 +21,10 @@ class GpuControlModelTest {
         private val failAlways: Set<String> = emptySet(),
         private val failAfterSuccess: MutableMap<String, Int> = mutableMapOf(),
         private val enforceInvariant: Boolean = false,
+        private val lockPath: String? = null,
+        private val clockPath: String? = null,
+        private val clockByIndex: Map<String, String> = emptyMap(),
+        private val baselineClock: String? = null,
     ) : GpuHardwareBackend.Io {
         val writes = mutableListOf<Pair<String, String>>()
         var invariantViolated = false
@@ -48,6 +52,12 @@ class GpuControlModelTest {
                 }
             }
             values[path] = value
+            // عقدة القفل تحكم الساعة الحقيقية في العتاد: كتابتها تغيّر `cur_freq` أيضًا،
+            // وإلا قاس الفحص الجديد ساعة قديمة وحكم على تثبيتٍ صحيح بالفشل.
+            if (path == lockPath && clockPath != null) {
+                val clock = if (value == "-1") baselineClock else clockByIndex[value]
+                if (clock != null) values[clockPath] = clock
+            }
             return true
         }
         override fun listDirectories(path: String): List<String> = when (path) {
@@ -123,6 +133,10 @@ class GpuControlModelTest {
             ),
             setOf(lock, "$base/governor"),
             failWrites,
+            lockPath = lock,
+            clockPath = "$base/cur_freq",
+            clockByIndex = mapOf("0" to "800000", "1" to "400000", "2" to "200000"),
+            baselineClock = "400000",
         )
     }
 
@@ -150,6 +164,14 @@ class GpuControlModelTest {
                 lock to activeIndex,
             ),
             setOf(lock, "$base/min_freq", "$base/max_freq", "$base/governor"),
+            lockPath = lock,
+            clockPath = "$base/cur_freq",
+            clockByIndex = mapOf(
+                "0" to "800000000",
+                "1" to "400000000",
+                "2" to "200000000",
+            ),
+            baselineClock = "400000000",
         )
     }
 

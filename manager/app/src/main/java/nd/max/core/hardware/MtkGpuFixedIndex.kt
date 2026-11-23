@@ -27,8 +27,14 @@ internal object MtkGpuFixedIndex {
      * و`release = false`: هذه ليست إعادة سقف المصنّع بل إعادة تشغيل الحاكم. ولو مرّرنا `true` لصار
      * كل خروج من تثبيت يرفع حماية حراريّة وَضعها المصنّع بلا سبب يخصّها.
      */
-    fun restoreDynamicScaling(io: GpuHardwareBackend.Io) {
-        io.permitVendorCeiling(lock = false, release = false)
+    fun restoreDynamicScaling(io: GpuHardwareBackend.Io): Boolean {
+        if (io.permitVendorCeiling(lock = false, release = false)) return true
+        // `permitVendorCeiling` هنا يمرّ بـ`PlatformCeilingAuthority.permitGpu`، و`release = false`
+        // لا يدخل في `Report.anyChannel` — فالعائد `false` لا يعني أن DVFS ما زال موقوفًا. الحكم
+        // الأخير من العقدة نفسها: `1` = يعمل. وإن غابت العقدة فلا شيء نُثبته، ولا نُعلن فشلًا وهميًّا.
+        val node = PlatformCeilingAuthority.GED_DVFS_ENABLE
+        if (!io.exists(node)) return true
+        return io.read(node)?.trim() == "1"
     }
 
     /** يحرّر قفل الفهرس الثابت (يكتب `-1`)، ويُرجع خط الأساس عند الفشل. */
@@ -38,14 +44,22 @@ internal object MtkGpuFixedIndex {
         val baselineIndex = io.read(path)?.let(MtkGpuOppTable::parseIndex)
             ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "baseline-unreadable")
         if (baselineIndex == "-1") {
-            restoreDynamicScaling(io)
-            return GpuHardwareBackend.TransactionResult(request, GpuHardwareBackend.refresh(live.path, io), true, true)
+            // القفل محرَّر أصلًا، لكنّ `release` هي فعل «أعِد التوسّع» لا «اكتب -1 فقط»:
+            // قد يكون DVFS موقوفًا من جلسة سابقة، والنجاح بلا هذه الخطوة يُبقي التردد مجمّدًا.
+            val scaling = restoreDynamicScaling(io)
+            return GpuHardwareBackend.TransactionResult(
+                request, GpuHardwareBackend.refresh(live.path, io), true, scaling,
+                error = if (scaling) null else "gpu-scaling-not-restored",
+            )
         }
         val wrote = io.write(path, "-1")
         val verified = wrote && io.read(path)?.let(MtkGpuOppTable::parseIndex) == "-1"
         if (verified) {
-            restoreDynamicScaling(io)
-            return GpuHardwareBackend.TransactionResult(request, GpuHardwareBackend.refresh(live.path, io), true, true)
+            val scaling = restoreDynamicScaling(io)
+            return GpuHardwareBackend.TransactionResult(
+                request, GpuHardwareBackend.refresh(live.path, io), true, scaling,
+                error = if (scaling) null else "gpu-scaling-not-restored",
+            )
         }
         val rollbackWrote = io.write(path, baselineIndex)
         val rollbackVerified = rollbackWrote && io.read(path)?.let(MtkGpuOppTable::parseIndex) == baselineIndex
@@ -71,6 +85,9 @@ internal object MtkGpuFixedIndex {
             ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "unsupported-frequency")
         val baselineIndex = io.read(path)?.let(MtkGpuOppTable::parseIndex)
             ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "baseline-unreadable")
+        // لقطة السقف قبل رفعه: التثبيت قد يُطفئ DVFS ويرفع قمعًا حراريًّا/منصّيًّا، وتراجعٌ
+        // يُعيد الفهرس وحده يترك المنصّة مكشوفة بلا القمع الذي كان قائمًا قبل الطلب.
+        val ceilingCapture = if (request.releaseVendorCeiling) io.captureVendorCeiling() else null
         if (request.releaseVendorCeiling) {
             io.permitVendorCeiling(lock = true, release = true)
         }
@@ -97,14 +114,19 @@ internal object MtkGpuFixedIndex {
         val rollbackGovernor = baselineGovernor == null ||
             (io.write("${live.path}/governor", baselineGovernor) &&
                 GpuHardwareBackend.refresh(live.path, io)?.governor == baselineGovernor)
-        val rollbackVerified = rollbackLock && rollbackGovernor
         // وإعادة التوسّع الديناميكي **جزء من التراجع** لا زينة بعده.
         //
         // فالتثبيت أوقف DVFS (إن كان قد طلب رفع سقف المصنّع)، وتراجعٌ يُعيد الفهرس ويُبقي DVFS
         // موقوفًا لا يُعيد شيئًا: الجهاز يبقى على الدرجة التي صادف وجودها وقت الطلب — أي يُنتج
         // العطب الذي جاء التراجع لإلغائه. و`applyDevfreq` يفعل هذا في تراجعه، فيتبع مسار القفل
         // القاعدة نفسها بدل أن يكون استثناءً لها.
-        restoreDynamicScaling(io)
+        //
+        // والترتيب مقصود: تمكين DVFS أولًا، ثم لقطة السقف **أخيرًا** لأنها تحمل `dvfsEnable`
+        // الأصلي؛ ولو سبقتها كتابةُ تمكين لغلبها. والتراجع لا يُعلَن ناجحًا إلا إذا رجع
+        // الفهرس والحاكم والتوسّع والسقف كلهم.
+        val scalingRestored = restoreDynamicScaling(io)
+        val ceilingRestored = ceilingCapture == null || io.restoreVendorCeiling(ceilingCapture)
+        val rollbackVerified = rollbackLock && rollbackGovernor && scalingRestored && ceilingRestored
         return GpuHardwareBackend.TransactionResult(
             request, GpuHardwareBackend.refresh(live.path, io), wroteLock && wroteGovernor, false, true, rollbackVerified,
             when {

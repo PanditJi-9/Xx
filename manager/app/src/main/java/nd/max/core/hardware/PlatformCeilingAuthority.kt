@@ -52,7 +52,7 @@ object PlatformCeilingAuthority {
     private const val GED_UPBOUND = "/sys/kernel/ged/hal/custom_upbound_gpu_freq"
     private const val GED_CUST_UPBOUND = "/sys/module/ged/parameters/gpu_cust_upbound_freq"
     private const val GED_CUST_BOOST = "/sys/module/ged/parameters/gpu_cust_boost_freq"
-    private const val GED_DVFS_ENABLE = "/sys/module/ged/parameters/gpu_dvfs_enable"
+    internal const val GED_DVFS_ENABLE = "/sys/module/ged/parameters/gpu_dvfs_enable"
 
     /**
      * `6` = «بلا حدود» في واجهة حرارة MI — قيمة تُقرأ ولا تُكتب من هذا التطبيق.
