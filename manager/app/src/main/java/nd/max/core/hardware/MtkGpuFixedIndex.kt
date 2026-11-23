@@ -85,28 +85,28 @@ internal object MtkGpuFixedIndex {
             ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "unsupported-frequency")
         val baselineIndex = io.read(path)?.let(MtkGpuOppTable::parseIndex)
             ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "baseline-unreadable")
-        // لقطة السقف قبل رفعه: التثبيت قد يُطفئ DVFS ويرفع قمعًا حراريًّا/منصّيًّا، وتراجعٌ
-        // يُعيد الفهرس وحده يترك المنصّة مكشوفة بلا القمع الذي كان قائمًا قبل الطلب.
-        val ceilingCapture = if (request.releaseVendorCeiling) io.captureVendorCeiling() else null
-        if (request.releaseVendorCeiling) {
-            io.permitVendorCeiling(lock = true, release = true)
-        }
         val touchesGovernor = request.governor != null
         val baselineGovernor = if (touchesGovernor) {
             live.governor
                 ?: return GpuHardwareBackend.TransactionResult(request, live, false, false, error = "baseline-unreadable")
         } else null
+        // Validate every baseline before changing any vendor state. Even an early
+        // governor-baseline failure must not leave DVFS or a ceiling altered.
+        val ceilingCapture = if (request.releaseVendorCeiling) io.captureVendorCeiling() else null
+        if (request.releaseVendorCeiling) {
+            io.permitVendorCeiling(lock = true, release = true)
+        }
         val wroteLock = io.write(path, targetIndex)
         val wroteGovernor = !touchesGovernor || (wroteLock && io.write("${live.path}/governor", request.governor))
-        val actual = GpuHardwareBackend.refresh(live.path, io)
         // **صدى الفهرس ليس التردد.** هذا القياس هو ما يفصل «كتبنا الرقم» عن «الجهاز يعمل عليه»:
         // على هذا الجهاز بقي الفهرس على ٨٣٢ بينما الساعة الحقيقية ٢٦/٧٥٤، وكان التطبيق يعلن
-        // النجاح لأن قراءة الفهرس تطابق ما كتبناه. وحين لا يُقاس التردد يبقى الحكم `BY_INDEX`
-        // كما هو مصرَّح به، ولا يُدَّعى قياس لم يقع.
-        val measuredHz = actual?.let { GpuHardwareBackend.currentFrequencyHz(it, io) }
-        val clockMismatch = measuredHz != null &&
-            GpuCeilingPolicy.pinVerdict(frequency, measuredHz) == GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH
-        val verified = wroteLock && wroteGovernor && !clockMismatch &&
+        // النجاح لأن قراءة الفهرس تطابق ما كتبناه. No measured clock means an unverified
+        // fixed frequency, even when the index echoes correctly.
+        val readback = if (wroteLock && wroteGovernor) GpuHardwareBackend.readBackRequest(live, request, io)
+            else GpuHardwareBackend.RequestReadback(GpuHardwareBackend.refresh(live.path, io), false)
+        val actual = readback.device
+        val clockMismatch = readback.clockVerdict == GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH
+        val verified = wroteLock && wroteGovernor && readback.verified &&
             io.read(path)?.let(MtkGpuOppTable::parseIndex) == MtkGpuOppTable.parseIndex(targetIndex) &&
             (request.governor == null || actual?.governor.equals(request.governor, true))
         if (verified) return GpuHardwareBackend.TransactionResult(request, actual, true, true)
@@ -131,6 +131,7 @@ internal object MtkGpuFixedIndex {
             request, GpuHardwareBackend.refresh(live.path, io), wroteLock && wroteGovernor, false, true, rollbackVerified,
             when {
                 clockMismatch && rollbackVerified -> GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH.token
+                readback.clockVerdict == GpuCeilingPolicy.PinVerdict.BY_INDEX && rollbackVerified -> "pin-unreadable"
                 rollbackVerified -> "apply-not-verified-baseline-restored"
                 else -> "apply-and-rollback-failed"
             },

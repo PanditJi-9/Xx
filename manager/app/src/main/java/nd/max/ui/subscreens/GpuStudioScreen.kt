@@ -63,7 +63,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -77,7 +76,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.StateFlow
 import nd.max.R
 import nd.max.core.hardware.GpuFrequencyWindow
 import nd.max.core.policy.DangerConsent
@@ -212,6 +213,7 @@ fun GpuStudioScreen(
             GpuHero(
                 state = state,
                 device = device,
+                clock = viewModel.nowMs,
                 trailing = { MaxDeviceInfoShortcut(navController, MaxDestination.GpuStudio) },
             )
         }
@@ -243,16 +245,22 @@ fun GpuStudioScreen(
 private fun GpuHero(
     state: GpuStudioUiState,
     device: GpuHardwareBackend.Device,
+    clock: StateFlow<Long>,
     trailing: (@Composable () -> Unit)? = null
 ) {
-    val writable = device.rangeWritable || device.exactLockWritable || device.governorWritable
-    // عُمر القراءة يُحسب فقط إن كانت هناك قراءة.
-    //
-    // وهذا إصلاحُ عطبٍ كان كامنًا: الصيغة السابقة (`observedAtMs ?: 0L`) تطرح من صفر، فلو
-    // غابت القراءة لعُرض «عمر» بمليارات الثواني **كرقم حيّ** — وهذا ما يمنعه ADR-07 صراحةً.
-    val ageSeconds: Long? = state.selection?.observedAtMs?.let {
-        ((System.currentTimeMillis() - it) / 1000L).coerceAtLeast(0L)
+    val writable = device.devfreqCeilingWritable || device.exactLockWritable || device.governorWritable
+    val presentationNow by clock.collectAsStateWithLifecycle()
+    val nowMs = maxOf(presentationNow, System.currentTimeMillis())
+    val ageMs = state.liveSampleAtMs?.let { nowMs - it }
+    val ageSeconds = ageMs?.let { (it / 1000L).coerceAtLeast(0L) }
+    val liveTrust = when {
+        state.liveMhz == null || ageMs == null -> MaxDataTrust.Unreadable
+        ageMs < 0L || ageMs > GpuStudioViewModel.LIVE_SAMPLE_MAX_AGE_MS -> MaxDataTrust.Stale
+        else -> MaxDataTrust.Live
     }
+    val deviceFresh = state.deviceSampleAtMs?.let {
+        nowMs - it in 0L..GpuStudioViewModel.LIVE_SAMPLE_MAX_AGE_MS
+    } == true
 
     MaxGroup {
         MaxRow(
@@ -283,7 +291,7 @@ private fun GpuHero(
                 label = stringResource(R.string.max_gpu_live_frequency),
                 value = shownMhz?.toString(),
                 unit = "MHz",
-                trust = if (shownMhz != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
+                trust = liveTrust,
                 // العقدة التي قِيست فعلًا (GED أو `cur_freq` أو `gpuclk`)، لا مسار المزوّد:
                 // نسبة قراءةٍ إلى عقدة لم تُقرأ ادّعاءُ مصدرٍ كاذب.
                 source = state.liveSource,
@@ -299,9 +307,9 @@ private fun GpuHero(
                 modifier = Modifier.weight(1f),
                 metric = MaxMetric(
                     label = stringResource(R.string.max_gpu_dynamic_min),
-                    value = window.dynamicMinMhz?.toString(),
+                    value = window.dynamicMinMhz?.takeIf { deviceFresh }?.toString(),
                     unit = "MHz",
-                    trust = if (window.dynamicMinMhz != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
+                    trust = if (window.dynamicMinMhz != null && deviceFresh) MaxDataTrust.Live else MaxDataTrust.Unreadable,
                     source = device.path,
                 ),
                 size = MaxMetricSize.Small,
@@ -311,9 +319,9 @@ private fun GpuHero(
                 modifier = Modifier.weight(1f),
                 metric = MaxMetric(
                     label = stringResource(R.string.max_gpu_dynamic_max),
-                    value = window.dynamicMaxMhz?.toString(),
+                    value = window.dynamicMaxMhz?.takeIf { deviceFresh }?.toString(),
                     unit = "MHz",
-                    trust = if (window.dynamicMaxMhz != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
+                    trust = if (window.dynamicMaxMhz != null && deviceFresh) MaxDataTrust.Live else MaxDataTrust.Unreadable,
                     source = device.path,
                 ),
                 size = MaxMetricSize.Small,
@@ -328,9 +336,9 @@ private fun GpuHero(
                 modifier = Modifier.weight(1f),
                 metric = MaxMetric(
                     label = stringResource(R.string.max_gpu_load),
-                    value = device.loadPercent?.toString(),
+                    value = device.loadPercent?.takeIf { deviceFresh }?.toString(),
                     unit = "%",
-                    trust = if (device.loadPercent != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
+                    trust = if (device.loadPercent != null && deviceFresh) MaxDataTrust.Live else MaxDataTrust.Unreadable,
                     source = device.path,
                 ),
                 size = MaxMetricSize.Small,
@@ -340,9 +348,9 @@ private fun GpuHero(
                 modifier = Modifier.weight(1f),
                 metric = MaxMetric(
                     label = stringResource(R.string.max_gpu_temp_label),
-                    value = device.thermalC?.toString(),
+                    value = device.thermalC?.takeIf { deviceFresh }?.toString(),
                     unit = "°C",
-                    trust = if (device.thermalC != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
+                    trust = if (device.thermalC != null && deviceFresh) MaxDataTrust.Live else MaxDataTrust.Unreadable,
                     source = device.evidence.firstOrNull(),
                 ),
                 size = MaxMetricSize.Small,
@@ -365,7 +373,11 @@ private fun GpuHero(
                 MaxMetric(
                     label = stringResource(R.string.max_gpu_governor_label),
                     value = device.governor?.takeIf { it.isNotBlank() },
-                    trust = if (device.governor.isNullOrBlank()) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                    trust = when {
+                        device.governor.isNullOrBlank() -> MaxDataTrust.Unreadable
+                        !deviceFresh -> MaxDataTrust.Stale
+                        else -> MaxDataTrust.Live
+                    },
                     source = device.path,
                 )
             )
@@ -502,7 +514,7 @@ private fun gpuPercent(share: Float): String =
 @Composable
 private fun GpuIntents(state: GpuStudioUiState, vm: GpuStudioViewModel) {
     val device = state.device ?: return
-    val available = device.rangeWritable || device.exactLockWritable
+    val available = device.devfreqCeilingWritable || device.exactLockWritable
     val lockedReason = stringResource(R.string.max_gpu_intents_locked)
 
     MaxSection(
@@ -543,7 +555,7 @@ private fun GpuIntents(state: GpuStudioUiState, vm: GpuStudioViewModel) {
                 } else {
                     state.stagedIntent == intent.mode
                 }
-                val enabled = isDefault || available
+                val enabled = !state.applying && (isDefault || available)
                 MaxChoiceRow(
                     title = stringResource(intent.labelRes),
                     subtitle = stringResource(intent.descRes),
@@ -551,7 +563,7 @@ private fun GpuIntents(state: GpuStudioUiState, vm: GpuStudioViewModel) {
                     // عليه فعلًا، لا ما تمنّاه المستخدم آخر مرّة.
                     selected = selected,
                     enabled = enabled,
-                    lockedReason = lockedReason.takeIf { !enabled },
+                    lockedReason = if (state.applying) stringResource(R.string.max_gpu_applying) else lockedReason.takeIf { !enabled },
                     onSelect = {
                         val mode = intent.mode
                         if (mode == null) vm.restoreSession() else vm.stageMode(mode)
@@ -723,7 +735,7 @@ private fun GpuAdvancedLab(
     ) {
         if (!expanded) return@MaxSection
 
-        if (!device.exactLockWritable) {
+        if (!device.devfreqCeilingWritable && !device.exactLockWritable) {
             MaxRow(
                 title = stringResource(R.string.max_gpu_no_writable_range),
                 icon = Icons.Rounded.Speed,
@@ -748,6 +760,8 @@ private fun GpuAdvancedLab(
                     MaxChoiceRow(
                         title = governor,
                         selected = selected == governor,
+                        enabled = !state.applying,
+                        lockedReason = stringResource(R.string.max_gpu_applying).takeIf { state.applying },
                         onSelect = { vm.stageGovernor(governor) },
                     )
                 }
@@ -795,57 +809,86 @@ private fun GpuRangeControls(
 
     val pendingMin = state.pending?.minFreq
     val pendingMax = state.pending?.maxFreq
-    val liveMinIndex = frequencies.indexOf(pendingMin ?: device.minFreq).takeIf { it >= 0 } ?: 0
-    val liveMaxIndex = frequencies.indexOf(pendingMax ?: device.maxFreq).takeIf { it >= 0 } ?: frequencies.lastIndex
-
-    // الجهاز الذي لا يقبل نطاقًا مكتوبًا يبقى على القفل الدقيق؛ ونفس البدء القديم محفوظ.
-    var fixedFrequency by remember(device.path) { mutableStateOf(!device.rangeWritable) }
-    var minIndex by remember(device.path, liveMinIndex) { mutableIntStateOf(liveMinIndex) }
-    var maxIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
-    var lockIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
+    val minIndex = frequencies.indexOf(pendingMin ?: device.minFreq).takeIf { it >= 0 } ?: 0
+    val maxIndex = (frequencies.indexOf(pendingMax ?: device.maxFreq).takeIf { it >= 0 } ?: frequencies.lastIndex)
+        .coerceAtLeast(minIndex)
+    val fixedFrequency = when {
+        !device.devfreqCeilingWritable || frequencies.size == 1 -> true
+        pendingMin != null && pendingMax != null -> pendingMin == pendingMax
+        state.pending?.releaseLock == true -> false
+        else -> device.minFreq != null && device.minFreq == device.maxFreq
+    }
+    val canChangeMode = if (fixedFrequency) device.devfreqCeilingWritable && frequencies.size > 1 else device.exactLockWritable
+    val modeLockedReason = when {
+        state.applying -> stringResource(R.string.max_gpu_applying)
+        frequencies.size == 1 -> stringResource(R.string.max_gpu_single_frequency_desc)
+        fixedFrequency -> stringResource(R.string.max_gpu_reason_range_read_only)
+        else -> stringResource(R.string.max_gpu_reason_exact_lock_read_only)
+    }
+    val controlsEnabled = !state.applying && if (fixedFrequency) device.exactLockWritable else device.devfreqCeilingWritable
+    val controlsLockedReason = if (state.applying) {
+        stringResource(R.string.max_gpu_applying)
+    } else if (fixedFrequency) {
+        stringResource(R.string.max_gpu_reason_exact_lock_read_only)
+    } else stringResource(R.string.max_gpu_reason_range_read_only)
 
     MaxGroup {
         MaxSwitchRow(
             title = stringResource(R.string.max_gpu_fixed_title),
             checked = fixedFrequency,
-            onCheckedChange = { fixedFrequency = it },
+            onCheckedChange = vm::stageFrequencyMode,
             subtitle = stringResource(
                 if (fixedFrequency) R.string.max_gpu_fixed_on_desc else R.string.max_gpu_fixed_off_desc
             ),
             icon = Icons.Rounded.Bolt,
             iconTone = MaxTone.Accent,
+            enabled = !state.applying && canChangeMode,
+            lockedReason = modeLockedReason.takeIf { state.applying || !canChangeMode },
         )
 
         MaxGroupDivider()
 
-        if (fixedFrequency) {
+        if (frequencies.size == 1) {
+            // A one-OPP driver has a selectable request, not an invalid 0f..0f slider.
+            MaxChoiceRow(
+                title = stringResource(R.string.max_gpu_fixed_value),
+                subtitle = format(device, frequencies.first()),
+                selected = pendingMin == frequencies.first() && pendingMax == frequencies.first(),
+                enabled = controlsEnabled,
+                lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
+                onSelect = { vm.stageLock(frequencies.first()) },
+            )
+        } else if (fixedFrequency) {
             MaxSliderRow(
                 title = stringResource(R.string.max_gpu_fixed_value),
-                value = lockIndex.toFloat(),
-                onValueChange = { lockIndex = it.roundToInt().coerceIn(0, frequencies.lastIndex) },
-                valueText = format(device, frequencies[lockIndex]),
+                value = maxIndex.toFloat(),
+                onValueChange = { vm.stageLock(frequencies[it.roundToInt().coerceIn(0, frequencies.lastIndex)]) },
+                valueText = format(device, frequencies[maxIndex]),
                 valueRange = 0f..frequencies.lastIndex.toFloat(),
                 steps = (frequencies.size - 2).coerceAtLeast(0),
-                onValueChangeFinished = { vm.stageLock(frequencies[lockIndex]) },
+                enabled = controlsEnabled,
+                lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
             )
         } else {
             MaxSliderRow(
                 title = stringResource(R.string.max_gpu_range_min),
                 value = minIndex.toFloat(),
-                onValueChange = { minIndex = it.roundToInt().coerceIn(0, maxIndex) },
+                onValueChange = { vm.stageRangeMinimum(frequencies[it.roundToInt().coerceIn(0, frequencies.lastIndex)]) },
                 valueText = format(device, frequencies[minIndex]),
                 valueRange = 0f..frequencies.lastIndex.toFloat(),
                 steps = (frequencies.size - 2).coerceAtLeast(0),
-                onValueChangeFinished = { vm.stageRange(frequencies[minIndex], frequencies[maxIndex]) },
+                enabled = controlsEnabled,
+                lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
             )
             MaxSliderRow(
                 title = stringResource(R.string.max_gpu_range_max),
                 value = maxIndex.toFloat(),
-                onValueChange = { maxIndex = it.roundToInt().coerceIn(minIndex, frequencies.lastIndex) },
+                onValueChange = { vm.stageRangeMaximum(frequencies[it.roundToInt().coerceIn(0, frequencies.lastIndex)]) },
                 valueText = format(device, frequencies[maxIndex]),
                 valueRange = 0f..frequencies.lastIndex.toFloat(),
                 steps = (frequencies.size - 2).coerceAtLeast(0),
-                onValueChangeFinished = { vm.stageRange(frequencies[minIndex], frequencies[maxIndex]) },
+                enabled = controlsEnabled,
+                lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
             )
         }
     }
@@ -1034,6 +1077,7 @@ private fun reasonRes(reason: String?): Int = when (reason) {
     // قفل OPP كُتب، لكن الساعة المقاسة لم تطابقه: الفهرس صدى لا تردد، وقد أعاد المسار
     // الحالة السابقة. بلا هذا السطر كان المستخدم يرى «تعذّر تنفيذ الطلب بأمان» بلا سبب.
     "pin-clock-mismatch" -> R.string.max_gpu_reason_pin_clock_mismatch
+    "fixed-clock-unreadable", "pin-clock-unreadable" -> R.string.max_gpu_reason_fixed_clock_unreadable
     "empty-request" -> R.string.max_gpu_reason_empty_request
     else -> R.string.max_gpu_reason_unknown
 }

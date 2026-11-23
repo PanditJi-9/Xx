@@ -58,6 +58,14 @@ class GpuControlModelTest {
                 val clock = if (value == "-1") baselineClock else clockByIndex[value]
                 if (clock != null) values[clockPath] = clock
             }
+            // A devfreq governor moves to equal accepted bounds; merely echoing
+            // min/max must not substitute for the independently measured clock.
+            if (path.endsWith("/min_freq") || path.endsWith("/max_freq")) {
+                val base = path.substringBeforeLast('/')
+                val min = values["$base/min_freq"]
+                val max = values["$base/max_freq"]
+                if (min != null && min == max) values["$base/cur_freq"] = min
+            }
             return true
         }
         override fun listDirectories(path: String): List<String> = when (path) {
@@ -192,7 +200,7 @@ class GpuControlModelTest {
         val lock = "/proc/gpufreqv2/fix_target_opp_index"
         // السؤال الصحيح للسقف: هل تقبل عقدتا المدى كتابة؟ ومكان القفل لا يُبطله.
         assertTrue(device.devfreqCeilingWritable)
-        assertFalse("المسار القديم يمنع المدى عند وجود قفل — وهذا ما حوّل السقف إلى تثبيت", device.rangeWritable)
+        assertTrue("قفل OPP لا يلغي مدى devfreq المثبت", device.rangeWritable)
 
         val result = GpuHardwareBackend.applyValidated(
             device,
@@ -211,7 +219,8 @@ class GpuControlModelTest {
         val fake = mtkCeilingIo(activeIndex = "2")
         val device = GpuHardwareBackend.selection(fake).device!!
         val lock = "/proc/gpufreqv2/fix_target_opp_index"
-        assertEquals(650_000_000L, device.maxFreq)
+        assertEquals(754_000_000L, device.maxFreq)
+        assertEquals(650_000_000L, GpuHardwareBackend.currentExactLockFrequency(device, fake))
         // وخط الأساس يُلتقط **قبل** الكتابة (كما يفعل `AppMonitor`) وإلا لكان قد سجّل ما بعدها.
         val baseline = GpuHardwareBackend.captureBaseline(device, fake)
 
@@ -434,22 +443,25 @@ class GpuControlModelTest {
         assertEquals("/sys/class/devfreq/test-gpu/max_freq", fake.writes.first().first)
     }
 
-    @Test fun mtkExactLockReportsEffectiveRangeAndReleases() {
+    @Test fun mtkExactLockVerifiesItsIndexWithoutInventingLiveBoundsAndReleases() {
         val fake = mtkIo()
         val device = GpuHardwareBackend.selection(fake).device!!
         val result = GpuHardwareBackend.apply(device, GpuHardwareBackend.Request(400_000_000L, 400_000_000L), fake)
         assertTrue(result.verified)
-        assertEquals(400_000_000L, result.actual?.minFreq)
-        assertEquals(400_000_000L, result.actual?.maxFreq)
+        assertNull(result.actual?.minFreq)
+        assertNull(result.actual?.maxFreq)
+        assertEquals(400_000_000L, result.actual?.currentFreq)
         assertEquals(400_000_000L, GpuHardwareBackend.currentExactLockFrequency(result.actual!!, fake))
         assertTrue(GpuHardwareBackend.releaseExactLock(fake))
     }
 
-    @Test fun activeMtkLockIsReflectedDuringDiscovery() {
-        val device = GpuHardwareBackend.selection(mtkIo(activeIndex = "1")).device!!
-        assertEquals(400_000_000L, device.minFreq)
-        assertEquals(400_000_000L, device.maxFreq)
+    @Test fun activeMtkLockIsConfigurationNotAMeasuredClockDuringDiscovery() {
+        val fake = mtkIo(activeIndex = "0")
+        val device = GpuHardwareBackend.selection(fake).device!!
+        assertNull(device.minFreq)
+        assertNull(device.maxFreq)
         assertEquals(400_000_000L, device.currentFreq)
+        assertEquals(800_000_000L, GpuHardwareBackend.currentExactLockFrequency(device, fake))
     }
 
     @Test fun mtkSmartIntentsMapToLocksAndRelease() {
@@ -474,8 +486,10 @@ class GpuControlModelTest {
         assertTrue(result.verified)
         assertEquals("-1", fake.value(lock))
         val released = result.actual!!
-        assertEquals(200_000_000L, released.minFreq)
-        assertEquals(800_000_000L, released.maxFreq)
+        assertNull(released.minFreq)
+        assertNull(released.maxFreq)
+        assertEquals(200_000_000L, released.provenMinFreq)
+        assertEquals(800_000_000L, released.provenMaxFreq)
     }
 
     @Test fun mtkAdaptiveOnReleasedLockIsAVerifiedNoop() {
@@ -532,12 +546,12 @@ class GpuControlModelTest {
         assertEquals(listOf(false to false), fake.vendorCeilingCalls)
     }
 
-    @Test fun anExactPinAsksForBothTheReleaseAndTheDvfsHold() {
+    @Test fun anExactDevfreqRangeDoesNotFreezeDvfsAtThePreviousClock() {
         val fake = io()
         val device = GpuHardwareBackend.selection(fake).device!!
         val request = GpuHardwareBackend.Request(400_000_000L, 400_000_000L, releaseVendorCeiling = true)
         assertTrue(GpuHardwareBackend.apply(device, request, fake).verified)
-        assertEquals(listOf(true to true), fake.vendorCeilingCalls)
+        assertEquals(listOf(false to true), fake.vendorCeilingCalls)
     }
 
     @Test fun conflictingOppIndicesAreNotGuessed() {

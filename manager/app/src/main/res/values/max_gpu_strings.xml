@@ -53,7 +53,7 @@
 
     <string name="max_gpu_review_title">Staged change</string>
     <string name="max_gpu_review_intent">Goal: %1$s</string>
-    <string name="max_gpu_review_current">Current: %1$s</string>
+    <string name="max_gpu_review_current">Current limits: %1$s</string>
     <string name="max_gpu_review_requested">Requested: %1$s</string>
     <string name="max_gpu_review_release">Requested: release the lock and return to dynamic scaling</string>
     <string name="max_gpu_apply">Apply and verify</string>
@@ -68,9 +68,10 @@
     <string name="max_gpu_advanced_title">Advanced lab</string>
     <string name="max_gpu_advanced_desc">Only what the driver declares and we can verify is shown here.</string>
     <string name="max_gpu_fixed_title">Fixed frequency</string>
-    <string name="max_gpu_fixed_on_desc">One exact frequency is held. The governor no longer scales the GPU.</string>
-    <string name="max_gpu_fixed_off_desc">A minimum and a maximum are set; the governor scales between them.</string>
-    <string name="max_gpu_fixed_value">Held frequency</string>
+    <string name="max_gpu_fixed_on_desc">Requests one exact frequency for review. Apply and verify is still required; the live clock may differ if the kernel refuses or thermal limits intervene.</string>
+    <string name="max_gpu_fixed_off_desc">Requests a minimum and maximum for review. After applying, the driver still controls the live clock and thermal protection remains active.</string>
+    <string name="max_gpu_fixed_value">Requested frequency</string>
+    <string name="max_gpu_single_frequency_desc">The driver declares one frequency. Select it to stage a fixed-frequency request; Apply and verify is still required.</string>
     <string name="max_gpu_range_min">Minimum</string>
     <string name="max_gpu_range_max">Maximum</string>
     <string name="max_gpu_no_writable_range">No writable OPP list was proven, so the range and lock controls are hidden.</string>
@@ -109,7 +110,7 @@
     <string name="max_gpu_notice_reset_partial_detail">The GPU was returned to its platform range, but at least one saved setting could not be cleared and will be re-applied at the next boot. Retry the reset before rebooting.</string>
     <string name="max_gpu_reset_defaults">Reset to platform defaults</string>
     <string name="max_gpu_reset_defaults_desc">Releases a saved fixed GPU lock, restores the advertised range, and clears the settings this app re-applies at boot.</string>
-    <string name="max_gpu_range_desc">A minimum and a maximum are set; the governor scales between them.</string>
+    <string name="max_gpu_range_desc">A minimum and maximum are staged for review; they take effect only after applying and verifying.</string>
     <string name="max_gpu_governor_staged_desc">A different governor is staged; it takes effect with the rest of the request.</string>
 
     <string name="max_gpu_reason_unsupported_frequency">The driver does not declare this frequency.</string>
@@ -124,7 +125,8 @@
     <string name="max_gpu_reason_ambiguous_unit">The frequency unit cannot be resolved with confidence, so no write is attempted.</string>
     <string name="max_gpu_reason_provider_ambiguous">More than one GPU provider matched; no write is attempted.</string>
     <string name="max_gpu_reason_provider_disappeared">The GPU provider the change was staged against is gone.</string>
-    <string name="max_gpu_reason_pin_clock_mismatch">The fixed index was written, but the measured GPU clock did not match it, so the previous state was restored.</string>
+    <string name="max_gpu_reason_pin_clock_mismatch">The measured GPU clock did not match the requested fixed frequency. Check the live values and the restore result.</string>
+    <string name="max_gpu_reason_fixed_clock_unreadable">The live GPU clock could not be measured, so the fixed frequency could not be verified.</string>
     <string name="max_gpu_reason_empty_request">Nothing was requested.</string>
     <string name="max_gpu_reason_unknown">The request could not be carried out safely.</string>
     <string name="max_gpu_reason_technical">Reason code</string>

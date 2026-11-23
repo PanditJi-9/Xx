@@ -13,11 +13,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import nd.max.MaxManagerProps
 import nd.max.core.hardware.ControlOwnership
@@ -26,7 +33,6 @@ import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.hardware.GpuTweakPersistence
 import nd.max.core.hardware.HardwareControlArbiter
 import nd.max.core.hardware.HardwareControlKey
-import nd.max.core.hardware.ManualControlLocks
 import nd.max.core.platform.PropertyUtils
 
 /**
@@ -78,6 +84,10 @@ data class GpuStudioUiState(
     val liveMhz: Int? = null,
     /** المصدر الفعلي لـ[liveMhz]، فتُعرض البطاقة عقدة القياس لا مسار المزوّد. `null` حين لا قياس. */
     val liveSource: String? = null,
+    /** Timestamp of this clock sample, never the provider-discovery timestamp. */
+    val liveSampleAtMs: Long? = null,
+    /** Completion time of the device reading that supplies live limits/load/temperature. */
+    val deviceSampleAtMs: Long? = null,
     val historyMHz: List<Float> = emptyList(),
     /**
      * جدول الوقت في الحالة كما نشرته النواة، أو `null` إن لم تنشره.
@@ -120,80 +130,164 @@ class GpuStudioViewModel @Inject constructor(
     var state by mutableStateOf(GpuStudioUiState())
         private set
 
+    companion object {
+        const val LIVE_SAMPLE_MAX_AGE_MS = 5_000L
+        private const val POLL_INTERVAL_MS = 1_500L
+        private const val REQUEST_TOKEN = "gpu-studio"
+
+        private fun readBaseline(device: GpuHardwareBackend.Device): String? =
+            GpuHardwareBackend.refresh(device.path)?.takeIf {
+                it.name == device.name && it.frequencyUnit == device.frequencyUnit
+            }?.let {
+                GpuHardwareBackend.encodeBaseline(GpuHardwareBackend.captureBaseline(it))
+            }
+    }
+
+    private val hardwareMutex = Mutex()
+    private var loadJob: Job? = null
     private var pollJob: Job? = null
-    private var baselineProviderPath: String? = null
+
+    /** Presentation clock only; stops with the last lifecycle-aware subscriber. */
+    val nowMs: StateFlow<Long> = flow {
+        while (true) {
+            emit(System.currentTimeMillis())
+            delay(1_000L)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0L), System.currentTimeMillis())
+
+    private data class LiveSample(val hz: Long, val mhz: Int, val source: String, val atMs: Long)
+
+    private data class Observation(
+        val selection: GpuHardwareBackend.Selection,
+        val live: LiveSample?,
+        val deviceAtMs: Long?,
+        val stateTimes: List<GpuHardwareBackend.StateTime>?,
+        val baseline: GpuHardwareBackend.Baseline?,
+        val savedRequest: GpuHardwareBackend.Request?,
+    )
+
+    /** Called on IO while holding hardwareMutex; discovery cannot overwrite an in-flight write. */
+    private fun readObservation(previous: GpuHardwareBackend.Device?, resetBaseline: Boolean = false): Observation {
+        val selection = GpuHardwareBackend.selection()
+        val device = selection.device
+        val deviceAtMs = device?.let { System.currentTimeMillis() }
+        val providerChanged = previous?.path != device?.path || previous?.name != device?.name ||
+            previous?.frequencyUnit != device?.frequencyUnit
+        val baseline = if (providerChanged || resetBaseline) device?.let(GpuHardwareBackend::captureBaseline) else null
+        val saved = if (providerChanged || resetBaseline) device?.let(GpuTweakPersistence::loadValidated) else null
+        val times = device?.let { GpuHardwareBackend.timeInState(it) }
+        // Sample last, so a slow state-table read does not freshly label an older clock.
+        val live = device?.let(::readLive)
+        return Observation(selection, live, deviceAtMs, times, baseline, saved)
+    }
+
+    /** All state publication stays on Main and merges with the latest staged edits. */
+    private fun withObservation(observation: Observation, resetBaseline: Boolean = false): GpuStudioUiState {
+        val device = observation.selection.device
+        val providerChanged = state.device?.path != device?.path || state.device?.name != device?.name ||
+            state.device?.frequencyUnit != device?.frequencyUnit
+        val verified = state.verifiedSnapshot
+        val fixed = state.lastResult?.takeIf { it.verified }?.requested?.let {
+            it.minFreq?.takeIf { min -> min == it.maxFreq }
+        }
+        val fixedHz = fixed?.times(verified?.frequencyUnit?.hzMultiplier ?: 0L)
+        val drifted = verified != null && (
+            device == null || device.path != verified.path || device.minFreq != verified.minFreq ||
+                device.maxFreq != verified.maxFreq || device.governor != verified.governor ||
+                (fixed != null && observation.live?.hz != fixedHz)
+            )
+        return state.copy(
+            loading = false,
+            selection = observation.selection,
+            device = device,
+            baseline = if (providerChanged || resetBaseline) observation.baseline else state.baseline,
+            pending = if (providerChanged) null else state.pending,
+            stateTimes = observation.stateTimes,
+            liveMhz = observation.live?.mhz,
+            liveSource = observation.live?.source,
+            liveSampleAtMs = observation.live?.atMs,
+            deviceSampleAtMs = observation.deviceAtMs,
+            historyMHz = if (providerChanged) {
+                listOfNotNull(observation.live?.mhz?.toFloat())
+            } else if (observation.live != null) {
+                (state.historyMHz + observation.live.mhz.toFloat()).takeLast(60)
+            } else state.historyMHz,
+            verifiedSnapshot = if (drifted || providerChanged) null else verified,
+            lastResult = if (providerChanged) null else state.lastResult,
+            mode = if (providerChanged) null else state.mode,
+            stagedIntent = if (providerChanged) null else state.stagedIntent,
+            savedRequest = if (providerChanged || resetBaseline) observation.savedRequest else state.savedRequest,
+            notice = when {
+                providerChanged && !state.loading -> GpuNotice(GpuNoticeKind.PROVIDER_CHANGED)
+                drifted -> GpuNotice(GpuNoticeKind.DRIFTED)
+                else -> state.notice
+            },
+        )
+    }
 
     fun load() {
-        if (pollJob != null) return
-        viewModelScope.launch(Dispatchers.IO) {
-            val selection = GpuHardwareBackend.selection()
-            val device = selection.device
-            if (baselineProviderPath != device?.path) {
-                baselineProviderPath = device?.path
-                state = state.copy(baseline = device?.let(GpuHardwareBackend::captureBaseline))
+        if (pollJob?.isActive == true || loadJob?.isActive == true) return
+        loadJob = viewModelScope.launch {
+            hardwareMutex.withLock {
+                val previous = state.device
+                val observation = withContext(Dispatchers.IO) { readObservation(previous) }
+                state = withObservation(observation)
             }
-            val live = device?.let(::readLive)
-            state = state.copy(
-                loading = false,
-                selection = selection,
-                device = device,
-                liveMhz = live?.first,
-                liveSource = live?.second,
-                // تُقرأ عند فتح الشاشة، ثم تُقرأ مرّة أخرى إن تغيّر المزوّد (في الاستقصاء أدناه):
-                // المفاتيح لا تتغيّر إلا بفعل المستخدم في هذه الشاشة، فموضعا التغيّر معروفان.
-                savedRequest = device?.let(GpuTweakPersistence::loadValidated),
-            )
             startPolling()
         }
     }
 
     private fun startPolling() {
         pollJob?.cancel()
-        pollJob = viewModelScope.launch(Dispatchers.IO) {
+        pollJob = viewModelScope.launch {
             while (isActive) {
-                val selection = GpuHardwareBackend.selection()
-                val device = selection.device
-                // نفس رقم الشاشة: **التردد الجاري المقاس**، لا السقف ولا فهرس القفل.
-                val live = device?.let(::readLive)
-                val liveMhz = live?.first
-                val verified = state.verifiedSnapshot
-                val drifted = verified != null && (
-                    device == null ||
-                        device.path != verified.path ||
-                        device.minFreq != verified.minFreq ||
-                        device.maxFreq != verified.maxFreq ||
-                        device.governor != verified.governor
+                delay(POLL_INTERVAL_MS)
+                hardwareMutex.withLock {
+                    if (state.applying) return@withLock
+                    val previous = state.device
+                    val observation = withContext(Dispatchers.IO) { readObservation(previous) }
+                    // Apply may have been requested while this read was in flight.
+                    if (!state.applying) state = withObservation(observation)
+                }
+            }
+        }
+    }
+
+    /** Synchronous busy guard plus one IO transaction at a time; no staging can be lost on completion. */
+    private fun mutate(operation: suspend () -> Unit) {
+        if (state.applying || state.loading) return
+        state = state.copy(applying = true)
+        viewModelScope.launch {
+            hardwareMutex.withLock {
+                try {
+                    operation()
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    val previous = state.device
+                    val observation = withContext(Dispatchers.IO) {
+                        runCatching { readObservation(previous) }.getOrNull()
+                    }
+                    state = (observation?.let { withObservation(it) } ?: state.copy(
+                        liveMhz = null,
+                        liveSource = null,
+                        liveSampleAtMs = null,
+                        deviceSampleAtMs = null,
+                    )).copy(
+                        verifiedSnapshot = null,
+                        lastResult = null,
+                        // A thrown transaction is not evidence that no write happened or recovery succeeded.
+                        notice = GpuNotice(GpuNoticeKind.ROLLBACK_FAILED, reason = "gpu-transaction-interrupted"),
                     )
-                val states = device?.let { GpuHardwareBackend.timeInState(it) }
-                val providerChanged = baselineProviderPath != device?.path
-                if (providerChanged) baselineProviderPath = device?.path
-                state = state.copy(
-                    loading = false,
-                    selection = selection,
-                    device = device,
-                    baseline = if (providerChanged) device?.let(GpuHardwareBackend::captureBaseline) else state.baseline,
-                    pending = if (providerChanged) null else state.pending,
-                    stateTimes = states,
-                    liveMhz = liveMhz,
-                    liveSource = live?.second,
-                    historyMHz = if (providerChanged) listOfNotNull(liveMhz?.toFloat()) else if (liveMhz != null) (state.historyMHz + liveMhz.toFloat()).takeLast(60) else state.historyMHz,
-                    verifiedSnapshot = if (drifted || providerChanged) null else verified,
-                    // مع تغيّر المزوّد قد تقرأ المفاتيح حالةً لا تُصدَّق على عتادٍ آخر
-                    // (`loadValidated` تُحكّم الطلب على الجهاز الجديد وترد `null` إن لم يصلح)
-                    // فلا يبقى سطرٌ يقول «محفوظة» لعتادٍ ليس هذا.
-                    savedRequest = if (providerChanged) device?.let(GpuTweakPersistence::loadValidated) else state.savedRequest,
-                    notice = when {
-                        providerChanged -> GpuNotice(GpuNoticeKind.PROVIDER_CHANGED)
-                        drifted -> GpuNotice(GpuNoticeKind.DRIFTED)
-                        else -> state.notice
-                    },
-                )
-                delay(1_500)
+                } finally {
+                    state = state.copy(applying = false)
+                }
             }
         }
     }
 
     fun stageMode(mode: GpuHardwareBackend.IntentMode) {
+        if (state.applying) return
         val device = state.device ?: return
         val request = GpuHardwareBackend.requestForMode(device, mode)
         state = if (request == null) {
@@ -211,6 +305,7 @@ class GpuStudioViewModel @Inject constructor(
     }
 
     fun stageRange(min: Long, max: Long) {
+        if (state.applying) return
         val device = state.device ?: return
         val request = GpuHardwareBackend.Request(min, max, state.pending?.governor)
         val error = GpuHardwareBackend.validate(device, request)
@@ -229,6 +324,7 @@ class GpuStudioViewModel @Inject constructor(
     }
 
     fun stageLock(frequency: Long) {
+        if (state.applying) return
         val governor = state.pending?.governor
         val request = GpuHardwareBackend.Request(frequency, frequency, governor)
         val device = state.device ?: return
@@ -248,6 +344,7 @@ class GpuStudioViewModel @Inject constructor(
     }
 
     fun stageGovernor(governor: String) {
+        if (state.applying) return
         val device = state.device ?: return
         val current = state.pending
         val request = GpuHardwareBackend.Request(
@@ -271,6 +368,7 @@ class GpuStudioViewModel @Inject constructor(
     }
 
     fun cancelPreview() {
+        if (state.applying) return
         state = state.copy(
             pending = null,
             lastResult = null,
@@ -281,76 +379,173 @@ class GpuStudioViewModel @Inject constructor(
         )
     }
 
-    fun applyPreview() {
+    /** The mode switch stages the mutually exclusive request, not a second UI-only Boolean. */
+    fun stageFrequencyMode(fixed: Boolean) {
+        if (state.applying) return
         val device = state.device ?: return
+        val frequencies = device.frequencies
+        if (frequencies.isEmpty()) return
+        if (fixed) {
+            val target = state.pending?.maxFreq?.takeIf { it in frequencies }
+                ?: device.maxFreq?.takeIf { it in frequencies } ?: frequencies.last()
+            stageLock(target)
+        } else {
+            if (!device.devfreqCeilingWritable || frequencies.size < 2) {
+                state = state.copy(notice = GpuNotice(GpuNoticeKind.REFUSED, reason = "range-read-only-or-unproven"))
+                return
+            }
+            var min = state.pending?.minFreq ?: device.minFreq ?: frequencies.first()
+            var max = state.pending?.maxFreq ?: device.maxFreq ?: frequencies.last()
+            // Equal endpoints are an exact request. Switching off must actually stage a range.
+            if (min >= max || min !in frequencies || max !in frequencies) {
+                min = device.minFreq?.takeIf { it in frequencies } ?: frequencies.first()
+                max = device.maxFreq?.takeIf { it in frequencies } ?: frequencies.last()
+                if (min >= max) {
+                    min = frequencies.first()
+                    max = frequencies.last()
+                }
+            }
+            stageRange(min, max)
+        }
+    }
+
+    /** Read the other endpoint from the current pending request, not an older Compose callback. */
+    fun stageRangeMinimum(frequency: Long) {
+        if (state.applying) return
+        val device = state.device ?: return
+        val max = state.pending?.maxFreq ?: device.maxFreq ?: device.frequencies.lastOrNull() ?: return
+        stageRange(minOf(frequency, max), max)
+    }
+
+    fun stageRangeMaximum(frequency: Long) {
+        if (state.applying) return
+        val device = state.device ?: return
+        val min = state.pending?.minFreq ?: device.minFreq ?: device.frequencies.firstOrNull() ?: return
+        stageRange(min, maxOf(frequency, min))
+    }
+
+    fun applyPreview() {
+        if (state.applying) return
+        val stagedDevice = state.device ?: return
         val pending = state.pending ?: return
-        state = state.copy(applying = true)
-        viewModelScope.launch(Dispatchers.IO) {
-            val key = HardwareControlKey.gpuFrequency(device.name)
-            val token = "gpu-studio-${System.currentTimeMillis()}"
-            val baseline = GpuHardwareBackend.captureBaseline(device)
-            // القيمة المطلوبة والصيغة المقروءة من **نفس** الشكل: `GpuHardwareBackend`
-            // يحمل الحقول التي يمكن للطلب أن يمسّها (المدى · المُحكِّم · قفل OPP).
-            // كان المدى وحده، فطلبٌ يمسّ المُحكِّم أو يحرّر القفل لا يساوي المقروء
-            // أبدًا — فيُصنَّف نجاحه فشلًا وتُعاد الحالة السابقة (وهو ما يراه
-            // المستخدم: «اخترت فلا يتغير شيء»).
-            val desired = GpuHardwareBackend.encodeRequest(pending)
-            val arbiterResult = arbiter.submit(
-                key = key,
-                owner = ControlOwnership.Owner.GLOBAL_PROFILE,
-                token = token,
-                desired = desired,
-                // الطلب نفسه يُطبَّق لا نصّ يُفكّ من جديد: المُحكِّم لا يُطبِّق إلا
-                // `desired` الخاص بهذا الطلب، فإعادة الترميز هنا كانت تُسقط
-                // `releaseLock` لو أُضيف حقل للمخطط لاحقًا.
-                // الحكم من قياس المسار نفسه لا من نجاح الكتابة: `pin` قد يكتب الفهرس
-                // ثم يقيس ترددًا مخالفًا فيُرجع `verified=false` مع `writeSucceeded=true`.
-                // وتمرير `writeSucceeded` كان يترك المُحكِّم يعلن نجاحًا لأن قراءة الفهرس
-                // عادت إلى خط أساس مساوٍ للطلب (قفل قديم ٨٣٢) — وهو العطب المقيس.
-                apply = { GpuHardwareBackend.applyValidated(device, pending).verified },
-                read = {
-                    GpuHardwareBackend.refresh(device.path)?.let { live ->
-                        GpuHardwareBackend.encodeLive(live, pending)
-                    }
-                },
-                baseline = GpuHardwareBackend.encodeLive(device, pending),
-                restore = { GpuHardwareBackend.restoreBaseline(baseline) },
-                // صدى الفهرس وحده ليس حكمًا: قفل قديم ٨٣٢ يطابق الطلب بينما الساعة المقيسة
-                // ٧٥٤. فلا يُقبل «مطابق» — قبل الكتابة أو بعدها — إلا إذا وافقت الساعة
-                // المقيسة الطلب. وغياب القياس يُبقي حكم الفهرس (BY_INDEX) لا يُبطله.
-                verify = { _, actual ->
-                    val echo = actual != null && actual == desired
-                    val target = pending.minFreq?.takeIf { it == pending.maxFreq }
-                    if (target == null) {
-                        echo
-                    } else {
-                        val measured = GpuHardwareBackend.measuredFrequency(device)
-                        echo && (measured == null ||
-                            GpuCeilingPolicy.pinVerdict(target, measured.hz) !=
-                            GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH)
-                    }
+        val mode = state.mode
+        val intent = state.stagedIntent
+        mutate {
+            val (transaction, observation) = withContext(Dispatchers.IO) {
+                // Retarget one bounded intent. Dropping only our token also makes the
+                // rollback baseline the state immediately before this request, not an older apply.
+                arbiter.releaseToken(REQUEST_TOKEN, restore = false)
+                val selected = GpuHardwareBackend.selection()
+                val device = selected.device?.takeIf {
+                    it.path == stagedDevice.path && it.name == stagedDevice.name &&
+                        it.frequencyUnit == stagedDevice.frequencyUnit
+                }
+                val result = if (device == null) {
+                    GpuHardwareBackend.TransactionResult(
+                        requested = pending,
+                        actual = selected.device,
+                        writeSucceeded = false,
+                        verified = false,
+                        error = if (selected.state == GpuHardwareBackend.SelectionState.AMBIGUOUS) {
+                            "provider-ambiguous"
+                        } else "provider-disappeared",
+                    )
+                } else {
+                    var readDevice: GpuHardwareBackend.Device? = null
+                    var backendResult: GpuHardwareBackend.TransactionResult? = null
+                    var clockError: String? = null
+                    val desired = GpuHardwareBackend.encodeRequest(pending)
+                    val arbiterResult = arbiter.submit(
+                        key = HardwareControlKey.gpuFrequency(device.name),
+                        owner = ControlOwnership.Owner.GLOBAL_PROFILE,
+                        token = REQUEST_TOKEN,
+                        desired = desired,
+                        apply = {
+                            backendResult = GpuHardwareBackend.applyValidated(readDevice ?: device, pending)
+                            backendResult?.verified == true
+                        },
+                        read = {
+                            GpuHardwareBackend.refresh(device.path)?.takeIf {
+                                it.name == device.name && it.frequencyUnit == device.frequencyUnit
+                            }?.let { live ->
+                                readDevice = live
+                                GpuHardwareBackend.encodeBaseline(GpuHardwareBackend.captureBaseline(live))
+                            }.also { if (it == null) readDevice = null }
+                        },
+                        // Baseline encoding is request-independent, including the vendor lock.
+                        restore = { encoded ->
+                            GpuHardwareBackend.decodeBaseline(encoded)?.let {
+                                GpuHardwareBackend.restoreBaseline(it)
+                            } == true
+                        },
+                        verify = { _, actual ->
+                            val live = readDevice
+                            val echo = actual != null && live != null &&
+                                GpuHardwareBackend.encodeLive(live, pending) == desired
+                            val target = pending.minFreq?.takeIf { it == pending.maxFreq }
+                            if (target == null) {
+                                echo
+                            } else {
+                                val multiplier = live?.frequencyUnit?.hzMultiplier ?: 0L
+                                val targetHz = target.takeIf { multiplier > 0L && it <= Long.MAX_VALUE / multiplier }
+                                    ?.times(multiplier)
+                                val measured = live?.let { GpuHardwareBackend.currentFrequencyHz(it) }
+                                val verdict = GpuCeilingPolicy.pinVerdict(targetHz, measured)
+                                if (backendResult?.verified == true) {
+                                    clockError = when (verdict) {
+                                        GpuCeilingPolicy.PinVerdict.VERIFIED -> null
+                                        GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH -> "pin-clock-mismatch"
+                                        else -> "fixed-clock-unreadable"
+                                    }
+                                }
+                                // An index/range echo with no measured clock is not fixed-clock success.
+                                echo && verdict == GpuCeilingPolicy.PinVerdict.VERIFIED
+                            }
+                        },
+                        // The first explicit apply must reach the backend even if configuration already echoes it.
+                        realized = { _, _ -> backendResult?.verified == true },
+                    )
+                    GpuHardwareBackend.TransactionResult(
+                        requested = pending,
+                        actual = readDevice,
+                        writeSucceeded = backendResult?.writeSucceeded ?: false,
+                        verified = arbiterResult.verified && backendResult?.verified == true,
+                        rollbackAttempted = arbiterResult.rollbackAttempted || backendResult?.rollbackAttempted == true,
+                        rollbackVerified = if (arbiterResult.rollbackAttempted) {
+                            arbiterResult.rollbackVerified
+                        } else backendResult?.rollbackVerified,
+                        // Preserve the backend's actual refusal, rather than replacing it with the arbiter wrapper.
+                        error = backendResult?.error ?: clockError ?: arbiterResult.error,
+                    )
+                }
+                result to readObservation(stagedDevice)
+            }
+            val providerMatches = observation.selection.device?.let {
+                it.path == stagedDevice.path && it.name == stagedDevice.name &&
+                    it.frequencyUnit == stagedDevice.frequencyUnit
+            } == true
+            val fixed = pending.minFreq?.takeIf { it == pending.maxFreq }
+            val clockMatches = fixed == null || observation.live?.hz == fixed * stagedDevice.frequencyUnit.hzMultiplier
+            val clockMoved = transaction.verified && providerMatches && !clockMatches
+            val result = transaction.copy(
+                actual = observation.selection.device,
+                verified = transaction.verified && providerMatches && clockMatches,
+                error = transaction.error ?: when {
+                    !providerMatches -> "provider-disappeared"
+                    clockMoved && observation.live == null -> "fixed-clock-unreadable"
+                    clockMoved -> "pin-clock-mismatch"
+                    else -> null
                 },
             )
-            val refreshed = GpuHardwareBackend.selection()
-            val result = GpuHardwareBackend.TransactionResult(
-                requested = pending,
-                actual = refreshed.device,
-                writeSucceeded = arbiterResult.applied,
-                verified = arbiterResult.verified,
-                rollbackAttempted = arbiterResult.rollbackAttempted,
-                rollbackVerified = arbiterResult.rollbackVerified,
-                error = arbiterResult.error,
-            )
-            state = state.copy(
-                applying = false,
-                selection = refreshed,
-                device = refreshed.device,
-                pending = if (result.verified) null else pending,
+            state = withObservation(observation).copy(
+                pending = pending.takeIf { !result.verified && providerMatches },
                 lastResult = result,
-                verifiedSnapshot = refreshed.device.takeIf { result.verified },
-                mode = state.mode.takeIf { result.verified },
-                stagedIntent = state.stagedIntent.takeIf { result.verified },
+                verifiedSnapshot = observation.selection.device.takeIf { result.verified },
+                mode = mode.takeIf { result.verified },
+                stagedIntent = intent.takeIf { result.verified },
                 notice = when {
+                    !providerMatches -> GpuNotice(GpuNoticeKind.PROVIDER_CHANGED, reason = result.error)
+                    clockMoved -> GpuNotice(GpuNoticeKind.DRIFTED, reason = result.error)
                     result.verified -> GpuNotice(GpuNoticeKind.VERIFIED, reason = result.error)
                     result.rollbackVerified == true -> GpuNotice(GpuNoticeKind.ROLLED_BACK, reason = result.error)
                     result.rollbackAttempted -> GpuNotice(GpuNoticeKind.ROLLBACK_FAILED, reason = result.error)
@@ -361,24 +556,41 @@ class GpuStudioViewModel @Inject constructor(
     }
 
     fun restoreSession() {
+        if (state.applying) return
+        val device = state.device ?: return
         val baseline = state.baseline ?: return
-        state = state.copy(applying = true)
-        viewModelScope.launch(Dispatchers.IO) {
-            val restored = if (baseline.fixedIndex != null || (baseline.minFreq != null && baseline.maxFreq != null) || baseline.governor != null) {
-                GpuHardwareBackend.restoreBaseline(baseline)
-            } else false
-            val selection = GpuHardwareBackend.selection()
-            state = state.copy(
-                applying = false,
-                selection = selection,
-                device = selection.device,
+        if (baseline.devicePath != device.path) return
+        mutate {
+            val (result, observation) = withContext(Dispatchers.IO) {
+                arbiter.releaseToken(REQUEST_TOKEN, restore = false)
+                val result = arbiter.submit(
+                    key = HardwareControlKey.gpuFrequency(device.name),
+                    owner = ControlOwnership.Owner.GLOBAL_PROFILE,
+                    token = REQUEST_TOKEN,
+                    desired = GpuHardwareBackend.encodeBaseline(baseline),
+                    apply = { GpuHardwareBackend.restoreBaseline(baseline) },
+                    read = { readBaseline(device) },
+                    restore = { encoded ->
+                        GpuHardwareBackend.decodeBaseline(encoded)?.let { GpuHardwareBackend.restoreBaseline(it) } == true
+                    },
+                    verify = { desired, actual -> actual != null && actual == desired },
+                )
+                result to readObservation(device)
+            }
+            state = withObservation(observation).copy(
                 pending = null,
                 lastResult = null,
                 verifiedSnapshot = null,
                 mode = null,
                 stagedIntent = null,
                 notice = GpuNotice(
-                    if (restored) GpuNoticeKind.CANCELLED else GpuNoticeKind.ROLLBACK_FAILED,
+                    when {
+                        result.verified -> GpuNoticeKind.CANCELLED
+                        result.rollbackVerified == true -> GpuNoticeKind.ROLLED_BACK
+                        result.rollbackAttempted -> GpuNoticeKind.ROLLBACK_FAILED
+                        else -> GpuNoticeKind.REFUSED
+                    },
+                    reason = result.error,
                 ),
             )
         }
@@ -395,39 +607,41 @@ class GpuStudioViewModel @Inject constructor(
      */
     fun resetToDefaults() {
         if (state.applying) return
-        state = state.copy(applying = true)
-        viewModelScope.launch(Dispatchers.IO) {
-            // نيّة سابقة رابحة على مفتاح GPU قد تعيد تطبيق قفلها بعد الاستعادة، فتُبطل
-            // أثر الزر في الدورة التالية. تُلغى نوايا هذه العملية أولًا، **بلا استرجاع**:
-            // الاستعادة هي فعل هذا الزر نفسه، لا خط أساس جلسة سابقة.
-            state.device?.let { device ->
-                val key = HardwareControlKey.gpuFrequency(device.name)
-                arbiter.snapshot().filter { it.key == key }.forEach { intent ->
-                    arbiter.release(key, intent.token, restore = false)
-                }
+        val device = state.device ?: return
+        mutate {
+            val (result, cleared, observation) = withContext(Dispatchers.IO) {
+                // Never evict another subsystem's intent to make a reset look successful.
+                arbiter.releaseToken(REQUEST_TOKEN, restore = false)
+                var resetVerified = false
+                val result = arbiter.submit(
+                    key = HardwareControlKey.gpuFrequency(device.name),
+                    owner = ControlOwnership.Owner.GLOBAL_PROFILE,
+                    token = REQUEST_TOKEN,
+                    desired = "gpu-platform-defaults",
+                    apply = {
+                        resetVerified = GpuHardwareBackend.resetToPlatformDefaults()
+                        resetVerified
+                    },
+                    read = { readBaseline(device) },
+                    restore = { encoded ->
+                        GpuHardwareBackend.decodeBaseline(encoded)?.let { GpuHardwareBackend.restoreBaseline(it) } == true
+                    },
+                    verify = { _, actual -> resetVerified && actual != null },
+                    realized = { _, _ -> resetVerified },
+                )
+                val cleared = result.verified && GpuTweakPersistence.clearSaved()
+                Triple(result, cleared, readObservation(device, resetBaseline = result.verified))
             }
-            val reset = GpuHardwareBackend.resetToPlatformDefaults()
-            // المحو بعد نجاح العتاد فقط: إعدادات محفوظة بلا قفل حُرِّر تُعيد الحالة القديمة
-            // عند الإقلاع، فلا معنى لمحوها قبل أن يُثبت العتاد أنه عاد.
-            val cleared = reset && GpuTweakPersistence.clearSaved()
-            val selection = GpuHardwareBackend.selection()
-            val device = selection.device
-            val live = device?.let(::readLive)
-            state = if (reset) {
-                state.copy(
-                    applying = false,
-                    selection = selection,
-                    device = device,
-                    liveMhz = live?.first,
-                    liveSource = live?.second,
-                    baseline = device?.let(GpuHardwareBackend::captureBaseline),
+            val refreshed = withObservation(observation, resetBaseline = result.verified)
+            state = if (result.verified) {
+                refreshed.copy(
                     pending = null,
                     lastResult = null,
                     verifiedSnapshot = null,
                     mode = null,
                     stagedIntent = null,
                     historyMHz = emptyList(),
-                    savedRequest = if (cleared) null else device?.let(GpuTweakPersistence::loadValidated),
+                    savedRequest = if (cleared) null else observation.savedRequest,
                     notice = if (cleared) {
                         GpuNotice(GpuNoticeKind.RESET)
                     } else {
@@ -437,30 +651,48 @@ class GpuStudioViewModel @Inject constructor(
                     },
                 )
             } else {
-                state.copy(
-                    applying = false,
-                    selection = selection,
-                    device = device,
-                    liveMhz = live?.first,
-                    liveSource = live?.second,
-                    notice = GpuNotice(GpuNoticeKind.ROLLBACK_FAILED),
+                refreshed.copy(
+                    lastResult = null,
+                    verifiedSnapshot = null,
+                    notice = GpuNotice(
+                        when {
+                            result.rollbackVerified == true -> GpuNoticeKind.ROLLED_BACK
+                            result.rollbackAttempted -> GpuNoticeKind.ROLLBACK_FAILED
+                            else -> GpuNoticeKind.REFUSED
+                        },
+                        reason = result.error,
+                    ),
                 )
             }
         }
     }
 
     fun saveVerifiedToTweaks() {
+        if (state.applying) return
         val device = state.device ?: return
         val verified = state.verifiedSnapshot ?: return
         if (verified.path != device.path) return
-        viewModelScope.launch(Dispatchers.IO) {
-            PropertyUtils.set(MaxManagerProps.GpuStudio.MIN_FREQ, verified.minFreq?.toString().orEmpty())
-            PropertyUtils.set(MaxManagerProps.GpuStudio.MAX_FREQ, verified.maxFreq?.toString().orEmpty())
-            PropertyUtils.set(MaxManagerProps.GpuStudio.GOVERNOR, verified.governor.orEmpty())
-            PropertyUtils.set(MaxManagerProps.GpuStudio.MODE, state.mode ?: "custom")
-            withContext(Dispatchers.Main) {
-                state = state.copy(verifiedSnapshot = null, notice = null)
+        val mode = state.mode ?: "custom"
+        mutate {
+            val observation = withContext(Dispatchers.IO) { readObservation(device) }
+            val refreshed = withObservation(observation)
+            if (refreshed.verifiedSnapshot == null) {
+                state = refreshed
+                return@mutate
             }
+            val saved = withContext(Dispatchers.IO) {
+                PropertyUtils.set(MaxManagerProps.GpuStudio.MIN_FREQ, verified.minFreq?.toString().orEmpty())
+                PropertyUtils.set(MaxManagerProps.GpuStudio.MAX_FREQ, verified.maxFreq?.toString().orEmpty())
+                PropertyUtils.set(MaxManagerProps.GpuStudio.GOVERNOR, verified.governor.orEmpty())
+                PropertyUtils.set(MaxManagerProps.GpuStudio.MODE, mode)
+                observation.selection.device?.let(GpuTweakPersistence::loadValidated)
+            }
+            // Refresh the saved label without changing the session-start restoration baseline.
+            state = refreshed.copy(
+                verifiedSnapshot = null,
+                notice = null,
+                savedRequest = saved,
+            )
         }
     }
 
@@ -469,12 +701,15 @@ class GpuStudioViewModel @Inject constructor(
      * [GpuHardwareBackend.measuredFrequency]، فلا يُخلط مزوّد بآخر ولا تُوصف عقدة بغير اسمها.
      * و`null` حين لا يُقرأ شيء — لا صفر ولا سقف.
      */
-    private fun readLive(device: GpuHardwareBackend.Device): Pair<Int, String>? =
+    private fun readLive(device: GpuHardwareBackend.Device): LiveSample? =
         GpuHardwareBackend.measuredFrequency(device)?.let { measured ->
-            (measured.hz / 1_000_000L).toInt().takeIf { it > 0 }?.let { it to measured.source }
+            (measured.hz / 1_000_000L).toInt().takeIf { it > 0 }?.let {
+                LiveSample(measured.hz, it, measured.source, measured.observedAtMs)
+            }
         }
 
     override fun onCleared() {
+        loadJob?.cancel()
         pollJob?.cancel()
         super.onCleared()
     }

@@ -130,14 +130,20 @@ internal object MtkGpuOppTable {
      * يحوّل قراءة عقدة القفل إلى فهرس — و«لا قفل» نصًّا.
      *
      * والعقدة لا تُعيد رقمًا فقط: بعض الإصدارات تُعيد جملة (`fix GPU/STACK OPP index is disabled`)،
-     * وهي **حالة تحرير** لا قيمة. وقراءة لا تحمل رقمًا تعني `-1` كذلك، فالمجهول يُعالَج كتحرير —
-     * وهو الاختيار الآمن لأن `-1` لا تُثبّت شيئًا، بخلاف فهرس مُخترَع كان سيجعل الجهاز يقرأ
-     * «مُثبَّت» على تردد لم يطلبه أحد.
+     * وهي **حالة تحرير** لا قيمة. An empty or unrecognized response is not proof of release:
+     * it stays null, preventing a write without a restorable baseline.
      */
-    fun parseIndex(raw: String): String {
+    fun parseIndex(raw: String): String? {
         val clean = raw.trim()
-        if (clean.isEmpty() || clean == "-1" || clean.contains("disabled", true) || clean.contains("dynamic", true)) return "-1"
-        return Regex("-?\\d+").findAll(clean).map { it.value }.toList().lastOrNull() ?: "-1"
+        if (clean.isEmpty()) return null
+        clean.toIntOrNull()?.let { return it.takeIf { index -> index >= -1 }?.toString() }
+        if (clean.equals("disabled", true) || clean.equals("dynamic", true) ||
+            Regex("(?i)\\bOPP\\s+index\\s+is\\s+disabled\\s*$").containsMatchIn(clean)
+        ) return "-1"
+        if (Regex("-?\\d+").findAll(clean).count() != 1) return null
+        val labelled = Regex("(?i)\\bindex\\s*[:=]\\s*(-?\\d+)\\s*$").find(clean)
+            ?.groupValues?.getOrNull(1)?.toIntOrNull() ?: return null
+        return labelled.takeIf { it >= -1 }?.toString()
     }
 
     /**
