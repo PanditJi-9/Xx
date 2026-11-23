@@ -48,8 +48,14 @@ import javax.inject.Inject
 /** لا يُعاد طلب الجذر أكثر من مرّة كل ١٥ ثانية من الرئيسية — الطلب قد يُظهر نافذة صلاحية. */
 private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
 
-/** قراءة الحالة التي يكتبها الخادم نفسه — نفس مصدر ردّ `STATUS` في `IpcServer.c`. */
-private const val DAEMON_STATE_PROP = "getprop persist.sys.maxmanager.state"
+/**
+ * الحالة التي يكتبها الخادم نفسه — نفس مصدر ردّ `STATUS` في `IpcServer.c`.
+ *
+ * وتُقرأ عبر [PropertyUtils] داخل العملية (bionic) لا بصدفة: الحارس `PropBridgeTest`
+ * يمنع إعادة قراءة الخصائص بصدفة في هذا الملفّ، والقيمة هنا لا تحتاج جذرًا لقراءتها —
+ * الجذر يلزم لإثبات أن العملية حيّة وحدها.
+ */
+private const val DAEMON_STATE_PROP = "persist.sys.maxmanager.state"
 
 
 /**
@@ -279,9 +285,7 @@ class HomeViewModel @Inject constructor(
         if (viaChannel == DaemonIpc.Result.Unreachable && RootUtils.isRootGranted()) {
             rootLiveness = DaemonLivenessProbe(RootShellDaemonIo).read()
             if (rootLiveness == DaemonLiveness.Alive) {
-                rootState = RootShellDaemonIo.shell(DAEMON_STATE_PROP)
-                    .stdout.trim()
-                    .takeIf { it.isNotEmpty() }
+                rootState = PropertyUtils.get(DAEMON_STATE_PROP).takeIf { it.isNotEmpty() }
             }
         }
         return DaemonHealth.of(viaChannel, rootLiveness, rootState)
