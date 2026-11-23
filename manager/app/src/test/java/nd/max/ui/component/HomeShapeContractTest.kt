@@ -38,14 +38,14 @@ class HomeShapeContractTest {
     private fun read(name: String): String = File(sourceRoot, "ui/mainscreens/$name").readText()
 
     @Test
-    fun `the dashboard order puts identity banners vitals and actions first`() {
+    fun `the dashboard order puts identity and vitals first and actions after the live activity`() {
         val body = read("LegendaryHomeDashboard.kt").substringAfter("internal fun LegendaryHomeDashboard(")
-        val order = listOf("HomeHeader(", "HomeHeroCard(", "HomeActionRow(", "HardwarePulseCards(", "HomeVitalsGrid(", "MemoryMatrixCard(", "UnifiedActivityCard(", "CommandDeck(")
+        val order = listOf("HomeHeader(", "HomeHeroCard(", "HardwarePulseCards(", "HomeVitalsGrid(", "MemoryMatrixCard(", "UnifiedActivityCard(", "HomeActionRow(", "CommandDeck(")
             .map { body.indexOf(it) }
         assertTrue("كتلة مفقودة من الرئيسية", order.all { it >= 0 })
-        // **تغيّر الترتيب عن قصد ٢٠٢٦-١١-١٨** (تدقيق فيديو المالك): صفّ الفعل صعد فوق النبض،
-        // لأن الفعل الأوّلي كان يقع خلف ١.٥ شاشة تمرير. الحرّاس هنا يحرسون **ثبات** الترتيب لا
-        // صيغته القديمة؛ و`HomeTourModel` يحكي الخطوات بترتيب الشاشة نفسه فيُقرأ الاثنان معًا.
+        // **تغيّر الترتيب عن قصد ٢٠٢٦-١١-٢٣** (أمر المالك): صفّ الفعل نزل أسفل CPU/GPU،
+        // و«النشاط الحالي» يفصل بينهما. الحرّاس هنا يحرسون **ثبات** الترتيب لا صيغته القديمة؛
+        // و`HomeTourModel` يحكي الخطوات بترتيب الشاشة نفسه فيُقرأ الاثنان معًا.
         assertTrue("ترتيب الكتل الأولى تغيّر", order == order.sorted())
         assertFalse("البطل الضخم القديم عاد", body.contains("PulsePanel("))
     }

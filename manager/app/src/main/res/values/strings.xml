@@ -3496,6 +3496,8 @@
     <!-- Memory card: the two actions are the point of the redesign. -->
     <string name="home_memory_boost">Boost</string>
     <string name="home_memory_boost_desc">Stops cached background apps, then shows the memory actually freed.</string>
+    <string name="home_gamespace">GameSpace</string>
+    <string name="home_gamespace_desc">Open the game lobby and its side panel.</string>
     <string name="home_memory_boost_blocked">Boost needs root or Shizuku. Nothing was stopped.</string>
     <string name="home_memory_boost_none">Nothing worth stopping right now.</string>
     <string name="home_memory_boost_freed">Freed %1$s</string>

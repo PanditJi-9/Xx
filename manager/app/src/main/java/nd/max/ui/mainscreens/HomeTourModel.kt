@@ -67,7 +67,7 @@ internal enum class HomeTourTarget(val section: HomeTourSection) {
     SettingsTop(HomeTourSection.Settings),
 }
 
-/** خطوات الجولة بترتيب الشاشة: البطاقة الأولى، ثم الفعل، ثم CPU/GPU، ثم القراءات الحيّة، ثم البقية. */
+/** خطوات الجولة بترتيب الشاشة: البطاقة الأولى، ثم CPU/GPU، ثم القراءات الحيّة، ثم السعات، ثم الفعل. */
 internal enum class HomeTourStep(
     val target: HomeTourTarget,
     @StringRes val titleRes: Int,
@@ -75,9 +75,6 @@ internal enum class HomeTourStep(
 ) {
     /** أوّلًا: البطاقة الأولى — ما هذا الجهاز وأي صلاحية يحملها Max عليه. */
     Identity(HomeTourTarget.Hero, R.string.home_tour_identity_title, R.string.home_tour_identity_body),
-
-    /** ثم زرّا التعزيز والتحكم — الفعل قبل الحالة (تغيّر ٢٠٢٦-١١-١٨ مع ترتيب الكتل). */
-    Actions(HomeTourTarget.Actions, R.string.home_tour_actions_title, R.string.home_tour_actions_body),
 
     /** ثم CPU وGPU: تاريخ التردد كما يظهر تحتهما. */
     Pulse(HomeTourTarget.Pulse, R.string.home_tour_pulse_title, R.string.home_tour_pulse_body),
@@ -87,6 +84,9 @@ internal enum class HomeTourStep(
 
     /** السعات. */
     Memory(HomeTourTarget.Memory, R.string.home_tour_memory_title, R.string.home_tour_memory_body),
+
+    /** ثم زرّا التعزيز وGameSpace — أسفل النبض والنشاط (تغيّر ٢٠٢٦-١١-٢٣ مع ترتيب الكتل). */
+    Actions(HomeTourTarget.Actions, R.string.home_tour_actions_title, R.string.home_tour_actions_body),
 
     /** منصة التحكم: الاختصارات الشخصية. */
     Deck(HomeTourTarget.Deck, R.string.home_tour_deck_title, R.string.home_tour_deck_body),

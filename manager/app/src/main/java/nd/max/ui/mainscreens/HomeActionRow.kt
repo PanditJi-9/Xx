@@ -10,7 +10,8 @@
  *  - **Boost**: يوقف التطبيقات المخبّأة ويقيس الذاكرة **قبل وبعد** (`MemoryBoostEngine`) — فالرقم
  *    الذي يظهر تحته محرَّرٌ فعلًا لا وعدًا. وهو مالك هذا الفعل الوحيد في الشاشة: كان له صفّ داخل
  *    مصفوفة الذاكرة فصار هنا، وبقاء الاثنين كان سيرسم الزرّ مرّتين.
- *  - **Control**: باب منصة التحكم (والتبويب السفلي هو الباب نفسه — الزرّ هنا يُقرأ فعلًا لا قائمة).
+ *  - **GameSpace**: باب لوبي الألعاب (`MaxDestination.GameLobby`) — الزرّ فعلٌ لا حالة، ويمرّ
+ *    بالبوابة نفسها التي يمرّ بها أي دخول إلى اللوبي.
  *
  * **والزرّ لا يختفي عند نقص الصلاحية** (نصّ §10.3): يبهت ويقول سطر الحالة تحته ما ينقصه. من لا يرى
  * الزرّ لا يعرف أن الميزة موجودة، فيقرأ التطبيق كأنه بلا Boost.
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -72,6 +74,7 @@ import nd.max.ui.component.neuralPalette
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.viewmodel.MemoryBoostState
 import nd.max.ui.design.maxRadius
 
@@ -81,6 +84,7 @@ private val ActionHeight = MaxSize.minTouchTarget
 internal fun HomeActionRow(
     boost: MemoryBoostState,
     onBoost: () -> Unit,
+    onGameSpace: () -> Unit,
 ) {
     val p = neuralPalette()
     // ما حرّره «تعزيز» فعلًا يظهر رقمًا على بلاطته، والحالة تُقال بالنص لا باللون وحده.
@@ -96,9 +100,30 @@ internal fun HomeActionRow(
         boost.outcome != null && freedMb == null -> stringResource(R.string.home_memory_boost_none)
         else -> stringResource(R.string.home_memory_boost_desc)
     }
-    // **أمر المالك (2026-11-20):** بلاطة «التحكم» التي كانت بجانب «تعزيز» انتقلت إلى مساحة
-    // الألعاب، فبقي فعل واحد على الرئيسية يأخذ العرض كله — ولا خانة فارغة تُقرأ فعلًا مفقودًا.
-    BoostActionTile(boostAccent, boostSupport, freedMb, onBoost, Modifier.fillMaxWidth())
+    // **أمر المالك (2026-11-23):** زرّا فعلٍ جنبًا إلى جنب — «تعزيز» و«GameSpace» — بعد أن كان
+    // فعل واحدًا يأخذ العرض كله. والارتفاع من الصفّ ([IntrinsicSize.Min]) فلا تتفاوت البلاطتان
+    // مهما اختلف طول شرحهما.
+    Row(
+        modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+    ) {
+        BoostActionTile(
+            boostAccent,
+            boostSupport,
+            freedMb,
+            onBoost,
+            Modifier.weight(1f).fillMaxHeight(),
+        )
+        QuickActionTile(
+            title = stringResource(R.string.home_gamespace),
+            icon = MaxDestination.GameLobby.icon,
+            accent = p.accent,
+            value = null,
+            support = stringResource(R.string.home_gamespace_desc),
+            onClick = onGameSpace,
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+        )
+    }
 }
 
 @Composable

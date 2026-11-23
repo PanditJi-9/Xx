@@ -106,14 +106,14 @@ import nd.max.ui.design.maxRadius
  *  0. header   — brand, engine state, guide, power and settings.
  *  1. hero     — the first card, compact: device, access row, temperature, three one-line tiles, device overview.
  *  2. pulse    — CPU and GPU: load, clock and the frequency history beneath them.
- *  3. actions  — Boost (measured before/after) and Control, side by side.
- *  4. vitals   — the readings no other block shows: CPU, GPU and surface temperature, and network speed.
- *  5. focus    — storage almost full (hideable), or heat / memory when those are the real problem.
- *  6. memory   — RAM, ZRAM and storage capacity, each row a door.
- *  7. cleaner  — storage fullness and the Ultra Cleaner action.
- *  8. deck     — the control platform: the destinations people reach for, in compact rows.
- *  2b. activity — what your settings are doing now, right under CPU and GPU: a plain summary, the changes,
+ *  3. activity — what your settings are doing now, right under CPU and GPU: a plain summary, the changes,
  *      and one door per row. It always shows something: an empty state says the device runs on defaults.
+ *  4. actions  — Boost (measured before/after) and GameSpace (the lobby), side by side, below the activity.
+ *  5. vitals   — the readings no other block shows: CPU, GPU and surface temperature, and network speed.
+ *  6. focus    — storage almost full (hideable), or heat / memory when those are the real problem.
+ *  7. memory   — RAM, ZRAM and storage capacity, each row a door.
+ *  8. cleaner  — storage fullness and the Ultra Cleaner action.
+ *  9. deck     — the control platform: the destinations people reach for, in compact rows.
  *
  * **بلا حركة على البطاقات:** لا بانرات متحركة ولا دخول متتابع ولا تبديل مشهد بانزلاق.
  *
@@ -183,19 +183,6 @@ internal fun LegendaryHomeDashboard(
                 onAccess = onAccess,
             )
         }
-        // صفّ الفعل فوق النبض (تدقيق الفيديو ٢٠٢٦-١١-١٨): كان الفعل الأوّلي «تعزيز» يقع بعد
-        // البطل والتخزين والمقياسين والنشاط — أي على مسافة ١.٥ شاشة تمرير من أول نظرة. الرئيسية
-        // تجيب ثلاثة أسئلة بهذا الترتيب: من أنا (البطل) ← ماذا أفعل الآن (هذا الصفّ) ← كيف حالي
-        // (النبض وما بعده). و`HomeShapeContractTest` و`HomeTourModel` يقرآن هذا الترتيب فيُحدَّثان معه.
-        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
-            NeuralSectionHeader(title = stringResource(R.string.home_section_actions))
-            HomeTourAnchor(HomeTourTarget.Actions) {
-                HomeActionRow(
-                    boost = boost,
-                    onBoost = onBoost,
-                )
-            }
-        }
         // «مدار الطاقة» (أنيميشن البطّارية أثناء الشحن) — **مُخفٰى بأمر المالك ٢٠٢٦-١٠-٢١**
         // («أخفِ انيميشن البطاريه في الشاشة الرئيسية»): صار غير مستدعًى هنا، والملفّ
         // [HomeOrbitPowerCard] بقي كما هو فلا يُحذف عملٌ مُنجز (إرجاعه بسطر واحد)، وشرطُه
@@ -237,6 +224,20 @@ internal fun LegendaryHomeDashboard(
             MemoryMatrixCard(dashboard = dashboard, onNavigate = onNavigate)
         }
         UnifiedActivityCard(maxAi = maxAi, onNavigate = onNavigate)
+        // صفّ الفعل **أسفل** CPU/GPU وبعد «النشاط الحالي» (أمر المالك ٢٠٢٦-١١-٢٣): النشاط
+        // يفصل بين الأرقام التي تُقرأ وبين الفعلين، فلا يُقرأ الزرّ قبل معرفة ما يجري الآن.
+        // وكان فوق النبض منذ تدقيق ٢٠٢٦-١١-١٨، فعاد إلى ما طلبه المالك بعد أن صار الفعل تابعه.
+        // و`HomeShapeContractTest` و`HomeTourModel` يقرآن هذا الترتيب فيُحدَّثان معه.
+        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+            NeuralSectionHeader(title = stringResource(R.string.home_section_actions))
+            HomeTourAnchor(HomeTourTarget.Actions) {
+                HomeActionRow(
+                    boost = boost,
+                    onBoost = onBoost,
+                    onGameSpace = { onNavigate(MaxDestination.GameLobby.route) },
+                )
+            }
+        }
         if (!focusFirst) {
             FocusCard(dashboard, onNavigate, storageCardVisible, onHideStorage)
         }
@@ -488,10 +489,22 @@ private fun FrequencyMetricCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // العنوان المرن يأخذ ما تبقّى، والنسبة تُقاس أولًا بعرضها الكامل: بلا `weight`
+            // هنا كان عنوان GPU الأطول يزاحم «100%» فتختفي النسبة (قيس باللقطة ٢٠٢٦-١١-٢٣).
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Box(Modifier.size(MaxSpace.sm).clip(CircleShape).background(accent))
                 Spacer(Modifier.width(MaxSpace.xs))
-                Text(title, color = p.muted, style = MaterialTheme.typography.labelMedium)
+                Text(
+                    title,
+                    modifier = Modifier.weight(1f),
+                    color = p.muted,
+                    style = MaterialTheme.typography.labelMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Spacer(Modifier.width(MaxSpace.xs))
                 Icon(
                     Icons.AutoMirrored.Rounded.KeyboardArrowRight,
@@ -500,6 +513,7 @@ private fun FrequencyMetricCard(
                     tint = accent,
                 )
             }
+            Spacer(Modifier.width(MaxSpace.sm))
             NeuralValue(
                 percent?.coerceIn(0, 100)?.let { "$it%" } ?: unknown,
                 style = MonoValueStyleLarge,

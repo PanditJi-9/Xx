@@ -3447,6 +3447,8 @@
 
     <string name="home_memory_boost">تعزيز</string>
     <string name="home_memory_boost_desc">يوقف التطبيقات المخبأة ثم يعرض الذاكرة التي حُرّرت فعلًا.</string>
+    <string name="home_gamespace">GameSpace</string>
+    <string name="home_gamespace_desc">افتح لوبي الألعاب ولوحته الجانبية.</string>
     <string name="home_memory_boost_blocked">التعزيز يحتاج روتًا أو شيزوكو. لم يُوقف شيء.</string>
     <string name="home_memory_boost_none">لا شيء يستحق الإيقاف الآن.</string>
     <string name="home_memory_boost_freed">حُرِّر %1$s</string>
