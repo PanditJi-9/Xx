@@ -577,6 +577,9 @@ class GpuStudioViewModel @Inject constructor(
                 )
                 result to readObservation(device)
             }
+            val providerMatches = observation.selection.device?.let {
+                it.path == device.path && it.name == device.name && it.frequencyUnit == device.frequencyUnit
+            } == true
             state = withObservation(observation).copy(
                 pending = null,
                 lastResult = null,
@@ -585,6 +588,7 @@ class GpuStudioViewModel @Inject constructor(
                 stagedIntent = null,
                 notice = GpuNotice(
                     when {
+                        !providerMatches -> GpuNoticeKind.PROVIDER_CHANGED
                         result.verified -> GpuNoticeKind.CANCELLED
                         result.rollbackVerified == true -> GpuNoticeKind.ROLLED_BACK
                         result.rollbackAttempted -> GpuNoticeKind.ROLLBACK_FAILED
@@ -629,8 +633,23 @@ class GpuStudioViewModel @Inject constructor(
                     verify = { _, actual -> resetVerified && actual != null },
                     realized = { _, _ -> resetVerified },
                 )
-                val cleared = result.verified && GpuTweakPersistence.clearSaved()
-                Triple(result, cleared, readObservation(device, resetBaseline = result.verified))
+                val observation = readObservation(device, resetBaseline = result.verified)
+                val providerMatches = observation.selection.device?.let {
+                    it.path == device.path && it.name == device.name && it.frequencyUnit == device.frequencyUnit
+                } == true
+                val verified = result.verified && providerMatches
+                val cleared = verified && GpuTweakPersistence.clearSaved()
+                val saved = if (verified) {
+                    observation.selection.device?.let(GpuTweakPersistence::loadValidated)
+                } else observation.savedRequest
+                Triple(
+                    result.copy(
+                        verified = verified,
+                        error = result.error ?: "provider-disappeared".takeIf { !providerMatches },
+                    ),
+                    cleared,
+                    observation.copy(savedRequest = saved),
+                )
             }
             val refreshed = withObservation(observation, resetBaseline = result.verified)
             state = if (result.verified) {

@@ -812,10 +812,11 @@ private fun GpuRangeControls(
     val minIndex = frequencies.indexOf(pendingMin ?: device.minFreq).takeIf { it >= 0 } ?: 0
     val maxIndex = (frequencies.indexOf(pendingMax ?: device.maxFreq).takeIf { it >= 0 } ?: frequencies.lastIndex)
         .coerceAtLeast(minIndex)
+    val releaseStaged = state.pending?.releaseLock == true
     val fixedFrequency = when {
+        releaseStaged -> false
         !device.devfreqCeilingWritable || frequencies.size == 1 -> true
         pendingMin != null && pendingMax != null -> pendingMin == pendingMax
-        state.pending?.releaseLock == true -> false
         else -> device.minFreq != null && device.minFreq == device.maxFreq
     }
     val canChangeMode = if (fixedFrequency) device.devfreqCeilingWritable && frequencies.size > 1 else device.exactLockWritable
@@ -825,7 +826,8 @@ private fun GpuRangeControls(
         fixedFrequency -> stringResource(R.string.max_gpu_reason_range_read_only)
         else -> stringResource(R.string.max_gpu_reason_exact_lock_read_only)
     }
-    val controlsEnabled = !state.applying && if (fixedFrequency) device.exactLockWritable else device.devfreqCeilingWritable
+    val controlsEnabled = !state.applying &&
+        (if (fixedFrequency) device.exactLockWritable else device.devfreqCeilingWritable)
     val controlsLockedReason = if (state.applying) {
         stringResource(R.string.max_gpu_applying)
     } else if (fixedFrequency) {
@@ -838,7 +840,11 @@ private fun GpuRangeControls(
             checked = fixedFrequency,
             onCheckedChange = vm::stageFrequencyMode,
             subtitle = stringResource(
-                if (fixedFrequency) R.string.max_gpu_fixed_on_desc else R.string.max_gpu_fixed_off_desc
+                when {
+                    releaseStaged -> R.string.max_gpu_review_release
+                    fixedFrequency -> R.string.max_gpu_fixed_on_desc
+                    else -> R.string.max_gpu_fixed_off_desc
+                }
             ),
             icon = Icons.Rounded.Bolt,
             iconTone = MaxTone.Accent,
@@ -854,8 +860,8 @@ private fun GpuRangeControls(
                 title = stringResource(R.string.max_gpu_fixed_value),
                 subtitle = format(device, frequencies.first()),
                 selected = pendingMin == frequencies.first() && pendingMax == frequencies.first(),
-                enabled = controlsEnabled,
-                lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
+                enabled = !state.applying && device.exactLockWritable,
+                lockedReason = controlsLockedReason.takeIf { state.applying || !device.exactLockWritable },
                 onSelect = { vm.stageLock(frequencies.first()) },
             )
         } else if (fixedFrequency) {
@@ -869,7 +875,7 @@ private fun GpuRangeControls(
                 enabled = controlsEnabled,
                 lockedReason = controlsLockedReason.takeIf { !controlsEnabled },
             )
-        } else {
+        } else if (device.devfreqCeilingWritable) {
             MaxSliderRow(
                 title = stringResource(R.string.max_gpu_range_min),
                 value = minIndex.toFloat(),
