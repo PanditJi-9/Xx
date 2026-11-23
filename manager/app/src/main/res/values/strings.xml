@@ -2188,6 +2188,14 @@
     <string name="persist_danger_confirm_action">I understand — turn it on</string>
     <string name="persist_last_run_title">Last restore run</string>
     <string name="persist_last_run_never">Nothing re-applied yet on this install.</string>
+    <string name="persist_reset_platform_title">Reset to platform defaults</string>
+    <string name="persist_reset_platform_desc">Releases MaxManager overrides on CPU, GPU, I/O and the saved profile, then releases the vendor ceiling and returns the balanced plan.</string>
+    <string name="persist_reset_platform_running">Releasing overrides and verifying what the hardware accepted…</string>
+    <string name="persist_reset_platform_done">Platform defaults restored — every step was verified by reading the node back.</string>
+    <string name="persist_reset_platform_partial">Some steps could not be verified: %1$s. The rest were reset; run it again after checking root access.</string>
+    <string name="persist_reset_platform_confirm_title">Reset hardware to platform defaults?</string>
+    <string name="persist_reset_platform_confirm_body">This removes MaxManager CPU/GPU/I/O limits and saved governor choices, releases any fixed GPU lock and vendor ceiling, and returns the saved profile to balanced. It does not factory-reset Android, does not delete your files, and does not change app choices. Device thermal throttling may return to stock and feel slower.</string>
+    <string name="persist_reset_platform_confirm_action">Reset now</string>
     <string name="persist_fast_boots_title">Fast reboots in a row</string>
     <string name="persist_fast_boots_desc">%1$d counted by the boot guard. Two in a row trip it.</string>
     <string name="persist_fast_boots_tripped">The guard tripped: automatic application of advanced tweaks is held back until you turn it back on.</string>

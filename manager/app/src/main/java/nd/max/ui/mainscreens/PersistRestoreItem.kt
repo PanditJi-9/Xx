@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import android.text.format.DateUtils
 import kotlinx.coroutines.launch
 import nd.max.R
+import nd.max.core.hardware.PlatformDefaultsReset
 import nd.max.core.persist.PersistRestorer
 import nd.max.core.persist.PersistStore
 import nd.max.core.policy.DangerConsent
@@ -56,6 +58,10 @@ fun PersistRestoreItem() {
     var dangerousReason by remember { mutableStateOf(PersistStore.dangerousAutoOffReason(context)) }
     var lastRunAtMs by remember { mutableStateOf(PersistStore.lastRunAtMs(context)) }
     var pendingDangerConfirm by remember { mutableStateOf(false) }
+    var resetting by remember { mutableStateOf(false) }
+    var pendingResetConfirm by remember { mutableStateOf(false) }
+    var resetFailure by remember { mutableStateOf<String?>(null) }
+    var resetDone by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         ExpressiveList(
@@ -154,6 +160,65 @@ fun PersistRestoreItem() {
             )
         )
 
+        // **استعادة افتراضي المنصّة** (بلاغ SHARK): إزالة الوحدة وحدها قد تُبقي مفاتيح
+        // `persist.sys.maxmanager*` و`API/current_profile`، فيعيد الخادم الوضع القديم عند الإقلاع.
+        // وهذا الفعل يفكّ قيود المصنّع والملفات المحفوظة ويعيد التخطيط المتوازن — لا يمسّ
+        // اختيارات التطبيق ولا ملفاتك، ولا يُعيد ضبط أندرويد نفسه.
+        ExpressiveList(
+            content = listOf(
+                {
+                    ExpressiveListItem(
+                        onClick = if (!resetting) {
+                            { pendingResetConfirm = true }
+                        } else null,
+                        headlineContent = { Text(stringResource(R.string.persist_reset_platform_title)) },
+                        supportingContent = {
+                            Text(
+                                stringResource(
+                                    if (resetting) R.string.persist_reset_platform_running
+                                    else R.string.persist_reset_platform_desc
+                                )
+                            )
+                        },
+                        leadingContent = {
+                            LeadingIcon(
+                                icon = Icons.Rounded.SettingsBackupRestore,
+                                contentDescription = null
+                            )
+                        },
+                        trailingContent = {
+                            if (resetting) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
+                            }
+                        }
+                    )
+                },
+            )
+        )
+
+        // النتيجة تُعرض كما قِيست: نجاح كامل، أو أسماء الخطوات التي لم تُثبت.
+        resetFailure?.let { failed ->
+            Text(
+                text = stringResource(R.string.persist_reset_platform_partial, failed),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+            )
+        }
+        if (resetDone) {
+            Text(
+                text = stringResource(R.string.persist_reset_platform_done),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+            )
+        }
+
         // إقرار المخاطر مرة واحدة لكل ميزة: يُعرض مرة، ويُسجَّل بزمنه، ولا يُلغى تلقائيًّا.
         // والرسالة تقول المسؤولية صريحةً — لا «هل أنت متأكد؟» التي لا تقول شيئًا.
         MaxConfirmDialog(
@@ -170,6 +235,29 @@ fun PersistRestoreItem() {
             },
             onDismiss = { pendingDangerConfirm = false },
             icon = Icons.Rounded.Warning,
+            destructive = true
+        )
+
+        MaxConfirmDialog(
+            visible = pendingResetConfirm,
+            title = stringResource(R.string.persist_reset_platform_confirm_title),
+            message = stringResource(R.string.persist_reset_platform_confirm_body),
+            confirmLabel = stringResource(R.string.persist_reset_platform_confirm_action),
+            onConfirm = {
+                pendingResetConfirm = false
+                resetting = true
+                resetDone = false
+                resetFailure = null
+                scope.launch {
+                    val outcome = PlatformDefaultsReset.reset()
+                    resetFailure = outcome.failed.joinToString(", ") { it.name }
+                        .takeIf { it.isNotEmpty() }
+                    resetDone = outcome.allOk
+                    resetting = false
+                }
+            },
+            onDismiss = { pendingResetConfirm = false },
+            icon = Icons.Rounded.SettingsBackupRestore,
             destructive = true
         )
 
