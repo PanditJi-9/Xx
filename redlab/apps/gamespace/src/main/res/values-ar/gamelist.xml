@@ -65,5 +65,11 @@
     <string name="rl_hub_yes">نعم</string>
     <string name="rl_hub_no">لا</string>
     <string name="rl_hub_refresh_open">فتح شاشة معدل التحديث الأصلية</string>
+    <string name="rl_vendor_news">أخبار Game Space تحتاج خدمة محتوى Nubia، وهي غير موجودة على هذا الهاتف. زر الأصل يبقى في مكانه.</string>
+    <string name="rl_vendor_detector">مؤشر الإطارات/الشبكة يحتاج خدمة الطبقة العلوية من RedMagic. زرّه يبقى حيث وضعه المصنّع.</string>
+    <string name="rl_vendor_mora">المساعد الصوتي Mora ميزة أجهزة Nubia؛ زر الأصل يبقى ظاهرًا وغير فاعل.</string>
+    <string name="rl_vendor_recommend">توصيات الألعاب تحتاج تغذية متجر Nubia، وهذا البناء لا يتصل بها.</string>
+    <string name="rl_vendor_extern">مكتبة الأجهزة الخارجية تحتاج cn.nubia.externdevice، وهي غير مثبّتة.</string>
+    <string name="rl_shortcut_unavailable">المشغّل لا يسمح بالاختصارات المثبَّتة هنا.</string>
     <string name="rl_vendor_3a">ألعاب 3A / الكمبيوتر تحتاج خدمة البثّ من RedMagic، وهي غير موجودة على هذا الهاتف. زر الأصل يبقى في مكانه.</string>
 </resources>

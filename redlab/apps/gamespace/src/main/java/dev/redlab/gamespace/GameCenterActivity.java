@@ -66,6 +66,10 @@ public final class GameCenterActivity extends Activity {
     public static final String SECTION_WALLPAPER = "wallpaper";
     /** Opened by the lobby's 3A/PC track, which the original wires to the streaming feature. */
     public static final String SECTION_STREAMING = "streaming";
+    /** Opened by the upper bar's score-record button. */
+    public static final String SECTION_RECORDS = "records";
+    /** Opened by the upper bar's personal-center button. */
+    public static final String SECTION_PROFILE = "profile";
 
     private static final String PREFS = "game_space_center";
     private static final String ANDROID_NS = "http://schemas.android.com/apk/res/android";
@@ -154,6 +158,8 @@ public final class GameCenterActivity extends Activity {
     private int sectionIndex(String section) {
         Kind wanted = SECTION_WALLPAPER.equals(section) ? Kind.WALLPAPER
                 : SECTION_STREAMING.equals(section) ? Kind.STREAMING
+                : SECTION_RECORDS.equals(section) ? Kind.RECORDS
+                : SECTION_PROFILE.equals(section) ? Kind.PROFILE
                 : null;
         if (wanted != null) {
             for (int i = 0; i < rows.size(); i++) {

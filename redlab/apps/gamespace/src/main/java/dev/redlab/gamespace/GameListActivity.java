@@ -2,6 +2,7 @@ package dev.redlab.gamespace;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -116,7 +117,103 @@ public final class GameListActivity extends Activity {
         findViewById(R.id.lobby_red_time).setOnClickListener(view ->
                 vendorToast("rl_vendor_red_time"));
 
+        inflateUpperBar();
         loadLauncherApps();
+    }
+
+    /**
+     * The original upper bar: the RedMagic mark, a live clock, a live battery view and the stock
+     * buttons. It is the vendor's own {@code upper_view} layout, inflated through the same tag
+     * redirect as the lobby, so nothing in it is redrawn or re-styled here.
+     *
+     * <p>Inflation is guarded: this bar is an addition to a lobby that already works, and a bar
+     * that cannot be created must not take the game list down with it.
+     */
+    private void inflateUpperBar() {
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null || content.getChildCount() == 0
+                || !(content.getChildAt(0) instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup root = (ViewGroup) content.getChildAt(0);
+        try {
+            getLayoutInflater().inflate(R.layout.upper_view, root, true);
+        } catch (RuntimeException | LinkageError unsupported) {
+            android.util.Log.w("GameList", "upper bar unavailable", unsupported);
+            return;
+        }
+        bindUpperBar(root);
+    }
+
+    private void bindUpperBar(ViewGroup root) {
+        View news = root.findViewById(R.id.top_news);
+        if (news != null) {
+            news.setOnClickListener(view -> vendorToast("rl_vendor_news"));
+        }
+        View detector = root.findViewById(R.id.top_detector);
+        if (detector != null) {
+            detector.setOnClickListener(view -> vendorToast("rl_vendor_detector"));
+        }
+        View score = root.findViewById(R.id.top_score);
+        if (score != null) {
+            score.setOnClickListener(view -> openCenter(GameCenterActivity.SECTION_RECORDS));
+        }
+        View mora = root.findViewById(R.id.top_mora);
+        if (mora != null) {
+            mora.setOnClickListener(view -> vendorToast("rl_vendor_mora"));
+        }
+        View recommend = root.findViewById(R.id.game_recommend);
+        if (recommend != null) {
+            recommend.setOnClickListener(view -> vendorToast("rl_vendor_recommend"));
+        }
+        View extern = root.findViewById(R.id.extern_device);
+        if (extern != null) {
+            extern.setOnClickListener(view -> vendorToast("rl_vendor_extern"));
+        }
+        View profile = root.findViewById(R.id.personal_center);
+        if (profile != null) {
+            profile.setOnClickListener(view -> openCenter(GameCenterActivity.SECTION_PROFILE));
+        }
+        View shortcut = root.findViewById(R.id.add_shortcut);
+        if (shortcut != null) {
+            shortcut.setOnClickListener(view -> pinSelectedShortcut());
+        }
+        // play_center is hidden by the vendor build itself (GameLobbyFragment line 204), so it
+        // keeps that measured state instead of becoming a dead button here.
+        View playCenter = root.findViewById(R.id.play_center);
+        if (playCenter != null) {
+            playCenter.setVisibility(View.GONE);
+        }
+    }
+
+    /** The stock add-shortcut button: a real pinned launcher shortcut for the selected game. */
+    private void pinSelectedShortcut() {
+        if (selected == null) {
+            return;
+        }
+        android.content.pm.ShortcutManager manager = getSystemService(android.content.pm.ShortcutManager.class);
+        if (manager == null || !manager.isRequestPinShortcutSupported()) {
+            vendorToast("rl_shortcut_unavailable");
+            return;
+        }
+        Intent launch = getPackageManager().getLaunchIntentForPackage(selected.packageName);
+        if (launch == null) {
+            return;
+        }
+        try {
+            Context other = createPackageContext(selected.packageName, 0);
+            int iconId = getPackageManager().getApplicationInfo(selected.packageName, 0).icon;
+            android.content.pm.ShortcutInfo info = new android.content.pm.ShortcutInfo.Builder(
+                    this, selected.packageName)
+                    .setShortLabel(selected.label)
+                    .setLongLabel(selected.label)
+                    .setIcon(android.graphics.drawable.Icon.createWithResource(other, iconId))
+                    .setIntent(launch)
+                    .build();
+            manager.requestPinShortcut(info, null);
+        } catch (PackageManager.NameNotFoundException | IllegalArgumentException failed) {
+            vendorToast("rl_shortcut_unavailable");
+        }
     }
 
     private void openCenter(String section) {

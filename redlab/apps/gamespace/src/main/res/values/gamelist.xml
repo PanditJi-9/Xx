@@ -65,5 +65,11 @@
     <string name="rl_hub_yes">Yes</string>
     <string name="rl_hub_no">No</string>
     <string name="rl_hub_refresh_open">Open the original refresh-rate screen</string>
+    <string name="rl_vendor_news">Game Space news needs the Nubia content service, which is not on this phone. The stock button keeps its place.</string>
+    <string name="rl_vendor_detector">The FPS/network indicator needs the RedMagic overlay service. Its button stays where the vendor put it.</string>
+    <string name="rl_vendor_mora">The Mora voice assistant is a Nubia-device feature; the stock button stays visible and inactive.</string>
+    <string name="rl_vendor_recommend">Game recommendations need the Nubia store feed, which this build does not contact.</string>
+    <string name="rl_vendor_extern">The external-device library needs cn.nubia.externdevice, which is not installed.</string>
+    <string name="rl_shortcut_unavailable">The launcher does not allow pinned shortcuts here.</string>
     <string name="rl_vendor_3a">3A / PC games need the RedMagic streaming service, which is not on this phone. The original button stays where it is.</string>
 </resources>
