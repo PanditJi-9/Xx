@@ -990,7 +990,15 @@ object GpuHardwareBackend {
         if (touchesRange) wrote = writeRange(live, request.minFreq, request.maxFreq, io)
         if (wrote && touchesGovernor) wrote = io.write("${live.path}/governor", request.governor)
         val actual = refresh(live.path, io)
-        if (wrote && matches(actual, request)) return TransactionResult(request, actual, true, true)
+        // **التردد الثابت لا يكفيه صدى العقدة.** قد تُقبل كتابة `min == max` ويُقرأ المدى كما
+        // طُلب بينما الساعة لم تتحرّك (حاكم `dummy` أو قمع خارجي). فيُقاس التردد فعلًا ويُرفض
+        // النجاح إن خالف الهدف؛ وإن تعذّر القياس يُقبل إثبات العقدة ويُعلن حدّه في التعليق لا
+        // في واجهة المستخدم. وهذا ما يمنع تكرار «يُقال نُفِّذ والجهاز على درجته القديمة».
+        val pinnedHz = request.minFreq?.takeIf { it == request.maxFreq }
+        val nodeSatisfied = wrote && matches(actual, request)
+        val clockMismatch = nodeSatisfied && pinnedHz != null && actual != null &&
+            measuredFrequency(actual, io)?.let { !clockAgrees(pinnedHz, it.hz) } == true
+        if (nodeSatisfied && !clockMismatch) return TransactionResult(request, actual, true, true)
 
         val rollbackVerified = restoreTouchedBaseline(baseline, request, io)
         // وبعد التراجع يُعاد الوضع الطبيعي للسلطة: طلب تثبيت فشل كان قد أوقف DVFS في GED، وإبقاؤه
@@ -1005,8 +1013,21 @@ object GpuHardwareBackend {
             verified = false,
             rollbackAttempted = true,
             rollbackVerified = rollbackVerified,
-            error = if (rollbackVerified) "apply-not-verified-baseline-restored" else "apply-and-rollback-failed",
+            error = when {
+                !rollbackVerified -> "apply-and-rollback-failed"
+                clockMismatch -> "pin-clock-mismatch"
+                else -> "apply-not-verified-baseline-restored"
+            },
         )
+    }
+
+    /**
+     * هل توافق الساعة المقيسة ترددًا مثبَّتًا؟ التسامح ٢٪ أو ٥ MHz (أيّهما أكبر): قراءة الساعة
+     * تتأخّر عن الكتابة بقليل، ومقارنة تامة كانت سترفض تثبيتًا صحيحًا عند 519.7 مقابل 520.
+     */
+    private fun clockAgrees(pinnedHz: Long, measuredHz: Long): Boolean {
+        val tolerance = maxOf(5_000_000L, pinnedHz / 50L)
+        return kotlin.math.abs(measuredHz - pinnedHz) <= tolerance
     }
 
     private fun restoreTouchedBaseline(baseline: Baseline, request: Request, io: Io): Boolean {
