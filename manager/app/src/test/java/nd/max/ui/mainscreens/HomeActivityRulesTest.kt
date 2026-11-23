@@ -8,6 +8,7 @@ package nd.max.ui.mainscreens
 import nd.max.R
 import nd.max.core.daemon.DaemonIpc
 import nd.max.core.daemon.DaemonIpcProtocol
+import nd.max.core.daemon.DaemonLiveness
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.ui.viewmodel.DaemonHealth
 import org.junit.Assert.assertEquals
@@ -126,6 +127,38 @@ class HomeActivityRulesTest {
         assertEquals(DaemonHealth.UNREACHABLE, DaemonHealth.of(DaemonIpc.Result.Unreachable))
     }
 
+    /**
+     * مقيس على جهاز المالك (`192.168.1.3:36303`، ٢٠٢٦-١١-٢٣): الخادم حيّ وسوكيته مستمع،
+     * لكن التطبيق (`untrusted_app`) لا يصل إلى سوكيت نطاق `su` في تثبيت KernelSU. فحكمٌ
+     * بـ«لا يجيب» عن خادم يعمل هو الرسالة الكاذبة نفسها التي جاء الأمر لإزالتها.
+     */
+    @Test
+    fun `a daemon alive but unreachable from the app is not reported as silent`() {
+        assertEquals(
+            "الجذر أثبت الحياة والقناة لم ترد — سطر رابع لا «لا يجيب»",
+            DaemonHealth.CHANNEL_BLOCKED,
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Alive),
+        )
+        assertEquals(
+            "وحين ينفي الجذر الحياة يبقى الحكم «لا يجيب»",
+            DaemonHealth.UNREACHABLE,
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Dead),
+        )
+        assertEquals(
+            "وقياس جذر غير حاسم لا يغيّر الحكم",
+            DaemonHealth.UNREACHABLE,
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Unknown),
+        )
+        assertEquals(
+            "وردّ القناة هو الحكم دائمًا، فلا يُستبدل بتأكيد جذر",
+            DaemonHealth.RUNNING,
+            DaemonHealth.of(
+                DaemonIpcProtocol.parseReply("OK state=running ai=1\n"),
+                DaemonLiveness.Dead,
+            ),
+        )
+    }
+
     @Test
     fun `an unmeasured daemon stays unknown instead of claiming failure`() {
         assertEquals(
@@ -159,6 +192,10 @@ class HomeActivityRulesTest {
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.UNREACHABLE))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.STOPPED))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.UNKNOWN))
+        assertFalse(
+            "حيّ لكن التطبيق لا يصل إليه = مشكلة قناة، ليست «دون مشاكل»",
+            HomeStatusCopy.daemonSatisfied(DaemonHealth.CHANNEL_BLOCKED),
+        )
         assertNull(
             "UNKNOWN ليست نجاحًا ولا فشلًا — سطر محايد",
             HomeStatusCopy.daemonVerdict(DaemonHealth.UNKNOWN),
@@ -185,6 +222,15 @@ class HomeActivityRulesTest {
             R.string.home_status_row_daemon_unknown,
             HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.UNKNOWN),
         )
+        assertNull(
+            "سطر «يعمل ولا يصل إليه التطبيق» لا يُعرض خارج وضع الروت",
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.SHIZUKU, DaemonHealth.CHANNEL_BLOCKED),
+        )
+        assertEquals(
+            "وفي وضع الروت يُعرض بسطر مستقلّ عن «لا يجيب»",
+            R.string.home_status_row_daemon_channel_blocked,
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.CHANNEL_BLOCKED),
+        )
     }
 
     @Test
@@ -193,7 +239,9 @@ class HomeActivityRulesTest {
             DaemonHealth.RUNNING,
             DaemonHealth.DENIED,
             DaemonHealth.STOPPED,
-        ).map { HomeStatusCopy.daemonRowRes(it) }
+            DaemonHealth.CHANNEL_BLOCKED,
+            DaemonHealth.UNKNOWN,
+        ).map { HomeStatusCopy.daemonRowRes(it, rootMode = true) }
         assertEquals("لكلّ حالة معروضة سطرها لا سطرٌ مشترك", rows.size, rows.toSet().size)
         assertTrue("الأسطر كلها موجودة", rows.all { it != null })
     }

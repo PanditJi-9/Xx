@@ -80,7 +80,7 @@ internal object HomeStatusCopy {
      * **ولا يُعرض الخادم إلا في وضع الروت** (أمر المالك ٢٠٢٦-١١-٢٢): في Shizuku/بلا مسار
      * يكون التطبيق عاملًا بمساره المباشر، وسطر «الخادم لا يجيب» يُوهم بعطبٍ ليس عطبًا.
      * وفي وضع الروت يصير سؤال «هل يعمل دون مشاكل؟» سؤالًا حقيقيًّا، فتُعرض كل حالاته:
-     * يعمل، أو يرفض هويّة التطبيق، أو لا يجيب، أو لم تُقس حالته بعد.
+     * يعمل، أو يرفض هويّة التطبيق، أو يعمل ولا يصل إليه التطبيق، أو لا يجيب، أو لم تُقس حالته بعد.
      *
      * و[UNKNOWN] تبقى `null` خارج وضع الروت ولا تُكتب «لا يجيب» قبل السؤال (ADR-07).
      * وفي وضع الروت تُكتب صراحةً «لم تُقس بعد» — لا نجاحًا ولا فشلًا.
@@ -94,6 +94,11 @@ internal object HomeStatusCopy {
         // بعطلٍ غير موجود. وفي وضع الروت يُعرض لأنه عطب حقيقي (أمر المالك ٢٠٢٦-١١-٢٢).
         DaemonHealth.UNREACHABLE ->
             if (rootMode) R.string.home_status_row_daemon_unreachable else null
+        // «حيّ لكن التطبيق لا يصل إليه» سطرٌ رابع لا يُطوى في «لا يجيب»: القناة لم تُسأل أصلًا
+        // (SELinux في تثبيت الوحدة)، والجذر أثبت أن الخادم يعمل. ولا يُعرض خارج وضع الروت،
+        // فالحالة نفسها لا تُنتَج إلا بتأكيد الجذر.
+        DaemonHealth.CHANNEL_BLOCKED ->
+            if (rootMode) R.string.home_status_row_daemon_channel_blocked else null
         DaemonHealth.STOPPED -> R.string.home_status_row_daemon_stopped
     }
 
@@ -104,6 +109,8 @@ internal object HomeStatusCopy {
     fun daemonVerdict(health: DaemonHealth): Boolean? = when (health) {
         DaemonHealth.RUNNING -> true
         DaemonHealth.UNKNOWN -> null
+        // حيّ ومقيس، لكن التطبيق لا يستطيع التحكّم فيه عبر القناة ⇒ ليس «دون مشاكل».
+        DaemonHealth.CHANNEL_BLOCKED -> false
         else -> false
     }
 

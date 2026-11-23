@@ -11,11 +11,12 @@
     <string name="home_status_row_module">Module installed</string>
     <string name="home_status_row_module_pending">Module written — reboot to activate it</string>
     <string name="home_status_row_shizuku">Shizuku ready</string>
-    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«لا يجيب» ثلاث حالات لا واحدة -->
+    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» أربع حالات لا واحدة -->
     <string name="home_status_row_daemon_running">Daemon runs and answers</string>
     <string name="home_status_row_daemon_denied">Daemon runs but refuses this app\'s identity</string>
     <string name="home_status_row_daemon_stopped">Daemon answers but does not report itself as running</string>
     <string name="home_status_row_daemon_unreachable">Daemon did not answer</string>
+    <string name="home_status_row_daemon_channel_blocked">Daemon runs, but this app cannot reach it</string>
     <string name="home_status_row_daemon_unknown">Daemon status not measured yet</string>
     <string name="home_status_close">Close</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->

@@ -11,11 +11,12 @@
     <string name="home_status_row_module">الوحدة مثبّتة</string>
     <string name="home_status_row_module_pending">كُتبت الوحدة — أعِد التشغيل لتفعيلها</string>
     <string name="home_status_row_shizuku">Shizuku جاهز</string>
-    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«لا يجيب» ثلاث حالات لا واحدة -->
+    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» أربع حالات لا واحدة -->
     <string name="home_status_row_daemon_running">الخادم يعمل ويردّ</string>
     <string name="home_status_row_daemon_denied">الخادم يعمل لكنه يرفض هويّة هذا التطبيق</string>
     <string name="home_status_row_daemon_stopped">الخادم يردّ لكنه لا يعلن نفسه عاملًا</string>
     <string name="home_status_row_daemon_unreachable">الخادم لا يجيب</string>
+    <string name="home_status_row_daemon_channel_blocked">الخادم يعمل، لكن هذا التطبيق لا يستطيع الوصول إليه</string>
     <string name="home_status_row_daemon_unknown">لم تُقس حالة الخادم بعد</string>
     <string name="home_status_close">إغلاق</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->

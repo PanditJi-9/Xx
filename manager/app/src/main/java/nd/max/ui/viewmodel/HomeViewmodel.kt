@@ -33,6 +33,10 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nd.max.R
+import nd.max.core.daemon.DaemonIpc
+import nd.max.core.daemon.DaemonLiveness
+import nd.max.core.daemon.DaemonLivenessProbe
+import nd.max.core.daemon.RootShellDaemonIo
 import nd.max.core.maxai.MaxAiEngine
 import nd.max.core.platform.EventLog
 import nd.max.core.platform.PropertyUtils
@@ -61,13 +65,19 @@ private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
  * * [STOPPED] — `OK` وجسمه ليس `state=running`: يردّ لكنه يعلن أنه غير عامل. وله سطرٌ مستقلّ
  *   لأن قول «لا يجيب» عنه كذبٌ ثانٍ من العائلة نفسها التي جاء الأمر لإزالتها.
  * * [UNKNOWN] — لم تُسأل بعد (القياس الأوّل لم يقع)، ولا يُعرض لها سطر إطلاقًا.
+ * * [CHANNEL_BLOCKED] — القناة لا تردّ، **لكن الجذر أثبت أن الخادم حيّ**. وهذا هو حال تثبيت
+ *   الوحدة عبر KernelSU (مقيس على جهاز المالك ٢٠٢٦-١١-٢٣): الخادم يعمل في نطاق `su`، والتطبيق
+ *   في `untrusted_app`، ولا قاعدة `connectto` بينهما؛ فالسوكيت مستمع (`@maxmanager.sock`) وكل
+ *   نداء من التطبيق محجوب. فالسطر يقول «يعمل لكن التطبيق لا يصل إليه» — لا «لا يجيب» (لم يُسأل
+ *   أصلًا) ولا «فشل».
  */
 enum class DaemonHealth {
     UNKNOWN,
     RUNNING,
     DENIED,
     UNREACHABLE,
-    STOPPED
+    STOPPED,
+    CHANNEL_BLOCKED
     ;
 
     companion object {
@@ -78,14 +88,25 @@ enum class DaemonHealth {
         private fun stateOf(payload: String): String =
             payload.substringAfter(STATE_KEY, "").substringBefore(' ').trim()
 
-        /** تصنيف ردّ القناة — دالّة نقيّة تُقاس على JVM بلا سوكيت. */
-        fun of(result: nd.max.core.daemon.DaemonIpc.Result?): DaemonHealth = when (result) {
+        /**
+         * تصنيف ردّ القناة — دالّة نقيّة تُقاس على JVM بلا سوكيت.
+         *
+         * و[rootLiveness] لا يُسأل عنه إلا حين لا تردّ القناة: فحين تردّ `RUNNING`/`STOPPED`/`DENIED`
+         * يكون الردّ نفسه هو الحكم، ولا معنى لتأكيدٍ ثانٍ. وحين لا تردّ، لا يملك التطبيق وحده
+         * سبيلًا للتفريق بين خادم ميّت وخادم حيّ محجوب عنه (SELinux في تثبيت الوحدة)؛ فيُمرَّر
+         * قياس الجذر من [DaemonLivenessProbe] — نفس التعريف الواحد للحياة المستعمل في الحارس.
+         */
+        fun of(
+            result: DaemonIpc.Result?,
+            rootLiveness: DaemonLiveness? = null,
+        ): DaemonHealth = when (result) {
             null -> UNKNOWN
-            is nd.max.core.daemon.DaemonIpc.Result.Ok ->
+            is DaemonIpc.Result.Ok ->
                 if (stateOf(result.payload) == "running") RUNNING else STOPPED
 
-            is nd.max.core.daemon.DaemonIpc.Result.Refused -> DENIED
-            nd.max.core.daemon.DaemonIpc.Result.Unreachable -> UNREACHABLE
+            is DaemonIpc.Result.Refused -> DENIED
+            DaemonIpc.Result.Unreachable ->
+                if (rootLiveness == DaemonLiveness.Alive) CHANNEL_BLOCKED else UNREACHABLE
         }
     }
 }
@@ -209,10 +230,38 @@ class HomeViewModel @Inject constructor(
      */
     private fun probeDaemonHealth() {
         viewModelScope.launch(Dispatchers.IO) {
-            val health = DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+            val health = measureDaemonHealth()
             val updatePending = RootUtils.isModuleUpdatePendingReboot()
             _uiState.update { it.copy(daemonHealth = health, moduleUpdatePending = updatePending) }
         }
+    }
+
+    /**
+     * القياس الكامل لحالة الخادم: القناة أولًا، ثم **تأكيد بالجذر حين لا تردّ القناة**.
+     *
+     * **العطب الذي يمنعه (مقيس على `192.168.1.3:36303`، ٢٠٢٦-١١-٢٣):** في تثبيت الوحدة عبر
+     * KernelSU يعمل `sys.maxmanager-service` في نطاق `su`، والتطبيق في `untrusted_app`؛ ولا قاعدة
+     * `connectto` بينهما في `maxmanager_app.te` (المكتوبة لتثبيت الروم حيث الخادم في نطاق
+     * `maxmanager`). فالسوكيت مستمع — `/proc/net/unix` يُظهر `@maxmanager.sock` بحالة LISTENING —
+     * بينما `connect` من التطبيق محجوب، فتُقرأ «الخادم لا يجيب» عن خادم حيّ. وهي الرسالة نفسها
+     * التي جاء أمر المالك ٢٠٢٦-١١-٢٠ لإزالتها.
+     *
+     * **ولا يُسأل الجذر إلا عند الحاجة:** قناة تردّ لا تحتاج تأكيدًا. وحين لا تردّ، `pidof` بالجذر
+     * (مع تأكيد `ps` المستقلّ في [DaemonLivenessProbe]) يفرّق بين «ميّت» — يبقى `UNREACHABLE` —
+     * و«حيّ لا يصل إليه التطبيق» — [DaemonHealth.CHANNEL_BLOCKED]. والجذر غير الممنوح لا يُسأل
+     * هنا (لا نافذة صلاحية لمجرد رسم سطر)، ويبقى الحكم `UNREACHABLE` كما قيس.
+     */
+    private fun measureDaemonHealth(): DaemonHealth {
+        val viaChannel = DaemonIpc.default.status()
+        val rootLiveness: DaemonLiveness? = if (
+            viaChannel == DaemonIpc.Result.Unreachable &&
+            RootUtils.isRootGranted()
+        ) {
+            DaemonLivenessProbe(RootShellDaemonIo).read()
+        } else {
+            null
+        }
+        return DaemonHealth.of(viaChannel, rootLiveness)
     }
 
     /**
@@ -235,8 +284,7 @@ class HomeViewModel @Inject constructor(
                 // في وضع الروم بلا init rc ولا سياسة SELinux.
                 val isRooted = RootUtils.requestRootAccess()
                 val isModuleInstalled = RootUtils.isModuleInstalled()
-                val daemonHealth =
-                    DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+                val daemonHealth = measureDaemonHealth()
                 val updatePending = RootUtils.isModuleUpdatePendingReboot()
                 nd.max.core.privilege.PrivilegeManager.refresh()
                 _uiState.update {
@@ -263,8 +311,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val isRooted = RootUtils.requestRootAccess()
                 val isModuleInstalled = RootUtils.isModuleInstalled()
-                val daemonHealth =
-                    DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+                val daemonHealth = measureDaemonHealth()
                 val updatePending = RootUtils.isModuleUpdatePendingReboot()
                 // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
                 // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
