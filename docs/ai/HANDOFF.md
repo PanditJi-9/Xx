@@ -29641,3 +29641,19 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 4. **`mainfiles/uninstall.sh` يحذف `/data/adb/maxmanager`** — حالة الخادم (`watchdog.pid`, `daemon.log`) كانت المسار الوحيد الباقي في مسار الإزالة القياسي.
 
 **البوابات بعدها (خروج 0):** `kt_balance` ٣٨٢١/٠ · `code_health` نظيف (الدَّين عند سقفه، ١٥٢٣ ملفًا/٣٤٤٠٥١ سطرًا) · `i18n_coverage --assert` ٠ عوائق · `design_tokens` ٢٤٥/٣٠٠ · `git diff --check` · و`sh -n mainfiles/uninstall.sh`. وحكم Actions لهذه الدفعة يُقرأ لاحقًا بنفس القيد: الإلغاء قبل أول خطوة يعني **لا حكم** لا نجاحًا.
+
+---
+
+## تكملة ٣٠٩ — «لماذا يتوقف البناء»: وسم runner بلا runner، والإصلاح، وأول حكم أخضر (2026-11-23)
+
+**السؤال:** «لماذا يتوقف البناء» — بعد تكرار إلغاء كل تشغيلات Actions بـ٠ خطوة خلال ثوانٍ.
+
+**السبب مقيس لا مُرجَّح:** متغيّر المستودع `BUILD_RUNNER = avrea-ubuntu-latest-8-vcpu` (منذ 2026-11-16) يُغذّي `runs-on: ${{ vars.BUILD_RUNNER || 'ubuntu-latest' }}` في `build.yml:177` و`verify-quick.yml:67` و`control-center.yml:19` و`docs-gates.yml:55`. و`gh api repos/PanditJi-9/Xx/actions/runners` يعطي **`total_count: 0`**، والمهمة الملغاة تحمل `labels: ["avrea-ubuntu-latest-8-vcpu"]` و`runner_name: ""` و`steps: 0` وتنتهي في ٣ ثوانٍ. فGitHub لا يجد runner بالوسم فيلغي المهمة قبل أول خطوة. وليست تلازمًا: `build.yml` و`verify-quick.yml` في مجموعتَي concurrency مختلفتين. والمستودع عام فدقائق `ubuntu-latest` مجانية.
+
+**الإصلاح (بأمر واحد قابل للرجوع):** `gh variable delete BUILD_RUNNER` — بلا تعديل أي ملف عمل، لأن الافتراضي `ubuntu-latest` مكتوب أصلًا. لإعادة runner الثمانية أنوية: يُسجَّل runner ويظهر في `Settings → Actions → Runners` **ثم** يُعاد إنشاء المتغيّر؛ وإلا عاد الإلغاء الفوري.
+
+**الحكم الأول بعد الإصلاح:** Quick Verify **`45187284978`** على `0da9be53` → **success**، وكل الخطوات مكتملة: `Contract gates (fast, no compiler)` · `Release compile + release unit tests` · `Unit test count evidence (JUnit XML)` · `Upload failure evidence`. فهو حكم **تصريف release واختبارات release** لهذا الرأس — أول حكم حقيقي منذ `45105667108` على `10c98682`. وأول تشغيل بعد الحذف ظهر `in_progress` بعد ٢٠ ثانية، وهو الدليل على أن الـrunner صار متاحًا.
+
+**حركة المالك أثناء التحقق:** دفع **`0da9be53`** «GameSpace: a working planet tab, add-games library and real center actions» (+1135/−115، ومنه الملفان `redlab` اللذان كانا يُتركان خارج التزاماتي). دفعُه شغّل `RedLab Foundation` و`pages-build-deployment` بنجاح، ولم يشغّل `MaxManager` (مرشِّح مسارات يستثني `redlab/**`). وشجرتي كانت تحمل نسخة أقدم من الملفين، فأُصلحت: stash باسم `owner-redlab` ← `merge --ff-only` ← أخذ نسخته المدفوعة، والنسخ المحلية محفوظة في `/tmp/owner-local-*.java`. الشجرة الآن نظيفة على `0da9be53`.
+
+**الحدود:** نجاح Quick Verify يعني «يترجم وتمرّ اختبارات release»، ولا يعني سلوكًا على جهاز ولا APK إصدار (الخطّ الكامل `build.yml` لم يُشغَّل على هذا الرأس لأنه لا يطابق مرشِّح مساراته). والتحقق الحيّ لسلوك GPU وزر الاستعادة ما زال ينتظر جهازًا.
