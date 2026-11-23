@@ -403,9 +403,9 @@ private fun GpuPulseCard(
         // **التردد الجاري هو الرقم الأول، والسقف بجانبه موسومًا.** كان الصدر يعرض السقف وحده
         // (520) فقرأه المالك على أنه «التردد الحالي» وقارنه بـ260 في شاشة GPU فبدا الرقمان
         // متناقضين — وهما كمّيتان مختلفتان. صار الصدر «الآن 260» ثم «السقف 520» في صفٍّ واحد.
-        topMhz = dashboard.gpuFreqMhz.takeIf { it > 0 },
+        topMhz = dashboard.gpuFreqMhz?.takeIf { it > 0 },
         topLabel = stringResource(R.string.home_freq_now),
-        secondaryTopMhz = dashboard.gpuCeilingMhz.takeIf { it > 0 },
+        secondaryTopMhz = dashboard.gpuCeilingMhz?.takeIf { it > 0 },
         secondaryTopLabel = stringResource(R.string.home_gpu_max_freq),
         rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
         accent = neuralPalette().accentAlt,
