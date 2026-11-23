@@ -140,10 +140,12 @@ internal object MtkGpuOppTable {
         if (clean.equals("disabled", true) || clean.equals("dynamic", true) ||
             Regex("(?i)\\bOPP\\s+index\\s+is\\s+disabled\\s*$").containsMatchIn(clean)
         ) return "-1"
-        if (Regex("-?\\d+").findAll(clean).count() != 1) return null
-        val labelled = Regex("(?i)\\bindex\\s*[:=]\\s*(-?\\d+)\\s*$").find(clean)
-            ?.groupValues?.getOrNull(1)?.toIntOrNull() ?: return null
-        return labelled.takeIf { it >= -1 }?.toString()
+        // العقدة على هذا الجهاز تُعيد `index: 30/30` (فهرس GPU/STACK)، فالصيغة المُسمّاة
+        // تُقبل ولو حملت رقمين. أما تكرار «index» مرّتين (`GPU index=2 STACK index=3`)
+        // فقراءتان متناقضتان: لا يُختار أحدهما بالحدس، بل يُعاد null.
+        val labelled = Regex("(?i)\\bindex\\s*[:=]\\s*(-?\\d+)").findAll(clean).toList()
+        if (labelled.size != 1) return null
+        return labelled.single().groupValues[1].toIntOrNull()?.takeIf { it >= -1 }?.toString()
     }
 
     /**
