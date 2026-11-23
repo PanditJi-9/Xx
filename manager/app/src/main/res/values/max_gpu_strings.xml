@@ -103,6 +103,12 @@
     <string name="max_gpu_notice_rolled_back_detail">A write that does not read back as requested is treated as a failure, not as success.</string>
     <string name="max_gpu_notice_verified_detail">The values now read match what was requested.</string>
     <string name="max_gpu_notice_cancelled_detail">The staged request was dropped, so nothing is waiting to be applied.</string>
+    <string name="max_gpu_notice_reset_title">Platform defaults restored</string>
+    <string name="max_gpu_notice_reset_detail">The fixed OPP lock was released, the advertised range was written back, and saved GPU settings were cleared so the next boot will not re-apply them.</string>
+    <string name="max_gpu_notice_reset_partial_title">Hardware reset, but saved settings remain</string>
+    <string name="max_gpu_notice_reset_partial_detail">The GPU was returned to its platform range, but at least one saved setting could not be cleared and will be re-applied at the next boot. Retry the reset before rebooting.</string>
+    <string name="max_gpu_reset_defaults">Reset to platform defaults</string>
+    <string name="max_gpu_reset_defaults_desc">Releases a saved fixed GPU lock, restores the advertised range, and clears the settings this app re-applies at boot.</string>
     <string name="max_gpu_range_desc">A minimum and a maximum are set; the governor scales between them.</string>
     <string name="max_gpu_governor_staged_desc">A different governor is staged; it takes effect with the rest of the request.</string>
 
@@ -118,6 +124,7 @@
     <string name="max_gpu_reason_ambiguous_unit">The frequency unit cannot be resolved with confidence, so no write is attempted.</string>
     <string name="max_gpu_reason_provider_ambiguous">More than one GPU provider matched; no write is attempted.</string>
     <string name="max_gpu_reason_provider_disappeared">The GPU provider the change was staged against is gone.</string>
+    <string name="max_gpu_reason_pin_clock_mismatch">The fixed index was written, but the measured GPU clock did not match it, so the previous state was restored.</string>
     <string name="max_gpu_reason_empty_request">Nothing was requested.</string>
     <string name="max_gpu_reason_unknown">The request could not be carried out safely.</string>
     <string name="max_gpu_reason_technical">Reason code</string>

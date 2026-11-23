@@ -44,4 +44,21 @@ object GpuTweakPersistence {
         val request = loadValidated(device) ?: return null
         return GpuHardwareBackend.apply(device, request)
     }
+
+    /**
+     * يمحو ما يُعاد تطبيقه في كل إقلاع.
+     *
+     * والقيمة الفارغة تعني «غير محفوظ» عند [loadValidated]، فلا يحتاج القارئ إلى تمييز حالة
+     * ثالثة، ولا يبقى مفتاح يحمل قيمة قديمة يُعيدها الإقلاع التالي بعد أن اختار المستخدم
+     * «استعادة افتراضي المنصّة».
+     *
+     * والعائد `false` إن بقي مفتاح يحمل قيمة بعد المحاولة: `setAndConfirm` تقرأ مرتجِعًا،
+     * فلا يُقال «مُحي» لمجرد أن أمر الكتابة أُرسل.
+     */
+    fun clearSaved(): Boolean = listOf(
+        MaxManagerProps.GpuStudio.MODE,
+        MaxManagerProps.GpuStudio.MIN_FREQ,
+        MaxManagerProps.GpuStudio.MAX_FREQ,
+        MaxManagerProps.GpuStudio.GOVERNOR,
+    ).all { key -> PropertyUtils.setAndConfirm(key, "") }
 }

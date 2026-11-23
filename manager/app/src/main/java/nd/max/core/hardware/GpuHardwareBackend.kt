@@ -857,6 +857,34 @@ object GpuHardwareBackend {
         }
     }
 
+    /**
+     * يعيد GPU إلى ما تعلنه المنصّة، ويلغي أثر جلسة سابقة على العتاد.
+     *
+     * والفرق بينه وبين «افتراضي» في الشاشة أن هذا لا يستعيد لقطة جلستنا، بل يلغي ما قد
+     * يكون كتبته جلسة أقدم أو أداة أخرى: يحرّر قفل OPP الثابت إن كان قائمًا، ثم يكتب المدى
+     * المعلن كاملًا على عقدة devfreq. والتحقق قراءة مرتجعة من العقدة نفسها — فلا يُعاد
+     * `true` لمجرد أن الكتابة نُفِّذت.
+     *
+     * وهذا هو المسار الصادق لطلب «Reset to defaults»: إلغاء التثبيت وحده لا يمحو قفلًا
+     * كُتب في `/proc/gpufreqv2/fix_target_opp_index` ولا مفاتيح يعيد التطبيقُ تطبيقها كل
+     * إقلاع. وما لا يُقرأ أو لا يُكتب يُقال `false`، ولا يُدَّعى نجاح.
+     */
+    fun resetToPlatformDefaults(io: Io = SystemIo): Boolean {
+        val device = selection(io).device ?: return false
+        val lockPath = device.mtkFixedIndexPath
+        if (lockPath != null && !MtkGpuOppTable.isReleased(device, io)) {
+            val released = MtkGpuFixedIndex.release(device, Request(releaseLock = true), io)
+            if (!released.verified) return false
+        }
+        val after = refresh(device.path, io) ?: return false
+        val min = after.frequencies.filter { it > 0L }.minOrNull() ?: return false
+        val max = after.frequencies.filter { it > 0L }.maxOrNull() ?: return false
+        if (after.minFreq == min && after.maxFreq == max) return true
+        if (!writeRange(after, min, max, io)) return false
+        val verified = refresh(after.path, io) ?: return false
+        return verified.minFreq == min && verified.maxFreq == max
+    }
+
     private fun applyDevfreq(live: Device, request: Request, io: Io): TransactionResult {
         val touchesRange = request.minFreq != null && request.maxFreq != null
         val touchesGovernor = request.governor != null

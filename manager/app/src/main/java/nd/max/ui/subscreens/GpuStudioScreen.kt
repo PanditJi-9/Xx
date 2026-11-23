@@ -274,10 +274,10 @@ private fun GpuHero(
         // المستخدم جوابًا فوريًا عن «ماذا يفعل GPU الآن؟» بدل ستة أسطر متساوية الأهمية.
         // الحدّان الديناميكيان مُسمّيان صراحةً تحت التردد الحيّ: ما يُسمح به الرسّام الآن.
         val window = GpuFrequencyWindow.of(device)
-        // التردد الحالي = السقف الديناميكي الحيّ (ما يعمل به الهاتف الآن، مثل ٧٥٤)، فيتطابق الرقمان
-        // بدل أن يعلق الأول على عقدة `cur_freq` الراكدة (٢٦٠) تحت مُحكِّم `dummy` وسقفٌ آخر بجواره.
-        // وإن لم يُقرأ السقف فالقراءة الجارية كما هي، فلا رقم مختلق.
-        val shownMhz = window.dynamicMaxMhz ?: GpuHardwareBackend.frequencyMHz(device, device.currentFreq)?.toInt()
+        // التردد الحالي = **المقاس الجاري** (GED ثم `cur_freq`) لا السقف ولا فهرس القفل.
+        // القفل يصف ما طلبناه، والسقف يصف ما يُسمح به، والقياس يصف ما يجري — والخلط بينها
+        // هو ما جعل الشاشة تعرض ٨٣٢ «حاليًّا» بينما النواة تعمل على ٢٦/٧٥٤.
+        val shownMhz = state.liveMhz
         MaxMetricReadout(
             metric = MaxMetric(
                 label = stringResource(R.string.max_gpu_live_frequency),
@@ -757,6 +757,21 @@ private fun GpuAdvancedLab(
                 iconTone = MaxTone.Inactive,
             )
         }
+
+        // «استعادة افتراضي المنصّة» تعيش هنا لا في صفّ «افتراضي (حالة البداية)»: ذاك
+        // يستعيد لقطة الجلسة، وقد تكون هي نفسها قفلًا قديمًا. وهذه تذهب إلى العتاد:
+        // تحرّر فهرس OPP الثابت وترجع المدى المعلن وتمحو المحفوظ الذي يُعاد كل إقلاع.
+        // وتظهر ولو لم يكن هناك طلب مُجهَّز، لأن الحاجة إليها تكون بعد تراكم أثر جلسات
+        // سابقة — لا أثناء مراجعة تغيير جديد.
+        MaxGroupDivider()
+        MaxRow(
+            title = stringResource(R.string.max_gpu_reset_defaults),
+            subtitle = stringResource(R.string.max_gpu_reset_defaults_desc),
+            icon = Icons.Rounded.Restore,
+            iconTone = MaxTone.Neutral,
+            enabled = !state.applying,
+            onClick = vm::resetToDefaults,
+        )
     }
 }
 
@@ -925,6 +940,11 @@ private fun noticeCondition(notice: GpuNotice): MaxCondition {
 
         GpuNoticeKind.VERIFIED -> MaxConditionKind.Applied
 
+        // «استعادة الافتراضي» ليست طلبًا جديدًا، لكنها **فعل ناجح مقيس**: القفل حُرِّر
+        // والمدى قرأ نفسه مرتجِعًا. ولا تُصنَّف Applying وإلا بقيت الشاشة تقول «جارٍ»
+        // بعد أن انتهى الفعل.
+        GpuNoticeKind.RESET -> MaxConditionKind.Applied
+
         GpuNoticeKind.REFUSED,
         GpuNoticeKind.ROLLBACK_FAILED,
         -> MaxConditionKind.Failed
@@ -946,6 +966,11 @@ private fun noticeCondition(notice: GpuNotice): MaxCondition {
         GpuNoticeKind.ROLLBACK_FAILED -> R.string.max_gpu_notice_rollback_failed_title
         GpuNoticeKind.PROVIDER_CHANGED -> R.string.max_gpu_notice_provider_changed_title
         GpuNoticeKind.DRIFTED -> R.string.max_gpu_notice_drifted_title
+        GpuNoticeKind.RESET -> if (notice.reason == null) {
+            R.string.max_gpu_notice_reset_title
+        } else {
+            R.string.max_gpu_notice_reset_partial_title
+        }
     }
 
     val detail = when (notice.kind) {
@@ -966,6 +991,13 @@ private fun noticeCondition(notice: GpuNotice): MaxCondition {
         GpuNoticeKind.STAGED_GOVERNOR -> stringResource(R.string.max_gpu_governor_staged_desc)
         GpuNoticeKind.CANCELLED -> stringResource(R.string.max_gpu_notice_cancelled_detail)
         GpuNoticeKind.NO_TABLE -> stringResource(R.string.max_gpu_intents_locked)
+        GpuNoticeKind.RESET -> stringResource(
+            if (notice.reason == null) {
+                R.string.max_gpu_notice_reset_detail
+            } else {
+                R.string.max_gpu_notice_reset_partial_detail
+            }
+        )
         GpuNoticeKind.REFUSED -> stringResource(reasonRes(notice.reason))
     }
 
@@ -992,6 +1024,9 @@ private fun reasonRes(reason: String?): Int = when (reason) {
     "ambiguous-frequency-unit" -> R.string.max_gpu_reason_ambiguous_unit
     "provider-ambiguous" -> R.string.max_gpu_reason_provider_ambiguous
     "provider-disappeared" -> R.string.max_gpu_reason_provider_disappeared
+    // قفل OPP كُتب، لكن الساعة المقاسة لم تطابقه: الفهرس صدى لا تردد، وقد أعاد المسار
+    // الحالة السابقة. بلا هذا السطر كان المستخدم يرى «تعذّر تنفيذ الطلب بأمان» بلا سبب.
+    "pin-clock-mismatch" -> R.string.max_gpu_reason_pin_clock_mismatch
     "empty-request" -> R.string.max_gpu_reason_empty_request
     else -> R.string.max_gpu_reason_unknown
 }

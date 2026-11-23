@@ -82,7 +82,14 @@ internal object MtkGpuFixedIndex {
         val wroteLock = io.write(path, targetIndex)
         val wroteGovernor = !touchesGovernor || (wroteLock && io.write("${live.path}/governor", request.governor))
         val actual = GpuHardwareBackend.refresh(live.path, io)
-        val verified = wroteLock && wroteGovernor &&
+        // **صدى الفهرس ليس التردد.** هذا القياس هو ما يفصل «كتبنا الرقم» عن «الجهاز يعمل عليه»:
+        // على هذا الجهاز بقي الفهرس على ٨٣٢ بينما الساعة الحقيقية ٢٦/٧٥٤، وكان التطبيق يعلن
+        // النجاح لأن قراءة الفهرس تطابق ما كتبناه. وحين لا يُقاس التردد يبقى الحكم `BY_INDEX`
+        // كما هو مصرَّح به، ولا يُدَّعى قياس لم يقع.
+        val measuredHz = actual?.let { GpuHardwareBackend.currentFrequencyHz(it, io) }
+        val clockMismatch = measuredHz != null &&
+            GpuCeilingPolicy.pinVerdict(frequency, measuredHz) == GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH
+        val verified = wroteLock && wroteGovernor && !clockMismatch &&
             io.read(path)?.let(MtkGpuOppTable::parseIndex) == MtkGpuOppTable.parseIndex(targetIndex) &&
             (request.governor == null || actual?.governor.equals(request.governor, true))
         if (verified) return GpuHardwareBackend.TransactionResult(request, actual, true, true)
@@ -100,7 +107,11 @@ internal object MtkGpuFixedIndex {
         restoreDynamicScaling(io)
         return GpuHardwareBackend.TransactionResult(
             request, GpuHardwareBackend.refresh(live.path, io), wroteLock && wroteGovernor, false, true, rollbackVerified,
-            if (rollbackVerified) "apply-not-verified-baseline-restored" else "apply-and-rollback-failed",
+            when {
+                clockMismatch && rollbackVerified -> GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH.token
+                rollbackVerified -> "apply-not-verified-baseline-restored"
+                else -> "apply-and-rollback-failed"
+            },
         )
     }
 }

@@ -27,6 +27,10 @@ import nd.max.core.hardware.HardwareControlArbiter
 import nd.max.core.hardware.HardwareControlKey
 import nd.max.core.hardware.ManualControlLocks
 import nd.max.core.platform.PropertyUtils
+import nd.max.ui.util.MtkUtils
+
+/** أول عدد في نصّ قراءة (مثل «754 MHz») — لا يُخترع رقم من غياب نصّ. */
+private val LEADING_INTEGER = Regex("\\d+")
 
 /**
  * ناتج ما حدث، **برمز لا بجملة**.
@@ -50,6 +54,8 @@ enum class GpuNoticeKind {
     ROLLBACK_FAILED,
     PROVIDER_CHANGED,
     DRIFTED,
+    /** استُعيد افتراضي المنصّة: حُرِّر القفل ومُحي المحفوظ، لا «طُبِّق طلب». */
+    RESET,
 }
 
 @androidx.compose.runtime.Immutable
@@ -66,6 +72,13 @@ data class GpuStudioUiState(
     val device: GpuHardwareBackend.Device? = null,
     val pending: GpuHardwareBackend.Request? = null,
     val baseline: GpuHardwareBackend.Baseline? = null,
+    /**
+     * التردد الجاري **المقاس** — لا السقف ولا فهرس القفل.
+     *
+     * يُقرأ من GED ثم `cur_freq` بنفس سلّم القراءة الذي تستعمله الرئيسية، فيتطابق الرقمان.
+     * و`null` تعني «لم يُقس» لا صفرًا، فلا يُعرض رقم مختلق.
+     */
+    val liveMhz: Int? = null,
     val historyMHz: List<Float> = emptyList(),
     /**
      * جدول الوقت في الحالة كما نشرته النواة، أو `null` إن لم تنشره.
@@ -124,6 +137,7 @@ class GpuStudioViewModel @Inject constructor(
                 loading = false,
                 selection = selection,
                 device = device,
+                liveMhz = device?.let(::readLiveMhz),
                 // تُقرأ عند فتح الشاشة، ثم تُقرأ مرّة أخرى إن تغيّر المزوّد (في الاستقصاء أدناه):
                 // المفاتيح لا تتغيّر إلا بفعل المستخدم في هذه الشاشة، فموضعا التغيّر معروفان.
                 savedRequest = device?.let(GpuTweakPersistence::loadValidated),
@@ -138,11 +152,8 @@ class GpuStudioViewModel @Inject constructor(
             while (isActive) {
                 val selection = GpuHardwareBackend.selection()
                 val device = selection.device
-                // نفس رقم الشاشة: السقف الديناميكي الحيّ، وبديله القراءة الجارية.
-                val sample = device?.let {
-                    (nd.max.core.hardware.GpuFrequencyWindow.of(it).dynamicMaxMhz
-                        ?: GpuHardwareBackend.frequencyMHz(it, it.currentFreq)?.toInt())?.toFloat()
-                }
+                // نفس رقم الشاشة: **التردد الجاري المقاس**، لا السقف ولا فهرس القفل.
+                val liveMhz = device?.let(::readLiveMhz)
                 val verified = state.verifiedSnapshot
                 val drifted = verified != null && (
                     device == null ||
@@ -161,7 +172,8 @@ class GpuStudioViewModel @Inject constructor(
                     baseline = if (providerChanged) device?.let(GpuHardwareBackend::captureBaseline) else state.baseline,
                     pending = if (providerChanged) null else state.pending,
                     stateTimes = states,
-                    historyMHz = if (providerChanged) listOfNotNull(sample) else if (sample != null) (state.historyMHz + sample).takeLast(60) else state.historyMHz,
+                    liveMhz = liveMhz,
+                    historyMHz = if (providerChanged) listOfNotNull(liveMhz?.toFloat()) else if (liveMhz != null) (state.historyMHz + liveMhz.toFloat()).takeLast(60) else state.historyMHz,
                     verifiedSnapshot = if (drifted || providerChanged) null else verified,
                     // مع تغيّر المزوّد قد تقرأ المفاتيح حالةً لا تُصدَّق على عتادٍ آخر
                     // (`loadValidated` تُحكّم الطلب على الجهاز الجديد وترد `null` إن لم يصلح)
@@ -350,6 +362,59 @@ class GpuStudioViewModel @Inject constructor(
         }
     }
 
+    /**
+     * استعادة افتراضي المنصّة: تحرير قفل OPP الثابت، وإرجاع المدى المعلن، ومحو ما يعيد
+     * التطبيقُ تطبيقه كل إقلاع.
+     *
+     * وليست «افتراضي (حالة البداية)»: تلك تستعيد لقطة فتح الشاشة، وهي نفسها قد تكون
+     * ملوّثة بقفل جلسة أقدم. وهذه تذهب إلى العتاد نفسه، ثم تقرأه مرتجِعًا؛ ولا تمسّ
+     * المحفوظ إلا إذا نجح المسار كله — ففشلٌ جزئيّ لا يُفقد المستخدمَ إعداداته القديمة
+     * بلا بديل مقيس.
+     */
+    fun resetToDefaults() {
+        if (state.applying) return
+        state = state.copy(applying = true)
+        viewModelScope.launch(Dispatchers.IO) {
+            val reset = GpuHardwareBackend.resetToPlatformDefaults()
+            // المحو بعد نجاح العتاد فقط: إعدادات محفوظة بلا قفل حُرِّر تُعيد الحالة القديمة
+            // عند الإقلاع، فلا معنى لمحوها قبل أن يُثبت العتاد أنه عاد.
+            val cleared = reset && GpuTweakPersistence.clearSaved()
+            val selection = GpuHardwareBackend.selection()
+            val device = selection.device
+            state = if (reset) {
+                state.copy(
+                    applying = false,
+                    selection = selection,
+                    device = device,
+                    liveMhz = device?.let(::readLiveMhz),
+                    baseline = device?.let(GpuHardwareBackend::captureBaseline),
+                    pending = null,
+                    lastResult = null,
+                    verifiedSnapshot = null,
+                    mode = null,
+                    stagedIntent = null,
+                    historyMHz = emptyList(),
+                    savedRequest = if (cleared) null else device?.let(GpuTweakPersistence::loadValidated),
+                    notice = if (cleared) {
+                        GpuNotice(GpuNoticeKind.RESET)
+                    } else {
+                        // العتاد عاد، والمفاتيح لم تُمحَ: يُقال ذلك بصراحة لأن الإقلاع
+                        // التالي سيعيد تطبيقها — وهو عكس ما وعد به زر «استعادة».
+                        GpuNotice(GpuNoticeKind.RESET, reason = "saved-settings-not-cleared")
+                    },
+                )
+            } else {
+                state.copy(
+                    applying = false,
+                    selection = selection,
+                    device = device,
+                    liveMhz = device?.let(::readLiveMhz),
+                    notice = GpuNotice(GpuNoticeKind.ROLLBACK_FAILED),
+                )
+            }
+        }
+    }
+
     fun saveVerifiedToTweaks() {
         val device = state.device ?: return
         val verified = state.verifiedSnapshot ?: return
@@ -363,6 +428,17 @@ class GpuStudioViewModel @Inject constructor(
                 state = state.copy(verifiedSnapshot = null, notice = null)
             }
         }
+    }
+
+    /**
+     * التردد الجاري المقاس بنفس ترتيب الرئيسية: عقدة GED ثم `cur_freq`، وبعدها قراءة
+     * `MtkUtils` المتسامحة في الوحدة. و`null` حين لا يُقرأ شيء — لا صفر ولا سقف.
+     */
+    private fun readLiveMhz(device: GpuHardwareBackend.Device): Int? {
+        GpuHardwareBackend.currentFrequencyHz(device)?.let { hz ->
+            (hz / 1_000_000L).toInt().takeIf { it > 0 }?.let { return it }
+        }
+        return LEADING_INTEGER.find(MtkUtils.getCurrentGpuFreq())?.value?.toIntOrNull()?.takeIf { it > 0 }
     }
 
     override fun onCleared() {
