@@ -154,6 +154,7 @@ object RemoteAccess {
             component = COMPONENT,
             message = "initialised cipher=${cipher.id} device_persisted=${identity.persisted} " +
                 "config=${decision.origin.name.lowercase()} license=${if (record != null) "stored" else "none"}",
+            level = DiagnosticCenter.Level.INFO,
         )
         refresh("boot")
     }
@@ -301,7 +302,11 @@ object RemoteAccess {
             when (val outcome = client.fetch(before?.etag)) {
                 is FetchOutcome.Unchanged -> {
                     store.noteAttempt(now, "remote_unchanged")
-                    DiagnosticCenter.record(component = COMPONENT, message = "config unchanged ($reason)")
+                    DiagnosticCenter.record(
+                        component = COMPONENT,
+                        message = "config unchanged ($reason)",
+                        level = DiagnosticCenter.Level.INFO,
+                    )
                 }
                 is FetchOutcome.Changed -> {
                     val decision = ConfigBootGate.decide(
@@ -323,6 +328,7 @@ object RemoteAccess {
                         DiagnosticCenter.record(
                             component = COMPONENT,
                             message = "config revision=${decision.revision} ($reason)",
+                            level = DiagnosticCenter.Level.INFO,
                         )
                     } else {
                         store.noteAttempt(now, decision.code ?: "remote_rejected")

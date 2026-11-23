@@ -121,6 +121,7 @@ object CommunityStats {
                     is StatsDue.Skip -> DiagnosticCenter.record(
                         component = COMPONENT,
                         message = "stats skipped ${due.reason.code} ($reason)",
+                        level = DiagnosticCenter.Level.INFO,
                     )
                     StatsDue.Send -> send(app, state, version, env, health, now, reason)
                 }
@@ -142,11 +143,19 @@ object CommunityStats {
         reason: String,
     ) {
         val id = identity?.id ?: run {
-            DiagnosticCenter.record(COMPONENT, "stats skipped no_identity ($reason)")
+            DiagnosticCenter.record(
+                COMPONENT,
+                "stats skipped no_identity ($reason)",
+                level = DiagnosticCenter.Level.INFO,
+            )
             return
         }
         val client = client() ?: run {
-            DiagnosticCenter.record(COMPONENT, "stats skipped not_configured ($reason)")
+            DiagnosticCenter.record(
+                COMPONENT,
+                "stats skipped not_configured ($reason)",
+                level = DiagnosticCenter.Level.INFO,
+            )
             return
         }
         when (val outcome = client.track(payloadFor(id, version, env, health))) {
@@ -161,7 +170,11 @@ object CommunityStats {
                         lastAttemptAt = now,
                     ),
                 )
-                DiagnosticCenter.record(COMPONENT, "stats sent v$version env=$env ($reason)")
+                DiagnosticCenter.record(
+                    COMPONENT,
+                    "stats sent v$version env=$env ($reason)",
+                    level = DiagnosticCenter.Level.INFO,
+                )
             }
             is SignalOutcome.Failed -> {
                 store?.write(state.copy(attempts = state.attempts + 1, lastAttemptAt = now))
@@ -188,7 +201,11 @@ object CommunityStats {
                         SignalOutcome.Sent -> {
                             InstallIdentities.remove(File(app.filesDir, InstallIdentities.FILE_NAME))
                             identity = null
-                            DiagnosticCenter.record(COMPONENT, "stats withdrawn delete_sent")
+                            DiagnosticCenter.record(
+                                COMPONENT,
+                                "stats withdrawn delete_sent",
+                                level = DiagnosticCenter.Level.INFO,
+                            )
                         }
                         is SignalOutcome.Failed -> DiagnosticCenter.record(
                             component = COMPONENT,
@@ -200,7 +217,11 @@ object CommunityStats {
                 // وعدّادات الصحّة تُمسح معها: لا يبقى لجهازٍ سحب موافقته حسابٌ محليّ (وإن عاد
                 // فوافق، بدأ العدّ من الصفر — فلا يرتبط ما بعد السحب بما قبله).
                 HealthLedger.clear()
-                DiagnosticCenter.record(COMPONENT, "stats local record cleared")
+                DiagnosticCenter.record(
+                    COMPONENT,
+                    "stats local record cleared",
+                    level = DiagnosticCenter.Level.INFO,
+                )
             } catch (error: Exception) {
                 DiagnosticCenter.record(COMPONENT, "stats withdraw error", error)
             } finally {

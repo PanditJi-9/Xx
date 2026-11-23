@@ -317,7 +317,8 @@ class SafetyEngine @Inject constructor(
             "safety",
             "SAFETY_${if (tighten) "TIGHTEN" else if (isRetry) "RETRY" else "ENGAGED"} " +
                 "level=$level cap=${(capFraction * 100).toInt()}% armed=$armed " +
-                "applied=${outcome.applied} blocked=${outcome.blocked} failed=${outcome.failed} :: ${outcome.detail}"
+                "applied=${outcome.applied} blocked=${outcome.blocked} failed=${outcome.failed} :: ${outcome.detail}",
+            level = DiagnosticCenter.Level.INFO,
         )
         if (!isRetry && !tighten) {
             EventLog.userAction(
@@ -348,7 +349,8 @@ class SafetyEngine @Inject constructor(
         ceilingKnobs.leaveAll(TOKEN)
         DiagnosticCenter.record(
             "safety",
-            "SAFETY_RELEASED temp=${thermalC.toInt()}C — استرجاع خط الأساس"
+            "SAFETY_RELEASED temp=${thermalC.toInt()}C — استرجاع خط الأساس",
+            level = DiagnosticCenter.Level.INFO,
         )
         EventLog.userAction(
             screen = "SafetyEngine",
@@ -408,7 +410,8 @@ class SafetyEngine @Inject constructor(
         ceilingKnobs.leaveAll(TOKEN)
         DiagnosticCenter.record(
             "safety",
-            "SAFETY_STAND_DOWN $reason — released ceilings, manual control takes over"
+            "SAFETY_STAND_DOWN $reason — released ceilings, manual control takes over",
+            level = DiagnosticCenter.Level.INFO,
         )
         EventLog.userAction(
             screen = "SafetyEngine",
