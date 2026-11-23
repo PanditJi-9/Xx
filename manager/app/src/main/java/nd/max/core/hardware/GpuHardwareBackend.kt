@@ -890,7 +890,13 @@ object GpuHardwareBackend {
             // مسارا القفل الثابت يسكنان `MtkGpuFixedIndex` (فصل ملف بحجم الحدّ وبكائنه الأصلي):
             // تحرير الفهرس، أو تثبيت درجة واحدة بفهرسها.
             request.releaseLock -> MtkGpuFixedIndex.release(live, request, io)
-            request.minFreq != null && request.minFreq == request.maxFreq && live.mtkFixedIndexPath != null -> MtkGpuFixedIndex.pin(live, request, io)
+            // **التردد الثابت يمرّ بمسار المدى حين يكون مدى devfreq قابلًا للكتابة.** رصَد المالك
+            // الفرق بنفسه: المدى (min..max) يعمل، والثابت لا. وسببه أن `min == max` كان يُوجَّه
+            // دائمًا إلى فهرس OPP المزوّد، وفشلُه المقيس (`apply-not-verified-baseline-restored`)
+            // موثَّق في لقطته. فيبقى مسار الفهرس لجهاز لا يقبل مدى devfreq أصلًا.
+            request.minFreq != null && request.minFreq == request.maxFreq &&
+                live.mtkFixedIndexPath != null && !live.devfreqCeilingWritable ->
+                MtkGpuFixedIndex.pin(live, request, io)
             else -> applyDevfreq(live, request, io)
         }
     }
@@ -961,9 +967,11 @@ object GpuHardwareBackend {
         // 1300000000 ⇒ 754000000). ولو كتبنا أولًا لبقي أثر القمع مسجّلًا عطلًا انتهى.
         if (touchesRange) {
             io.permitVendorCeiling(
-                // `lock` = تثبيت قيمة واحدة، لا «تحرير السقف». خلطهما كان يُطفئ DVFS في كل طلب
-                // سقف (والسقف عكس التثبيت)، فيثبت التردد الذي صادف وجوده لحظة الطلب.
-                lock = request.minFreq == request.maxFreq,
+                // **DVFS يبقى يعمل ولو كان الطلب تثبيتًا.** `lock = true` يُطفئ DVFS عند المزوّد
+                // **قبل** الكتابة، فيتجمّد OPP السائد لحظتها (قيس 260 MHz عند حمل 100%) ولا تصل
+                // إليه كتابة `min_freq == max_freq`. والتثبيت تحققه حدود devfreq المتساوية وحدها،
+                // ويحكم عليه قياس الساعة بعده — لا نيّة طيّبة في الوسيط.
+                lock = false,
                 release = request.releaseVendorCeiling,
             )
         }
