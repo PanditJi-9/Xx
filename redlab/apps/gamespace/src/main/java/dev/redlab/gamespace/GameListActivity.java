@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -118,6 +119,7 @@ public final class GameListActivity extends Activity {
                 vendorToast("rl_vendor_red_time"));
 
         inflateUpperBar();
+        inflateLowerBar();
         loadLauncherApps();
     }
 
@@ -184,6 +186,118 @@ public final class GameListActivity extends Activity {
         if (playCenter != null) {
             playCenter.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * The original lower bar: the fan / BGM / display / performance buttons and the lobby tabs.
+     *
+     * <p>This is the vendor's own {@code lower_view}, inflated through the same tag redirect as
+     * the rest of the lobby, so the bottom of the screen keeps its original shape. The controls
+     * that address Nubia hardware services answer with the measured reason instead of becoming a
+     * dead icon.
+     */
+    private void inflateLowerBar() {
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null || content.getChildCount() == 0
+                || !(content.getChildAt(0) instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup root = (ViewGroup) content.getChildAt(0);
+        try {
+            getLayoutInflater().inflate(R.layout.lower_view, root, true);
+        } catch (RuntimeException | LinkageError unsupported) {
+            android.util.Log.w("GameList", "lower bar unavailable", unsupported);
+            return;
+        }
+        // The support/top-game tab strip and the handheld tips belong to the vendor's handheld
+        // mode. The stock lobby shows the two pill tabs, so keep those and hide the alternatives.
+        hide(root, R.id.tab_view_support_top_game);
+        hide(root, R.id.handheld_tips);
+        hide(root, R.id.one_more_thing_in);
+        hide(root, R.id.one_more_thing_in_support_top_game);
+
+        // The three lower buttons are sized by layout_constraintWidth_percent in the original
+        // layout, which only applies when the default is explicitly "percent". The vendor build
+        // got that from its own ConstraintLayout version; measured here, the views collapsed to
+        // zero width and the bar looked empty. Give them the dimension the layout already names
+        // for their focus backgrounds, and keep every original constraint in place.
+        int button = getResources().getDimensionPixelSize(R.dimen.lower_button_size);
+        size(root, R.id.fan_anim_view, button);
+        size(root, R.id.bgm_switch, button);
+        size(root, R.id.switch_view, button);
+        size(root, R.id.mode_view, button);
+
+        // The vendor build gets these compositions from the same XML attribute. On this build the
+        // attribute was measured not to reach Lottie (the views laid out at full size and drew
+        // nothing), so load each composition explicitly from the original asset and show its
+        // first frame. The files themselves are the original ones in materials/assets/lottie.
+        play(root, R.id.fan_anim_view, "lottie/fan_close.json");
+        play(root, R.id.bgm_switch, "lottie/bgm_on.json");
+        play(root, R.id.switch_view, "lottie/switch_full.json");
+        play(root, R.id.mode_view, "lottie/mode_normal.json");
+
+        bindClick(root, R.id.fan_anim_view, "rl_vendor_fan");
+        bindClick(root, R.id.bgm_switch, "rl_vendor_bgm");
+        bindClick(root, R.id.switch_view, "rl_vendor_display");
+        bindClick(root, R.id.mode_view, "rl_vendor_mode");
+    }
+
+    private void play(ViewGroup root, int id, String asset) {
+        View view = root.findViewById(id);
+        if (!(view instanceof com.airbnb.lottie.LottieAnimationView)) {
+            return;
+        }
+        try {
+            com.airbnb.lottie.LottieAnimationView lottie =
+                    (com.airbnb.lottie.LottieAnimationView) view;
+            lottie.setAnimation(asset);
+            lottie.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+            lottie.playAnimation();
+        } catch (RuntimeException missing) {
+            android.util.Log.w("GameList", "cannot load " + asset, missing);
+        }
+    }
+
+    private void size(ViewGroup root, int id, int pixels) {
+        View view = root.findViewById(id);
+        if (view == null) {
+            return;
+        }
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.width = pixels;
+        params.height = pixels;
+        view.setLayoutParams(params);
+    }
+
+    private void hide(ViewGroup root, int id) {
+        View view = root.findViewById(id);
+        if (view != null) {
+            view.setVisibility(View.GONE);
+        }
+    }
+
+    private void bindClick(ViewGroup root, int id, String message) {
+        View view = root.findViewById(id);
+        if (view != null) {
+            view.setOnClickListener(v -> vendorToast(message));
+        }
+    }
+
+    // Android resolves these from the android:onClick attributes in the original lower_view.xml.
+    public void switchToGameLobby(View view) {
+        // Already the lobby; the tab keeps its selected state.
+    }
+
+    public void switchToRegMagicPlanet(View view) {
+        vendorToast("rl_vendor_planet");
+    }
+
+    public void switchToTopGame(View view) {
+        vendorToast("rl_vendor_top_game");
+    }
+
+    public void backClick(View view) {
+        finish();
     }
 
     /** The stock add-shortcut button: a real pinned launcher shortcut for the selected game. */
@@ -269,6 +383,14 @@ public final class GameListActivity extends Activity {
                 }
                 String packageName = info.activityInfo.packageName;
                 if (getPackageName().equals(packageName)) {
+                    continue;
+                }
+                // The lobby is the Game Space library: the vendor build lists games, not every
+                // launchable app. ApplicationInfo.category is the launcher's own declaration, so
+                // this keeps the original meaning without a package-name guess list.
+                if (info.activityInfo.applicationInfo == null
+                        || info.activityInfo.applicationInfo.category
+                        != ApplicationInfo.CATEGORY_GAME) {
                     continue;
                 }
                 CharSequence label = info.loadLabel(manager);

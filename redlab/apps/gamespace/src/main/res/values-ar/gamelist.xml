@@ -72,4 +72,10 @@
     <string name="rl_vendor_extern">مكتبة الأجهزة الخارجية تحتاج cn.nubia.externdevice، وهي غير مثبّتة.</string>
     <string name="rl_shortcut_unavailable">المشغّل لا يسمح بالاختصارات المثبَّتة هنا.</string>
     <string name="rl_vendor_3a">ألعاب 3A / الكمبيوتر تحتاج خدمة البثّ من RedMagic، وهي غير موجودة على هذا الهاتف. زر الأصل يبقى في مكانه.</string>
+    <string name="rl_vendor_fan">زر المروحة يحتاج خدمة عتاد المروحة من RedMagic. مكانه الأصلي محفوظ.</string>
+    <string name="rl_vendor_bgm">الموسيقى الخلفية تحتاج خدمة الوسائط من Game Center.</string>
+    <string name="rl_vendor_display">مفتاح العرض يحتاج خدمة الشاشة من RedMagic. زر الأصل يبقى في مكانه.</string>
+    <string name="rl_vendor_mode">وضع الأداء يحتاج خدمة الأداء من RedMagic.</string>
+    <string name="rl_vendor_planet">RedMagic Planet تحتاج خدمة محتوى Nubia.</string>
+    <string name="rl_vendor_top_game">أفضل الألعاب تحتاج تغذية متجر Nubia.</string>
 </resources>

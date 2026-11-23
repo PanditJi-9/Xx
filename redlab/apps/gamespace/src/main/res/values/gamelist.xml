@@ -72,4 +72,10 @@
     <string name="rl_vendor_extern">The external-device library needs cn.nubia.externdevice, which is not installed.</string>
     <string name="rl_shortcut_unavailable">The launcher does not allow pinned shortcuts here.</string>
     <string name="rl_vendor_3a">3A / PC games need the RedMagic streaming service, which is not on this phone. The original button stays where it is.</string>
+    <string name="rl_vendor_fan">The fan button needs the RedMagic fan hardware service. Its original place is kept.</string>
+    <string name="rl_vendor_bgm">Background music needs the Nubia Game Center media service.</string>
+    <string name="rl_vendor_display">The display toggle needs the RedMagic display service. The stock button keeps its place.</string>
+    <string name="rl_vendor_mode">Performance mode needs the RedMagic performance service.</string>
+    <string name="rl_vendor_planet">RedMagic Planet needs the Nubia content service.</string>
+    <string name="rl_vendor_top_game">Top games need the Nubia store feed.</string>
 </resources>
