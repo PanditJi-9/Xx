@@ -16,11 +16,57 @@ import nd.max.core.ipc.RootNodeChannel
 import java.io.File
 
 object RootFileAccess {
+    /** نطاق sysfs؛ ما حُجب عن uid التطبيق تحته لا يُعاد سؤاله في كل نبضة (عطب مقيس). */
+    private const val SYSFS_ROOT = "/sys"
+
+    /** سقف الدلائل المحجوبة؛ بلوغه يُحوَّل إلى [SYSFS_ROOT] كي لا ينمو الحفظ بلا حدّ. */
+    private const val MAX_NATIVE_BLOCKED_DIRS = 256
+
+    /**
+     * الدلائل التي أثبت القياس أن القراءة داخل العملية محجوبة عنها، بينما الجذر يقرأها.
+     *
+     * **العطب الذي يمنع (حزمة ٢٠٢٦-١١-٢٣):** ٣٤٤ رفض `{ search } name="thermal"
+     * tcontext=sysfs_therm` في دقيقةٍ واحدة من `DefaultDispatch` — التطبيق في `untrusted_app`
+     * يسأل `/sys/class/thermal` كل نبضة (٢ ثانية) رغم أن الرفض ثابت، ثم يقرأها الجذر في النهاية.
+     * فالعمل الضائع يملأ تدقيق SELinux بلا أن يغيّر قيمة. الحفظ هنا **يتعلّم الرفض ولا يخمّنه**:
+     * لا يُضاف دلّال إلا بعد أن يفشل المسار الداخلي وينجح المسار المصرَّح للعقدة نفسها.
+     */
+    private val nativeBlockedDirs: MutableSet<String> = java.util.concurrent.ConcurrentHashMap.newKeySet()
+
     private fun quote(value: String): String = "'" + value.replace("'", "'\\''") + "'"
+
+    /**
+     * هل يقع [path] تحت دلّال أثبت القياس حجبه؟ — دالّة نقية تُقاس بلا جهاز.
+     *
+     * الصعود بالمجلّدات (لا مسح كل الدلائل) يجعل الكلفة بعدد أجزاء المسار لا بعدد ما حُفظ.
+     */
+    internal fun isNativeBlocked(path: String, blocked: Set<String> = nativeBlockedDirs): Boolean {
+        if (blocked.isEmpty()) return false
+        if (blocked.contains(path)) return true
+        var cursor = path
+        while (true) {
+            val slash = cursor.lastIndexOf('/')
+            if (slash <= 0) return false
+            cursor = cursor.substring(0, slash)
+            if (blocked.contains(cursor)) return true
+        }
+    }
+
+    /** لا يُحفظ إلا مسار sysfs — بقية الأنظمة ليست موضع العطب المقيس. */
+    private fun rememberNativeBlocked(dir: String) {
+        if (dir != SYSFS_ROOT && !dir.startsWith("$SYSFS_ROOT/")) return
+        if (nativeBlockedDirs.size >= MAX_NATIVE_BLOCKED_DIRS) {
+            nativeBlockedDirs.add(SYSFS_ROOT)
+            return
+        }
+        nativeBlockedDirs.add(dir)
+    }
+
+    private fun blockedParent(path: String): String = path.substringBeforeLast('/', "")
 
     fun exists(path: String): Boolean = runCatching {
         if (RootNodeChannel.service?.exists(path) == true) return@runCatching true
-        if (File(path).exists()) return@runCatching true
+        if (!isNativeBlocked(path) && File(path).exists()) return@runCatching true
         // قناة الخادم (بلا جذر في التطبيق): جوابها قاطع في الاتجاهين لأنّ الخادم يقيس بالجذر، فلا صدفة بعدها.
         DaemonIpc.default.exists(path)?.let { return@runCatching it }
         shellTest(path)
@@ -36,8 +82,19 @@ object RootFileAccess {
      */
     fun existing(paths: List<String>): List<Boolean> {
         if (paths.isEmpty()) return emptyList()
-        val native = ProbeBridge.existing(paths)
-        if (native != null && native.size == paths.size) return native
+        val eligible = paths.withIndex().filterNot { isNativeBlocked(it.value) }
+        val native = if (eligible.isEmpty()) null else ProbeBridge.existing(eligible.map { it.value })
+        if (native != null && native.size == eligible.size) {
+            val flags = BooleanArray(paths.size)
+            eligible.forEachIndexed { index, entry -> flags[entry.index] = native[index] }
+            // المحجوب لا يُسأل أصليًّا؛ جوابه من الطبقة المصرَّحة وحدها.
+            if (eligible.size != paths.size) {
+                paths.forEachIndexed { index, path ->
+                    if (isNativeBlocked(path)) flags[index] = exists(path)
+                }
+            }
+            return flags.toList()
+        }
         return paths.map { exists(it) }
     }
 
@@ -53,13 +110,23 @@ object RootFileAccess {
     }
 
     fun writable(path: String): Boolean = runCatching {
-        if (File(path).canWrite()) return@runCatching true
+        if (!isNativeBlocked(path) && File(path).canWrite()) return@runCatching true
         if (DaemonIpc.default.canWrite(path) == true) return@runCatching true
         nd.max.core.privilege.RootCommands.cmd("test -w ${quote(path)}").exec().isSuccess
     }.getOrDefault(false)
 
-    fun read(path: String): String? =
-        readViaChannel(path) ?: readDirect(path) ?: readViaDaemon(path) ?: shellRead(path)
+    fun read(path: String): String? {
+        readViaChannel(path)?.let { return it }
+        val blocked = isNativeBlocked(path)
+        if (!blocked) readDirect(path)?.let { return it }
+        readViaDaemon(path)?.let { return it }
+        val shell = shellRead(path)
+        // نجاح الجذر حيث أخفق المسار الداخلي دليلٌ على حجبٍ ثابت، لا على عقدة غائبة.
+        if (shell != null && !blocked && ProbeBridge.nativeAvailable) {
+            rememberNativeBlocked(blockedParent(path))
+        }
+        return shell
+    }
 
     /** قناة الخادم المستقلّ — لا جذر في التطبيق. `null` لأيّ سبب فتُكمل الطبقة التالية. */
     private fun readViaDaemon(path: String): String? = runCatching { DaemonIpc.default.read(path) }.getOrNull()
@@ -99,7 +166,33 @@ object RootFileAccess {
      */
     fun readMany(paths: List<String>): List<String?> {
         if (paths.isEmpty()) return emptyList()
-        return mergeNativeAndPrivileged(paths, ProbeBridge.readMany(paths), ::readManyPrivileged)
+        // **ولا يُعاد سؤال ما ثبت حجبه:** الدلائل التي رفض المسار الداخلي قراءتها سابقًا
+        // يُسأل عنها الطريق المصرَّح مباشرةً. القيمة نفسها لا تتغيّر — الكلفة وضجيج SELinux وحدهما.
+        val eligible: List<IndexedValue<String>> = if (ProbeBridge.nativeAvailable) {
+            paths.withIndex().filterNot { isNativeBlocked(it.value) }
+        } else {
+            emptyList()
+        }
+        val native = if (eligible.isEmpty()) {
+            null
+        } else {
+            ProbeBridge.readMany(eligible.map { it.value })
+                ?.takeIf { it.size == eligible.size }
+                ?.let { values ->
+                    val aligned = arrayOfNulls<String>(paths.size)
+                    eligible.forEachIndexed { index, entry -> aligned[entry.index] = values[index] }
+                    aligned.toList()
+                }
+        }
+        val merged = mergeNativeAndPrivileged(paths, native, ::readManyPrivileged)
+        if (native != null) {
+            eligible.forEach { entry ->
+                if (native[entry.index] == null && merged[entry.index] != null) {
+                    rememberNativeBlocked(blockedParent(entry.value))
+                }
+            }
+        }
+        return merged
     }
 
     /**
@@ -269,7 +362,10 @@ object RootFileAccess {
     /** Read-only listing of both files and directories for discovery transports. */
     fun listNames(path: String): List<String> = runCatching {
         // القارئ الأصلي أولًا (بلا صدفة `ls`) — وغيابه يُعيدنا إلى الصدفة كما كانت.
-        ProbeBridge.listNames(path)?.let { return it }
+        // وما ثبت حجبه عن uid التطبيق لا يُعاد سؤاله أصليًّا في كل مرة.
+        if (!isNativeBlocked(path)) {
+            ProbeBridge.listNames(path)?.let { return it }
+        }
         // وقناة الجذر قبل الصدفة: المجلّد المحجوب عن uid التطبيق لا يعود فارغًا من الجذر،
         // ثم لا يُقرأ بالصدفة إلا إذا غابت القناة فعلًا.
         RootNodeChannel.service?.let { service ->
@@ -284,16 +380,31 @@ object RootFileAccess {
     fun listDirectories(path: String): List<String> {
         // الترتيب: قراءة داخل العملية ← IPC الجذر ← صدفة `ls` ← `File`. وكل طبقة
         // تسبق التي تليها بلا مساس بالقدرة: ما لا يقرأه uid التطبيق يسأله الجذر.
-        ProbeBridge.listNames(path, dirsOnly = true)?.let { return it }
+        //
+        // **والتعلّم من الرفض:** مجلّد أعاد الأصلي فيه لا شيء وأعاد الجذر أسماءه هو مجلّد
+        // محجوب عن uid التطبيق، فلا يُسأل أصليًّا مرة أخرى (‏٣٤٤ رفض `thermal` في الحزمة).
+        val blocked = isNativeBlocked(path)
+        var nativeWasSilent = false
+        if (!blocked) {
+            val native = ProbeBridge.listNames(path, dirsOnly = true)
+            if (native != null && native.isNotEmpty()) return native
+            nativeWasSilent = native != null
+        }
         RootNodeChannel.service?.let { service ->
             runCatching { service.listNames(path, true).filter(String::isNotBlank) }
-                .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it.distinct() }
+                .getOrNull()?.takeIf { it.isNotEmpty() }?.let {
+                    if (nativeWasSilent) rememberNativeBlocked(path)
+                    return it.distinct()
+                }
         }
         runCatching {
             val result = nd.max.core.privilege.RootCommands.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
             if (result.isSuccess) {
                 val names = result.out.map(String::trim).filter(String::isNotEmpty)
-                if (names.isNotEmpty()) return names.distinct()
+                if (names.isNotEmpty()) {
+                    if (nativeWasSilent) rememberNativeBlocked(path)
+                    return names.distinct()
+                }
             }
         }
         return runCatching {

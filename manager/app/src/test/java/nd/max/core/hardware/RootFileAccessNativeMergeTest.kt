@@ -124,4 +124,44 @@ class RootFileAccessNativeMergeTest {
         val completed = RootFileAccess.completeBatch(listOf("/only"), listOf("")) { null }
         assertEquals(listOf<String?>(null), completed)
     }
+
+    /*
+     * ── تعلّم الرفض: لا يُعاد سؤال دلّال أثبت القياس أن uid التطبيق لا يقرؤه ──────────────
+     *
+     * هذه ليست «تخزين قيمة» بل **توجيه الطريق**: القيمة تظل تُقرأ بالجذر، والذي يتوقّف هو
+     * المحاولة الداخلية التي تُنتج ٣٤٤ رفض SELinux في الحزمة بلا أن تضيف قراءة.
+     */
+
+    @Test
+    fun `an empty blocklist blocks nothing`() {
+        assertEquals(false, RootFileAccess.isNativeBlocked("/sys/class/thermal", emptySet()))
+    }
+
+    @Test
+    fun `a blocked directory and everything under it take the privileged path`() {
+        val blocked = setOf("/sys/class/thermal")
+        assertEquals(true, RootFileAccess.isNativeBlocked("/sys/class/thermal", blocked))
+        assertEquals(true, RootFileAccess.isNativeBlocked("/sys/class/thermal/thermal_zone0/temp", blocked))
+        assertEquals(true, RootFileAccess.isNativeBlocked("/sys/class/thermal/thermal_zone7/mode", blocked))
+    }
+
+    @Test
+    fun `a sibling with the same prefix is not mistaken for a descendant`() {
+        assertEquals(
+            false,
+            RootFileAccess.isNativeBlocked("/sys/class/thermal2/temp", setOf("/sys/class/thermal")),
+        )
+        assertEquals(
+            false,
+            RootFileAccess.isNativeBlocked("/proc/stat", setOf("/sys/class/thermal")),
+        )
+    }
+
+    @Test
+    fun `blocking the sysfs root covers every sysfs path`() {
+        val blocked = setOf("/sys")
+        assertEquals(true, RootFileAccess.isNativeBlocked("/sys/class/thermal/thermal_zone0/temp", blocked))
+        assertEquals(true, RootFileAccess.isNativeBlocked("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq", blocked))
+        assertEquals(false, RootFileAccess.isNativeBlocked("/proc/stat", blocked))
+    }
 }
