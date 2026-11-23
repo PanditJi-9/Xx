@@ -6,13 +6,14 @@
     <!-- الحالة المفعّلة لا تفتح نافذة «لماذا غير مفعّل؟» (أمر المالك ٢٠٢٦-١١-٢٠) -->
     <!-- «Active» لا «كل شيء يعمل»: سطر الخادم قد يقول «لا يجيب»، وعنوانٌ يَنْقُض سطره كذب (2026-11-22) -->
     <string name="home_status_active_title">Active</string>
-    <string name="home_status_active_body">Your chosen path is active. The lines below show each part as measured now: root and Shizuku are two routes to the same goal, so the route you did not take is not required. A part that is missing narrows what the app can do; the daemon line says whether the background daemon answers.</string>
+    <string name="home_status_active_body">Your chosen path is active. The lines below show each part as measured now: root and Shizuku are two routes to the same goal, so the route you did not take is not required. A part that is missing narrows what the app can do; the daemon line says whether the background daemon is running.</string>
     <string name="home_status_row_root">Root granted</string>
     <string name="home_status_row_module">Module installed</string>
     <string name="home_status_row_module_pending">Module written — reboot to activate it</string>
     <string name="home_status_row_shizuku">Shizuku ready</string>
-    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» أربع حالات لا واحدة -->
+    <!-- سطر الخادم الخلفيّ: «يعمل ويردّ» و«يعمل عبر الجذر» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» خمس حالات لا واحدة -->
     <string name="home_status_row_daemon_running">Daemon runs and answers</string>
+    <string name="home_status_row_daemon_running_root">Daemon runs via root</string>
     <string name="home_status_row_daemon_denied">Daemon runs but refuses this app\'s identity</string>
     <string name="home_status_row_daemon_stopped">Daemon answers but does not report itself as running</string>
     <string name="home_status_row_daemon_unreachable">Daemon did not answer</string>

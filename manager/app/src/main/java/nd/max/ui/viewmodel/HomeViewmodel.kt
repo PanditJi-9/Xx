@@ -48,6 +48,9 @@ import javax.inject.Inject
 /** لا يُعاد طلب الجذر أكثر من مرّة كل ١٥ ثانية من الرئيسية — الطلب قد يُظهر نافذة صلاحية. */
 private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
 
+/** قراءة الحالة التي يكتبها الخادم نفسه — نفس مصدر ردّ `STATUS` في `IpcServer.c`. */
+private const val DAEMON_STATE_PROP = "getprop persist.sys.maxmanager.state"
+
 
 /**
  * حالة الخادم الخلفيّ كما **تُقاس** من `STATUS`، لا كما تُفترض.
@@ -60,20 +63,25 @@ private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
  * (`true/false`) تُسقط هذا الفارق وتُنتج رسالة «الخادم فشل» وهي غير صحيحة.
  *
  * * [RUNNING] — `OK` وجسمه `state=running`: يعمل ويردّ.
+ * * [RUNNING_ROOT] — القناة محجوبة (SELinux في تثبيت KernelSU)، **لكن الجذر أثبت أن الخادم حيّ
+ *   ويعلن نفسه `state=running`**. فالتطبيق يتحكّم به عبر الجذر، والسطر يقول «يعمل عبر الجذر»
+ *   لا «لا يجيب». وهذا هو الحال الطبيعيّ في تثبيت الوحدة، لا عطبًا يُعرض للمستخدم.
  * * [DENIED] — `Refused`: حيّ، لكنه يرفض هويّة هذا التطبيق (عطب هويّة لا فشل خادم).
  * * [UNREACHABLE] — `Unreachable`: لا قناة/لا ردّ؛ والتطبيق يعمل على مساره المباشر.
  * * [STOPPED] — `OK` وجسمه ليس `state=running`: يردّ لكنه يعلن أنه غير عامل. وله سطرٌ مستقلّ
  *   لأن قول «لا يجيب» عنه كذبٌ ثانٍ من العائلة نفسها التي جاء الأمر لإزالتها.
  * * [UNKNOWN] — لم تُسأل بعد (القياس الأوّل لم يقع)، ولا يُعرض لها سطر إطلاقًا.
- * * [CHANNEL_BLOCKED] — القناة لا تردّ، **لكن الجذر أثبت أن الخادم حيّ**. وهذا هو حال تثبيت
- *   الوحدة عبر KernelSU (مقيس على جهاز المالك ٢٠٢٦-١١-٢٣): الخادم يعمل في نطاق `su`، والتطبيق
- *   في `untrusted_app`، ولا قاعدة `connectto` بينهما؛ فالسوكيت مستمع (`@maxmanager.sock`) وكل
- *   نداء من التطبيق محجوب. فالسطر يقول «يعمل لكن التطبيق لا يصل إليه» — لا «لا يجيب» (لم يُسأل
- *   أصلًا) ولا «فشل».
+ * * [CHANNEL_BLOCKED] — القناة لا تردّ والجذر أثبت أن الخادم حيّ، **لكن حالته لم تُقرأ** (لا
+ *   `state=running`). وهذا هو حال تثبيت الوحدة عبر KernelSU (مقيس على جهاز المالك ٢٠٢٦-١١-٢٣):
+ *   الخادم يعمل في نطاق `su`، والتطبيق في `untrusted_app`، ولا قاعدة `connectto` بينهما؛
+ *   فالسوكيت مستمع (`@maxmanager.sock`) وكل نداء من التطبيق محجوب. فالسطر يقول «يعمل لكن
+ *   التطبيق لا يصل إليه» — لا «لا يجيب» (لم يُسأل أصلًا) ولا «فشل». وهو نادر: الخادم في
+ *   تثبيت الوحدة يكتب `state=running`، فيُصنَّف [RUNNING_ROOT] قبل الوصول إلى هنا.
  */
 enum class DaemonHealth {
     UNKNOWN,
     RUNNING,
+    RUNNING_ROOT,
     DENIED,
     UNREACHABLE,
     STOPPED,
@@ -99,14 +107,21 @@ enum class DaemonHealth {
         fun of(
             result: DaemonIpc.Result?,
             rootLiveness: DaemonLiveness? = null,
+            rootState: String? = null,
         ): DaemonHealth = when (result) {
             null -> UNKNOWN
             is DaemonIpc.Result.Ok ->
                 if (stateOf(result.payload) == "running") RUNNING else STOPPED
 
             is DaemonIpc.Result.Refused -> DENIED
-            DaemonIpc.Result.Unreachable ->
-                if (rootLiveness == DaemonLiveness.Alive) CHANNEL_BLOCKED else UNREACHABLE
+            DaemonIpc.Result.Unreachable -> when {
+                rootLiveness != DaemonLiveness.Alive -> UNREACHABLE
+                // الجذر قرأ الحالة التي يكتبها الخادم نفسه: «يعمل» حكمٌ مقيس، لا استنتاج من pid.
+                rootState == "running" -> RUNNING_ROOT
+                rootState == null -> CHANNEL_BLOCKED
+                // عملية حيّة أعلنت أنها ليست عاملة (إقلاع/إيقاف) — الحكم إعلانها لا وجودها.
+                else -> STOPPED
+            }
         }
     }
 }
@@ -248,20 +263,28 @@ class HomeViewModel @Inject constructor(
      *
      * **ولا يُسأل الجذر إلا عند الحاجة:** قناة تردّ لا تحتاج تأكيدًا. وحين لا تردّ، `pidof` بالجذر
      * (مع تأكيد `ps` المستقلّ في [DaemonLivenessProbe]) يفرّق بين «ميّت» — يبقى `UNREACHABLE` —
-     * و«حيّ لا يصل إليه التطبيق» — [DaemonHealth.CHANNEL_BLOCKED]. والجذر غير الممنوح لا يُسأل
-     * هنا (لا نافذة صلاحية لمجرد رسم سطر)، ويبقى الحكم `UNREACHABLE` كما قيس.
+     * و«حيّ» — ثم تُقرأ `persist.sys.maxmanager.state` التي يكتبها الخادم نفسه: `running` تعني
+     * [DaemonHealth.RUNNING_ROOT] («يعمل عبر الجذر»)، وغيرها يعني [DaemonHealth.CHANNEL_BLOCKED]
+     * أو [DaemonHealth.STOPPED] حسب الإعلان. والجذر غير الممنوح لا يُسأل هنا (لا نافذة صلاحية
+     * لمجرد رسم سطر)، ويبقى الحكم `UNREACHABLE` كما قيس.
+     *
+     * **ولماذا الحالة من الخادم لا من `pidof` وحده:** عملية حيّة في أثناء الإقلاع أو الإيقاف ليست
+     * خادمًا عاملًا. والخاصيّة يكتبها الخادم في مسار حياته، فهي إعلانه عن نفسه — وهي نفس الخاصية
+     * التي يقرؤها ردّ `STATUS` في `IpcServer.c`، فلا يوجد مصدر حقيقة ثانٍ.
      */
     private fun measureDaemonHealth(): DaemonHealth {
         val viaChannel = DaemonIpc.default.status()
-        val rootLiveness: DaemonLiveness? = if (
-            viaChannel == DaemonIpc.Result.Unreachable &&
-            RootUtils.isRootGranted()
-        ) {
-            DaemonLivenessProbe(RootShellDaemonIo).read()
-        } else {
-            null
+        var rootLiveness: DaemonLiveness? = null
+        var rootState: String? = null
+        if (viaChannel == DaemonIpc.Result.Unreachable && RootUtils.isRootGranted()) {
+            rootLiveness = DaemonLivenessProbe(RootShellDaemonIo).read()
+            if (rootLiveness == DaemonLiveness.Alive) {
+                rootState = RootShellDaemonIo.shell(DAEMON_STATE_PROP)
+                    .stdout.trim()
+                    .takeIf { it.isNotEmpty() }
+            }
         }
-        return DaemonHealth.of(viaChannel, rootLiveness)
+        return DaemonHealth.of(viaChannel, rootLiveness, rootState)
     }
 
     /**

@@ -135,14 +135,24 @@ class HomeActivityRulesTest {
     @Test
     fun `a daemon alive but unreachable from the app is not reported as silent`() {
         assertEquals(
-            "الجذر أثبت الحياة والقناة لم ترد — سطر رابع لا «لا يجيب»",
+            "الجذر أثبت الحياة والخادم أعلن state=running — «يعمل عبر الجذر» لا «لا يجيب»",
+            DaemonHealth.RUNNING_ROOT,
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Alive, "running"),
+        )
+        assertEquals(
+            "حيّ لكن حالته لم تُقرأ — سطر قناة محجوبة لا «لا يجيب»",
             DaemonHealth.CHANNEL_BLOCKED,
             DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Alive),
         )
         assertEquals(
+            "وعملية حيّة أعلنت أنها ليست عاملة تُقرأ بإعلانها",
+            DaemonHealth.STOPPED,
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Alive, "stopped"),
+        )
+        assertEquals(
             "وحين ينفي الجذر الحياة يبقى الحكم «لا يجيب»",
             DaemonHealth.UNREACHABLE,
-            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Dead),
+            DaemonHealth.of(DaemonIpc.Result.Unreachable, DaemonLiveness.Dead, "running"),
         )
         assertEquals(
             "وقياس جذر غير حاسم لا يغيّر الحكم",
@@ -155,6 +165,7 @@ class HomeActivityRulesTest {
             DaemonHealth.of(
                 DaemonIpcProtocol.parseReply("OK state=running ai=1\n"),
                 DaemonLiveness.Dead,
+                "stopped",
             ),
         )
     }
@@ -188,6 +199,10 @@ class HomeActivityRulesTest {
     @Test
     fun `only a daemon that answers and runs gets the check`() {
         assertTrue(HomeStatusCopy.daemonSatisfied(DaemonHealth.RUNNING))
+        assertTrue(
+            "الخادم الذي أثبت الجذر حياته وأعلن running يعمل فعلًا — علامة صحّ",
+            HomeStatusCopy.daemonSatisfied(DaemonHealth.RUNNING_ROOT),
+        )
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.DENIED))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.UNREACHABLE))
         assertFalse(HomeStatusCopy.daemonSatisfied(DaemonHealth.STOPPED))
@@ -222,6 +237,11 @@ class HomeActivityRulesTest {
             R.string.home_status_row_daemon_unknown,
             HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.UNKNOWN),
         )
+        assertEquals(
+            "وفي وضع الروت يُعرض سطر «يعمل عبر الجذر» بحالة نجاح",
+            R.string.home_status_row_daemon_running_root,
+            HomeStatusCopy.daemonRowFor(PrivilegeLevel.ROOT, DaemonHealth.RUNNING_ROOT),
+        )
         assertNull(
             "سطر «يعمل ولا يصل إليه التطبيق» لا يُعرض خارج وضع الروت",
             HomeStatusCopy.daemonRowFor(PrivilegeLevel.SHIZUKU, DaemonHealth.CHANNEL_BLOCKED),
@@ -237,6 +257,7 @@ class HomeActivityRulesTest {
     fun `each shown daemon state has its own line`() {
         val rows = listOf(
             DaemonHealth.RUNNING,
+            DaemonHealth.RUNNING_ROOT,
             DaemonHealth.DENIED,
             DaemonHealth.STOPPED,
             DaemonHealth.CHANNEL_BLOCKED,

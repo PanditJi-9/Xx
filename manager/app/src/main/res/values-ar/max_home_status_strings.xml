@@ -6,13 +6,14 @@
     <!-- الحالة المفعّلة لا تفتح نافذة «لماذا غير مفعّل؟» (أمر المالك ٢٠٢٦-١١-٢٠) -->
     <!-- «مفعّل» لا «كل شيء يعمل»: سطر الخادم قد يقول «لا يجيب»، وعنوانٌ يَنْقُض سطره كذب (2026-11-22) -->
     <string name="home_status_active_title">مفعّل</string>
-    <string name="home_status_active_body">المسار الذي اخترته مفعّل. السطور التالية تعرض كل قطعة كما قيست الآن: الجذر وShizuku طريقان إلى الغاية نفسها، فالطريق الذي لم تسلكه غير مطلوب. والقطعة الناقصة تضيّق ما يستطيعه التطبيق؛ وسطر الخادم يقول هل يجيب خادم الخلفية.</string>
+    <string name="home_status_active_body">المسار الذي اخترته مفعّل. السطور التالية تعرض كل قطعة كما قيست الآن: الجذر وShizuku طريقان إلى الغاية نفسها، فالطريق الذي لم تسلكه غير مطلوب. والقطعة الناقصة تضيّق ما يستطيعه التطبيق؛ وسطر الخادم يقول هل الخادم الخلفيّ يعمل.</string>
     <string name="home_status_row_root">الجذر ممنوح</string>
     <string name="home_status_row_module">الوحدة مثبّتة</string>
     <string name="home_status_row_module_pending">كُتبت الوحدة — أعِد التشغيل لتفعيلها</string>
     <string name="home_status_row_shizuku">Shizuku جاهز</string>
-    <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» أربع حالات لا واحدة -->
+    <!-- سطر الخادم الخلفيّ: «يعمل ويردّ» و«يعمل عبر الجذر» و«يرفض هويّة التطبيق» و«يعمل ولا يصل إليه التطبيق» و«لا يجيب» خمس حالات لا واحدة -->
     <string name="home_status_row_daemon_running">الخادم يعمل ويردّ</string>
+    <string name="home_status_row_daemon_running_root">الخادم يعمل عبر الجذر</string>
     <string name="home_status_row_daemon_denied">الخادم يعمل لكنه يرفض هويّة هذا التطبيق</string>
     <string name="home_status_row_daemon_stopped">الخادم يردّ لكنه لا يعلن نفسه عاملًا</string>
     <string name="home_status_row_daemon_unreachable">الخادم لا يجيب</string>
