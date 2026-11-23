@@ -277,8 +277,8 @@ android {
         applicationId = "nd.max"
         minSdk = 29
         targetSdk = 37
-        versionCode = 43
-        versionName = "V5.1"
+        versionCode = 44
+        versionName = "V5.2"
         vectorDrawables.useSupportLibrary = true
         buildConfigField("long", "BUILD_TIME", "${buildTimeEpochMs}L")
         // بصمة الأصل (ADR-95/ج): تُشتقّ من الإصدار لا من ساعة البناء، فتكون واحدة لكل إصدار
