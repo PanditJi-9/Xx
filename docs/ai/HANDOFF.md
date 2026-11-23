@@ -29588,3 +29588,26 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 **البوابات المحلية على الشجرة النهائية:** `kt_balance` (3820/0) · `code_health` (0) · `i18n_coverage --assert` و`--prune all` (0) · `design_tokens` (245/300) · `provenance_guard` (6036/0) · `bundle_contract` (16/16) · `license_audit` · `hardening_guard` · `jni_symbols` (الطبقة 2 بلا ثنائيات معلنة) · `sh -n` للسكربتين · `git diff --check` — كلها خروج 0.
 
 **الحدود الصادقة:** الجهاز `192.168.1.10:33911` لا طريق إليه في كل محاولات الجولة — فلا تحقّق لمس/RTL/عتاد ولا إثبات «يعمل على الهاتف» · `repo_audit --assert` انتهت مهلتها (900s) بلا حكم · تفويض subagent محجوب بحدّ الاستخدام المجاني (`Free usage limit reached`) فأُنجز العمل في الجلسة الأم · سلوك الإقلاع (مسح علامة `update`، قيام الرفيق والخادم) يحتاج جهازًا.
+
+---
+
+## تكملة ٣٠٧ — سطر الخادم «لا يجيب» في #876: قياس السبب، ثلاثة إصلاحات، وبناء ٨٨٢ أخضر (2026-11-23)
+
+**الطلب:** «لقد قمت بتثبيت الاصدار #876 ولا يزال مكتوب الخادم لا يجيب اريد حل نهائي تماما لهذا الموضوع المزعج وان يعمل كل شيئ ون اي مشاكل»، ثم «اصلح مشكلة البناء» ثم «اكمل».
+
+**القياس — السبب ليس عطبًا جديدًا بل نسخة قديمة:** `dumpsys package nd.max` أعطى `versionCode=876` و`versionName=V5.1 (876-1d619cfd-stable)`، أي أن المثبَّت يسبق كل إصلاحات الجولة (أولها `7e934098`). والخادم حيّ في اللحظة نفسها: `persist.sys.maxmanager.state=running`، و`sys.maxmanager-service` pid 6865 و`sys.maxmanager-appmonitoring` pid 6470، كلاهما في `u:r:su:s0`؛ وأربعة رفض `connectto` في حزمة السجلات (`untrusted_app` ← `su`) تثبت أن المنع SELinux لا موت خادم.
+
+**الالتزامات الثلاثة** (`eb58d6f3` ثم `99a5f04e` ثم `2921a762`، بعد `52ddda0d`):
+1. `fix(diagnostics)` — تسعة مواضع `DiagnosticCenter.record` لأحداث معلوماتية صارت `Level.INFO` (RemoteAccess ٣، CommunityStats ٦، SafetyEngine ٣)؛ والافتراضي `ERROR` باقٍ لما لا يُعرف.
+2. `fix(hardware)` — `RootFileAccess` يتعلّم الرفض: `isNativeBlocked` (صعود بالمجلّدات) و`rememberNativeBlocked` (نطاق `/sys` وحده، سقف ٢٥٦ ثم ينهار إلى `/sys`)، ويُتخطّى المسار الداخلي في `exists/existing/writable/read/readMany/listNames/listDirectories` مع بقاء القيم من طبقات الجذر، وأربعة اختبارات JVM. يزيل ٣٤٤ رفض `{ search } name="thermal" tcontext=sysfs_therm` في دقيقة (من ٤٧٨ رفضًا: search ٤٠٢ · read ٥١ · getattr ١٩ · connectto ٤ · write ٢).
+3. `fix(home)` — حالة صادقة `RUNNING_ROOT`: قناة غير واصلة + جذر ممنوح + `DaemonLiveness.Alive` + `persist.sys.maxmanager.state == running` ⇒ «الخادم يعمل عبر الجذر» بعلامة صحّ؛ وردّ القناة يغلب دائمًا، وما عدا ذلك `STOPPED`/`CHANNEL_BLOCKED`/`UNREACHABLE`. ومصدر الحقيقة واحد: الخادم يكتب الخاصية (`archdaemon/jni/src/System/System.c:118`) وردّه `STATUS` يقرأها (`archdaemon/jni/src/Ipc/IpcServer.c:526`).
+
+**عطب البناء ٨٨١ وإصلاحه:** التشغيل `45102270938` على `2921a762` سقط في اختبار واحد من ٤٥٩٣: `PropBridgeTest > no shell getprop is left on the converted hot paths` عند `PropBridgeTest.kt:93`، لأن `HomeViewmodel.kt` حمل `"getprop …"`. أُصلح في `10c98682`: الثابت `persist.sys.maxmanager.state` يُقرأ داخل العملية عبر `PropertyUtils.get` (‏`__system_property_get` أولًا)، والجذر بقي لإثبات الحياة وحده عبر `DaemonLivenessProbe(RootShellDaemonIo)`. وحارس الاختبار لم يُضعَّف.
+
+**حكم Actions:** `45105667108` على `10c98682` → **success** (اختبارات release وR8 والتوقيع والحزمة). والأثر المتري: `MaxManager-V5.1.zip` ٣٠٬٦٣٥٬٧٤٥ بايت، و`versionCode=882`، وتوقيع `5fdc5cb8…` هو توقيع الإصدار المعلَن، وsha256 للـAPK `d3b9c0e7…`.
+
+**البوابات المحلية:** `kt_balance` ٣٨٢٠/٠ · `code_health` نظيف · `i18n_coverage --assert` ٠ عوائق و`--prune all` ٠ يتيم · `design_tokens` ٢٤٥/٣٠٠ · `provenance_guard` ٦٠٤١/٠ · `git diff --check` نظيف.
+
+**سجلّات الحزمة (ما ليس عطبًا عندنا):** لا `FATAL EXCEPTION` ولا ANR ولا OOM؛ و`ActivityThread deliverResultsIfNeeded` NPE داخل الإطار بعد العودة من منتقي المستندات، لا في كودنا؛ وإشعار `nd.max:not-activated` نشره `pkg=android` على قناة `vector_module_updated` والحزمة `notLaunched=false`؛ ورفض `WRITE_SECURE_SETTINGS` من `system_server` pid 2385 بلا نسبة إلينا؛ و`dumpsys activity services nd.max` فارغ **بشكل صحيح** لأن التطبيق لا يربط خدمات (`assets-internal/scripts/diagnostics.sh:172`)؛ و`NEED_SETUP` علامة داخلية موثّقة تستهلكها شاشتا الشحن.
+
+**الحدود الصادقة:** الجهاز `192.168.1.3:36303` **لا طريق إليه** في هذه الجولة (`No route to host`، و`adb devices` فارغ) ⇒ لم يُثبَّت #882 ولم تُلتقط نافذة «نشط» ولم تُقرأ بلقطة. وأمر التحقق المعلّق: `adb connect 192.168.1.3:36303 && adb install -r /tmp/opencode/art882/app/MaxManager.apk`، والصفّ المتوقّع «الخادم يعمل عبر الجذر» **بشرط** أن يرى التطبيق الجذر ممنوحًا؛ وما لا يُثبته Actions (لمس/RTL/عتاد/إقلاع) يبقى يحتاج جهازًا.
