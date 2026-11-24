@@ -29714,3 +29714,36 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 **الحدود الصادقة:** لا تحقق حيّ (الجهاز `192.168.1.10:39527` منقطع)، ونجاح CI يعني «يترجم وتمرّ اختبارات release» لا «يُثبّت على هاتفك». حكم بناء الشجرة المصحَّحة يُقرأ من التشغيل التالي ويُسجَّل برقمه.
 
 **حكم الشجرة المصحَّحة (مقروء لا مُدَّعى):** التشغيل **`45315768165`** على **`3064b3b3`** = **success** (02:54:41Z → 03:14:05Z)، والخطوة الوحيدة التي فشلت في التشغيل السابق (`Tests + assemble + package`) نجحت هذه المرة بعد إصلاح `governorOnlyRequestIsVerifiableInTheSharedValueSchema`. والأثرات: **`MaxManager-V5.2.zip` id `14885578616` (30648362 بايت)** · `MaxManager-developer-bundle.zip` id `14886561573` · `MaxManager-checksums` id `14886456515`. و`3064b3b3` يحمل كل كود الجولة ووثائقها، فالحكم يخصّ الشجرة الحيّة نفسها. وما بعده من التزام وثائقي يصف الحكم ولا يغيّر كودًا.
+
+## تكملة ٣١٢ — تنفيذ `patch_maxmanager_legendary.sh`: عشر وحدات C، طبقة Kotlin لمركز التحكّم، وعطب نحوي كُشف قبل CI (2026-11-24)
+
+**أمر المالك (نصّه):** «تحقق من الجبد ونفذه patch_maxmanager_legendary.sh» — أي فحص الدفعة ثم تنفيذها.
+
+**١. هوية الملف وما فُحص قبل التنفيذ.** `patch_maxmanager_legendary.sh` في الجذر، **غير متتبَّع**، ٨٤٤٦٦ بايت، **٢٤٤٢ سطرًا**، ١٤ قسمًا (`[n/14]`)، بنسخ احتياطي لكل ملف قبل دهسه. وفيه **لا عملية مدمِّرة**: لا `git`، ولا `rm`، ولا `mv` إلا لـ`Android.mk.tmp`، ولا `chmod` — سوى `cp -p`. وأوّل ما قِيس: `stat -c '%d:%i'` للمسارين `/storage/emulated/0/MaxManger/optmize-main` و`/mnt/sdcard/MaxManger/optmize-main` أعطى **41:2100814** نفسه ⇒ شجرة واحدة، فلا حاجة لتعديل `PROJECT_DIR` (وهو عطب التوقّع الأول من دفعة `patch.sh` السابقة).
+
+**٢. ما أُبطل قبل أن يُكتب:** شرط `if [ -f "$KSU_DIR/bootloop_guard.sh" ]` **كاذب** (الملف غير موجود؛ المتتبَّع في `android/kernelsu/` هو `action.sh` · `customize.sh` · `module.prop` · `service.sh` · `skip_mount` · `uninstall.sh`) ⇒ لا سكربت جذر جديد (§0.8 محفوظ). و`Android.mk` **لم يُعدَّل** لأن `LOCAL_SRC_FILES := Main.c $(wildcard $(LOCAL_PATH)/src/*/*.c)` يضمّ الجديد تلقائيًّا (فالتعديل غير لازم وقد يكون ضارًّا). وطبقة Kotlin تذهب إلى **`app/src/main/java/com/maxmanager/control/`** أي `MaxControlCenter` (تطبيق المالك، يُبنى بـ`control-center.yml`) **لا** إلى تطبيق المستخدمين `manager/app` (`nd.max`) — حقيقة كان يجب قولها في أي تسليم.
+
+**٣. التنفيذ:** `bash patch_maxmanager_legendary.sh` ⇒ **EXIT 0**، وكتب **٢٦ ملفًا** (كلها `??`)، والنسخ الاحتياطية في `/storage/emulated/0/MaxManger/backup_legendary_20261124_192347`. الحصيلة: ١٢ رأسًا + ١٢ مصدر C في `archdaemon/jni/` (`ThreadAffinity` · `CgroupFreezer` · `NetworkQoS` · `InputBoost` · `ShaderPrewarm` · `AtlasDiscovery` · `KernelProcEvents` · `StealthIpc` · `SpoofTemplates` · `MaxLegendary` + `MemoryGuard` و`SysfsDirect` المكرّرَين من الدفعة السابقة) + `android/kernelsu/atlas_probe.sh` + ٤ ملفات Kotlin واختبار JUnit.
+
+**٤. الفحص النحوي قبل CI كشف عطبًا حقيقيًّا واحدًا — وهذا هو الفائدة المقيسة.** `gcc 15.2.0` متاح (لا NDK في هذه البيئة). الفحص الأول بـ`-std=c2x` أعطى أخطاء `O_CLOEXEC`/`lstat` في `SysfsDirect.c` و`ShaderPrewarm.c` — **مصطنعة** من صرامة glibc/ISO، لأن bionic يعرّفهما دائمًا. فالفحص الحاكم أُعيد بـ`-std=gnu2x -DNDEBUG -Wall -Wextra -Werror -pedantic-errors -Wpedantic -Iinclude -I.`:
+- `ShaderPrewarm.c` و`SysfsDirect.c`: **نظيفان**.
+- **`KernelProcEvents.c` فشل فعلًا:** `invalid use of structure with flexible array member [-Wpedantic]` عند السطرين ١٩ و٢٥ — لأن `struct cn_msg` ينتهي بـ`__u8 data[]` وكان عضوًا **مضمّنًا** داخل struct. وهذا كان سيُسقط `ndk-build` بـ`-Werror` في Actions حتمًا.
+- **الإصلاح:** `struct ml_cn_msg { struct cb_id id; __u32 seq; __u32 ack; __u16 len; __u16 flags; };` — نفس ترتيب وأحجام حقول `cn_msg` قبل `data[]` (٢٠ بايت) فالتخطيط بايتًا ببايت كما تتوقّعه النواة ويأتي `proc_event` في محلّه — ثم `struct ml_cn_msg cn_hdr;` بدل المضمّن، مع تعليق يشرح العطب. المنطق لم يتغيّر.
+- إعادة الفحص: **`KPE_CLEAN`** و**`OTHERS_CLEAN`** (الاثنا عشر كلها). وهذا **تحليل نصّي لا بناء**، ولا يُقال عنه «يمرّ» بالمعنى البنائي.
+
+**٥. `atlas_probe.sh` حُذف بقرار معلن:** `AtlasDiscovery.c` يكتب **نفس المسار** `ATLAS_MAP_PATH = "/data/adb/maxmanager/hardware_map.json"` عبر `atlas_discover_and_save`، و`atlas_load_or_repair` يعيد الاكتشاف والكتابة تلقائيًّا إن غاب الملف ⇒ السكربت **مكرّر** (§0.5)، ولا يُستدعى من `service.sh`/`action.sh`، ويكتب في مسار جذر (§0.8). فحُذف قبل الالتزام لا بعده.
+
+**٦. مراجعة Kotlin المولَّد (٤ ملفات + اختبار):** `CloudProfileRepository` (SHA-256 والتحقّق والاختيار) · `MicroHudEngine` (EWMA وRegex) · `AutomationEngine` (`sealed interface` بـ`data object` — يحتاج Kotlin 1.9+، والمشروع على AGP 9/Kotlin 2.x) · `SessionBenchmarkStore`. ولا استيراد لمكتبة غير معلنة في `app/build.gradle.kts` (فلا `kotlinx-serialization-json` ولا `org.json`). وتوقّعات الاختبارات الأربعة تُطابق السلوك يدويًّا (بصمة معدَّلة بنفس النصّ ⇒ `addVerified` false؛ بطارية <١٥٪ ⇒ قاعدتان؛ مقارنة الجلسات ⇒ ٥٠٠ MB و«lower power»).
+
+**٧. التحقق من عدم تكرار الرموز:** `sysfs_read_int` · `sysfs_write_str` · `sysfs_path_exists` **مُعرَّفة مرة واحدة فقط** (في `ShellUtility/SysfsDirect.c`) وتُستدعى من الملفات الجديدة؛ وكذلك `mg_get_available_ram_mb` · `ta_detect_topology` · `cf_init` · `nqos_init` · `ib_init` · `kpe_open` · `atlas_load_or_repair` — كلها في ملف واحد ⇒ لا تعريف مزدوج مع `FileUtility/FileHandler.c` أو `ExecuteDirect.c`.
+
+**٨. البوابات (خضراء):** `kt_balance` ٣٨٢١/٠ · `code_health` **0** بعد نقل `patch_maxmanager_legendary.sh` من الجذر إلى `build/` (كان يُسقطها بـ`stray_root_file: 1` مرتين — قياس لا رأي، والملف باقٍ محليًّا مستبعَدًا من Git) · `i18n_coverage` ٨٤+en · ٨٥ كودًا · `locales_config` ٨٥ · عوائق ٠ · `design_tokens` ٢٤٥/٣٠٠ · `jni_symbols --assert` **exit 0** (تصريحات ٢٣ · يتامى ٠ · الطبقة ٢ ونواقص ٠؛ والطبقة ٢ «غير مُتحقّقة» بلا ثنائيات — تُقال ولا تُدّعى) · `license_audit --assert` **exit 0** (٠ GPL في مسار الإصدار، ٦٠٧٣ ملفًا، ٠ مجهول الترخيص) · `git diff --check`.
+
+**٩. الالتزام والدفع:** **`ca5ed86a`** «feat(daemon): apply the legendary units and the control-center domain layer» — ٢٥ ملفًا (١٢ رأسًا + ١٢ مصدر C + ٥ ملفات Kotlin/اختبار)، مدفوع إلى `main`.
+
+**١٠. حدّ يُقال بصراحة:** الوحدات الاثنتا عشرة **غير موصولة بـ`Main.c`** — كود يُصرَّف ولا يُنفَّذ بعد: لا استدعاء لها من الخادم ولا من `service.sh`. فالحصيلة الآن «طبقة وحدات جاهزة للاختبار والوصل»، لا «قدرات تعمل على الجهاز». ويبقى ما يمسّ العتاد وSELinux يحتاج جهازًا مهما بلغت البوابات.
+
+**حكم CI على `ca5ed86a`:** تشغيلان متوقّعان لأن الملفات تقع في مساري التصفية: **`Control center APK`** (لأن `app/**`) و**`MaxManager`** (لأن `archdaemon/**`).
+- `45471631628` **Control center APK** = **success** (قرئ من `gh run view`)، فملفات Kotlin المولَّدة تُصرَّف واختباراتها تمرّ.
+- **`45471631720` MaxManager = success** (19:34:24Z → 19:53:43Z، المهمّة الوحيدة `Build MaxManager`) — أي أن الوحدات الاثنتي عشرة تُصرَّف في NDK الحقيقي بـ`-Werror -pedantic-errors -std=c23`، والاختبارات وبناء الأصليّ والتغليف والتوقيع تمرّ. والأثرات: **`MaxManager-V5.2.zip` id `14958927404` (30646907 بايت)** · `MaxManager-developer-bundle.zip` id `14958678053` · `MaxManager-checksums` id `14958463753`.
+- **حدّ هذا الحكم:** يثبت الترجمة والاختبارات والتغليف، **لا** أن الوحدات تعمل: لا استدعاء لها من `Main.c` بعد. والفحص النحوي المحلي كشف عطب `cn_msg` قبل CI، وهذا هو الدليل على أن الفحص المسبق يُغني عن دورة بناء فاشلة.

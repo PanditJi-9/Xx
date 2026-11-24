@@ -6156,3 +6156,22 @@ ls /vendor/lib64/ | grep -i 'libc++_shared\|libbinder_ndk'   # شرطان لتح
 **ما يستحق الاحتفاظ منه كفكرة (بلا كود):** نسخ كل ملف إلى `backup_full_<ts>` قبل دهسه؛ وكتابة ملفات كاملة بدل `sed` هشّ. **والباقي لا يُعاد اقتراحه بلا سبب جديد مكتوب.**
 
 **ونُقل الملف نفسه من الجذر إلى `build/patch.sh`** (مُستبعَد من Git، و`build/` لا يفحصه حارس الجذر): بقاؤه في الجذر أسقط بوابة `code_health` فعلًا بـ`stray_root_file: 1` — قياس لا رأي. فلم يُحذف الملف (يبقى مرجعًا للمالك) ولم يُتجاهل الفشل.
+
+## LEGENDARY-01 — وحدات `patch_maxmanager_legendary.sh`: نُفِّذت وتُصرَّف، **وغير موصولة** (2026-11-24)
+
+**الحالة: DONE_WITH_CONCERNS.** نُفِّذ السكربت بأمر المالك بعد فحصه، والالتزام `ca5ed86a` مدفوع إلى `main`. التفصيل في `HANDOFF.md` تكملة ٣١٢.
+
+**حكم CI (مقروء):** `Control center APK` `45471631628` = **success** · `MaxManager` `45471631720` = **success** ⇒ `MaxManager-V5.2.zip` id `14958927404` (30646907 بايت). أي أن الوحدات تُصرَّف في NDK الحقيقي بـ`-Werror` — وهذا لا يعني أنها تعمل (غير موصولة).
+
+**ما دخل الشجرة:** ١٢ رأسًا + ١٢ مصدر C في `archdaemon/jni/` (`ThreadAffinity` · `CgroupFreezer` · `NetworkQoS` · `InputBoost` · `ShaderPrewarm` · `AtlasDiscovery` · `KernelProcEvents` · `StealthIpc` · `SpoofTemplates` · `MaxLegendary` · `MemoryGuard` · `SysfsDirect`) — تدخل `ndk-build` تلقائيًّا بـ`wildcard` وتُصرَّف بـ`-Werror -pedantic-errors -std=c23`؛ و٤ ملفات Kotlin + اختبار لـ**`MaxControlCenter`** (`app/`) لا لتطبيق المستخدمين.
+
+**عطب كُشف قبل CI وأُصلح:** `KernelProcEvents.c` كان يضمّ `struct cn_msg` (ينتهي بـ`data[]`) عضوًا ⇒ `invalid use of structure with flexible array member` — أُبدل بـ`struct ml_cn_msg` بنفس التخطيط (٢٠ بايت). و`atlas_probe.sh` حُذف لأنه يكرّر `AtlasDiscovery.c` ويكتب في `/data/adb`. و`bootloop_guard` لم يُضف (شرطه كان كاذبًا).
+
+**CONCERNS (تُقرأ قبل أي ادّعاء قدرة):**
+1. **لا وحدة موصولة بـ`Main.c`** ولا مستدعاة من `service.sh`/`action.sh` ⇒ كود مُصرَّف لا يعمل. الوصل خطوة تالية مستقلة بمهمة وخطة اختبار.
+2. `SysfsDirect` و`MemoryGuard` يكرّران قدرةً قائمة (`FileUtility/FileHandler.c` · `GamePreload/GamePreload.c`) — أُبقيا لأن الملفات الجديدة تستدعي `sysfs_*` و`mg_*`؛ والمطلوب لاحقًا توحيدها على النظير القائم لا إبقاء مسارين (§0.5).
+3. `CgroupFreezer` · `NetworkQoS` · `InputBoost` · `StealthIpc` · `SpoofTemplates` تلامس سلوكًا نظاميًّا (cgroup/netlink/socket/خصائص) — لا تُوصَل بشيء قبل مراجعة سلامة مستقلة واختبار جهاز.
+4. `atlas_probe.sh` المحذوف ما زال في نسخة `backup_legendary_20261124_192347` على `/storage/emulated/0/MaxManger/` — لا يُعاد.
+5. لا قياس حيّ: الجهاز `192.168.1.10:39527` منقطع. `gcc -fsyntax-only` تحليل نصّي، وحكم CI يثبت الترجمة والاختبارات فقط.
+
+**NEXT:** (أ) مهمة وصل واحدة: `Main.c` + `service.sh` لوحدة واحدة فقط (المُرجَّح `AtlasDiscovery` لأنها تقرأ ولا تكتب سلوكًا) مع تحقّق قراءة مرتجعة وسجلّ رمز؛ (ب) مراجعة سلامة مستقلة قبل أي وحدة تكتب (cgroup/netlink/خصائص)؛ (ج) توثيق كل وحدة بجدول: ماذا تقرأ، ماذا تكتب، ما الذي يحدث لو فشلت.
