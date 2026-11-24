@@ -1009,7 +1009,7 @@ object GpuHardwareBackend {
         val measured = pinnedHz?.let { actual?.let { live -> measuredFrequency(live, io) } }
         val clockVerified = pinnedHz != null && measured != null && clockAgrees(pinnedHz, measured.hz)
         val clockMismatch = pinnedHz != null && measured != null && !clockVerified
-        if (wrote && pinnedHz != null && (clockVerified || (nodeSatisfied && !clockMismatch))) {
+        if (wrote && (clockVerified || (nodeSatisfied && !clockMismatch))) {
             return TransactionResult(request, actual, true, true)
         }
         // **والمدى لا يُحكم عليه بالمساواة الحرفية.** طلبُ سقفٍ عند قدرة الجهاز (1300) تُقصّه
