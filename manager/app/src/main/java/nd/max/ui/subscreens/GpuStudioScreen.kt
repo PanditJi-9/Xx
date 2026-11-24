@@ -807,7 +807,15 @@ private fun GpuRangeControls(
     // المنصّة تقصّ عند السقف الديناميكي (قِيست 520)، فيختار المستخدم درجة لا يمكن للعتاد أن
     // يقبلها ثم يرى «رفض العتاد التغيير» بلا سبب مفهوم. المدى يبقى قادرًا على طلب سقف أعلى
     // (فهو الذي يحرّر السقف)، وأما التثبيت فيقتصر على ما يمكن الوفاء به الآن.
-    val lockCeilingIndex = frequencies.indexOf(device.maxFreq).takeIf { it >= 0 } ?: frequencies.lastIndex
+    // ويُقاس بـ«أعلى درجة لا تتجاوز السقف» لا بمطابقة السقف حرفيًّا: السقف قد يكون رقمًا لا
+    // تقف عليه درجة معلنة (يقصّه مُحكِّم حراري بين درجتين)، والمطابقة الحرفية كانت تُسقط إلى
+    // آخر عنصر فتُعيد فتح ما أُغلق.
+    val liveCap = device.maxFreq
+    val lockCeilingIndex = if (liveCap != null) {
+        frequencies.indexOfLast { it <= liveCap }.takeIf { it >= 0 } ?: 0
+    } else {
+        frequencies.lastIndex
+    }
     // لا كتابة حالة داخل التركيب: القيمة الفعّالة تُشتقّ، والمخزّن يبقى كما هو حتى يُحرَّك المقبض.
     val effectiveLockIndex = lockIndex.coerceIn(0, lockCeilingIndex)
 
