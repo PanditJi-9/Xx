@@ -125,6 +125,8 @@
     <string name="max_gpu_reason_provider_ambiguous">More than one GPU provider matched; no write is attempted.</string>
     <string name="max_gpu_reason_provider_disappeared">The GPU provider the change was staged against is gone.</string>
     <string name="max_gpu_reason_pin_clock_mismatch">The fixed index was written, but the measured GPU clock did not match it, so the previous state was restored.</string>
+    <string name="max_gpu_reason_ceiling_held">The platform is still holding the GPU ceiling, so the previous state was restored.</string>
+    <string name="max_gpu_reason_opp_lock_held">A fixed OPP lock is still holding the GPU below the requested ceiling, so the previous state was restored.</string>
     <string name="max_gpu_reason_empty_request">Nothing was requested.</string>
     <string name="max_gpu_reason_unknown">The request could not be carried out safely.</string>
     <string name="max_gpu_reason_technical">Reason code</string>

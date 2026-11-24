@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.MaxManagerProps
 import nd.max.core.hardware.ControlOwnership
-import nd.max.core.hardware.GpuCeilingPolicy
 import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.hardware.GpuTweakPersistence
 import nd.max.core.hardware.HardwareControlArbiter
@@ -322,14 +321,30 @@ class GpuStudioViewModel @Inject constructor(
                     val echo = actual != null && actual == desired
                     val target = pending.minFreq?.takeIf { it == pending.maxFreq }
                     if (target == null) {
-                        echo
+                        // **المدى بحكم التحرير لا بالمساواة الحرفية** — نفس الدالة التي يحكم بها
+                        // المحرّك، فلا سياستان لسلوك واحد. وهذا هو الموضع الذي كان يُحوِّل نجاح
+                        // تحرير السقف إلى «رفض واستعادة»: طلبُ 1300 تُقصّه المنصّة إلى 520 بحقّها،
+                        // فيعود الصدى `260:520` فلا يساوي `260:1300000000` فيُقال فشل ويُمحى التحرير.
+                        GpuHardwareBackend.rangeRequestSatisfied(
+                            liveBefore = device,
+                            actual = GpuHardwareBackend.refresh(device.path),
+                            request = pending,
+                        )
                     } else {
                         val measured = GpuHardwareBackend.measuredFrequency(device)
-                        echo && (measured == null ||
-                            GpuCeilingPolicy.pinVerdict(target, measured.hz) !=
-                            GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH)
+                        // **الساعة هي الحكم.** صدى العقدة وحده ليس شرطًا: المنصّة قد تقصّ
+                        // `max_freq` فترجع القراءة مختلفة بينما التردد المثبَّت هو المطلوب فعلًا
+                        // (وهو ما يقرأه المستخدم). والتسامح ٢٪ أو ٥ MHz لأن الساعة تُقاس مرة
+                        // ثانية بعد الكتابة بقليل، والمقارنة التامة كانت تُرجع تثبيتًا صحيحًا.
+                        if (measured == null) echo
+                        else GpuHardwareBackend.clockAgrees(target, measured.hz)
                     }
                 },
+                // والتخطّي قبل الكتابة يبقى مشروطًا بصدى العقدة **لا بالساعة**: ترددٌ يصادف أنه
+                // يساوي الطلب الآن (خامل 260 عند طلب تثبيت 260) يجعل حكم الساعة صحيحًا، فلو
+                // تُخطّيت الكتابة لما ثُبِّت شيء وارتفع التردد بعد ثوانٍ. `realized` يُسأل في موضع
+                // واحد فقط: قبل أول محاولة؛ وبعدها يحكم `verify` وحده، فلا يُصنَّف تثبيت نُفِّذ.
+                realized = { _, actual -> actual != null && actual == desired },
             )
             val refreshed = GpuHardwareBackend.selection()
             val result = GpuHardwareBackend.TransactionResult(

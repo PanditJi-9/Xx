@@ -117,6 +117,8 @@
     <string name="max_gpu_reason_provider_ambiguous">أكثر من مزوّد GPU تطابق؛ ولا تُحاول أي كتابة.</string>
     <string name="max_gpu_reason_provider_disappeared">مزوّد GPU الذي رُوجع التغيير عليه لم يعد موجودًا.</string>
     <string name="max_gpu_reason_pin_clock_mismatch">كُتب فهرس التثبيت، لكن الساعة المقاسة لم تطابقه، فأُعيدت الحالة السابقة.</string>
+    <string name="max_gpu_reason_ceiling_held">المنصّة لا تزال تحتفظ بسقف الرسوم، فأُعيدت الحالة السابقة.</string>
+    <string name="max_gpu_reason_opp_lock_held">قفل OPP ثابت لا يزال يقيّد الرسوم دون السقف المطلوب، فأُعيدت الحالة السابقة.</string>
     <string name="max_gpu_reason_empty_request">لم يُطلب شيء.</string>
     <string name="max_gpu_reason_unknown">تعذّر تنفيذ الطلب بأمان.</string>
     <string name="max_gpu_reason_technical">كود السبب</string>

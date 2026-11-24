@@ -803,12 +803,24 @@ private fun GpuRangeControls(
     var minIndex by remember(device.path, liveMinIndex) { mutableIntStateOf(liveMinIndex) }
     var maxIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
     var lockIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
+    // **التثبيت لا يُعرض فوق السقف الحيّ.** كانت القائمة تمتدّ إلى قدرة الجهاز (1300) بينما
+    // المنصّة تقصّ عند السقف الديناميكي (قِيست 520)، فيختار المستخدم درجة لا يمكن للعتاد أن
+    // يقبلها ثم يرى «رفض العتاد التغيير» بلا سبب مفهوم. المدى يبقى قادرًا على طلب سقف أعلى
+    // (فهو الذي يحرّر السقف)، وأما التثبيت فيقتصر على ما يمكن الوفاء به الآن.
+    val lockCeilingIndex = frequencies.indexOf(device.maxFreq).takeIf { it >= 0 } ?: frequencies.lastIndex
+    // لا كتابة حالة داخل التركيب: القيمة الفعّالة تُشتقّ، والمخزّن يبقى كما هو حتى يُحرَّك المقبض.
+    val effectiveLockIndex = lockIndex.coerceIn(0, lockCeilingIndex)
 
     MaxGroup {
         MaxSwitchRow(
             title = stringResource(R.string.max_gpu_fixed_title),
             checked = fixedFrequency,
-            onCheckedChange = { fixedFrequency = it },
+            onCheckedChange = { on ->
+                fixedFrequency = on
+                // **التبديل نفسه يُجهّز الطلب.** كان يقلب الحالة المحلية وحدها، فيبقى الطلب
+                // المعلّق من وضع المدى فيُطبَّق مدى بينما المستخدم يظنّ أنه ثبّت درجة.
+                if (on) vm.stageLock(frequencies[effectiveLockIndex])
+            },
             subtitle = stringResource(
                 if (fixedFrequency) R.string.max_gpu_fixed_on_desc else R.string.max_gpu_fixed_off_desc
             ),
@@ -821,12 +833,12 @@ private fun GpuRangeControls(
         if (fixedFrequency) {
             MaxSliderRow(
                 title = stringResource(R.string.max_gpu_fixed_value),
-                value = lockIndex.toFloat(),
-                onValueChange = { lockIndex = it.roundToInt().coerceIn(0, frequencies.lastIndex) },
-                valueText = format(device, frequencies[lockIndex]),
-                valueRange = 0f..frequencies.lastIndex.toFloat(),
-                steps = (frequencies.size - 2).coerceAtLeast(0),
-                onValueChangeFinished = { vm.stageLock(frequencies[lockIndex]) },
+                value = effectiveLockIndex.toFloat(),
+                onValueChange = { lockIndex = it.roundToInt().coerceIn(0, lockCeilingIndex) },
+                valueText = format(device, frequencies[effectiveLockIndex]),
+                valueRange = 0f..lockCeilingIndex.toFloat(),
+                steps = (lockCeilingIndex - 1).coerceAtLeast(0),
+                onValueChangeFinished = { vm.stageLock(frequencies[effectiveLockIndex]) },
             )
         } else {
             MaxSliderRow(
@@ -1034,6 +1046,9 @@ private fun reasonRes(reason: String?): Int = when (reason) {
     // قفل OPP كُتب، لكن الساعة المقاسة لم تطابقه: الفهرس صدى لا تردد، وقد أعاد المسار
     // الحالة السابقة. بلا هذا السطر كان المستخدم يرى «تعذّر تنفيذ الطلب بأمان» بلا سبب.
     "pin-clock-mismatch" -> R.string.max_gpu_reason_pin_clock_mismatch
+    // سقف المنصّة أو قفل OPP هو ما منع الطلب: يُسمّى بدل «تعذّر تنفيذ الطلب بأمان» العامّ.
+    "gpu-ceiling-held" -> R.string.max_gpu_reason_ceiling_held
+    "gpu-opp-lock-held" -> R.string.max_gpu_reason_opp_lock_held
     "empty-request" -> R.string.max_gpu_reason_empty_request
     else -> R.string.max_gpu_reason_unknown
 }

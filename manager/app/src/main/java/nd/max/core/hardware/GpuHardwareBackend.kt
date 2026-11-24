@@ -646,7 +646,12 @@ object GpuHardwareBackend {
     /**
      * تردد GPU الجاري **ومصدره** — لا ما نظنّ أننا كتبناه.
      *
-     * المصدر الأول GED (بلا وحدة معلنة)، ثم `cur_freq`، ثم `gpuclk`. والوحدة تُستنتج من المقدار
+     * المصدر الأول `cur_freq` على عقدة devfreq، ثم `gpuclk`، ثم GED أخيرًا.
+     *
+     * **والترتيب مقصود ومقيس:** GED (`/sys/kernel/ged/hal/current_freqency`) يبلّغ قيمة مقرّبة/
+     * متأخرة (قِيست 250 MHz على rodin) بينما درجات devfreq نفسها 260، فكانت شاشة GPU تعرض رقمًا
+     * لا يطابق مدى البطاقة في الرئيسية. والعقدة التي تُعلن المدى هي التي تُعلن الجاري.
+     * وGED يبقى احتياطًا على جهاز لا ينشر `cur_freq`. والوحدة تُستنتج من المقدار
      * ([magnitudeToHz]) لأن العقد نفسها لا تعلنها، ولأن `frequencyUnit` المعلنة للجهاز تصف
      * **المدى المُطبَّع** لا العقدة الخام: على MTK `cur_freq` بالكيلوهرتز بينما `frequencyUnit = HZ`.
      *
@@ -663,7 +668,7 @@ object GpuHardwareBackend {
             device.frequencies.filter { it > 0L }.maxOrNull()?.times(device.frequencyUnit.hzMultiplier) ?: 0L
         }
         val upperHz = capabilityMaxHz.takeIf { it > 0L }?.times(2L) ?: 10_000_000_000L
-        for (path in listOf(GED_CURRENT_FREQUENCY, "${device.path}/cur_freq", "${device.path}/gpuclk")) {
+        for (path in listOf("${device.path}/cur_freq", "${device.path}/gpuclk", GED_CURRENT_FREQUENCY)) {
             val raw = io.read(path)?.trim()?.toLongOrNull() ?: continue
             if (raw <= 0L) continue
             val hz = magnitudeToHz(raw)
@@ -996,10 +1001,38 @@ object GpuHardwareBackend {
         // في واجهة المستخدم. وهذا ما يمنع تكرار «يُقال نُفِّذ والجهاز على درجته القديمة».
         val pinnedHz = request.minFreq?.takeIf { it == request.maxFreq }
         val nodeSatisfied = wrote && matches(actual, request)
-        val clockMismatch = nodeSatisfied && pinnedHz != null && actual != null &&
-            measuredFrequency(actual, io)?.let { !clockAgrees(pinnedHz, it.hz) } == true
-        if (nodeSatisfied && !clockMismatch) return TransactionResult(request, actual, true, true)
+        // **الساعة تُقاس دائمًا للطلب الثابت، لا بعد نجاح صدى العقدة فقط.** حين تُقبل الكتابة
+        // ويُقرأ المدى مختلفًا (قمع حراري أو سقف GED يقيّد `max_freq`) كان القياس يُتخطّى فيبقى
+        // السبب مجهولًا وتظهر رسالة عامة لا تقول شيئًا. والقياس المسبق يفصل «العقدة لم تُطابق»
+        // عن «الساعة لم تتحرك»، ويسمح بالنجاح حين تثبت الساعة على الطلب رغم اختلاف صدى العقدة —
+        // فالساعة هي حقيقة المستخدم، والصدى وصفٌ لها.
+        val measured = pinnedHz?.let { actual?.let { live -> measuredFrequency(live, io) } }
+        val clockVerified = pinnedHz != null && measured != null && clockAgrees(pinnedHz, measured.hz)
+        val clockMismatch = pinnedHz != null && measured != null && !clockVerified
+        if (wrote && pinnedHz != null && (clockVerified || (nodeSatisfied && !clockMismatch))) {
+            return TransactionResult(request, actual, true, true)
+        }
+        // **والمدى لا يُحكم عليه بالمساواة الحرفية.** طلبُ سقفٍ عند قدرة الجهاز (1300) تُقصّه
+        // المنصّة إلى 754 أو 520 بحقّها الحراري، وكانت المساواة تقرأ ذلك فشلًا فتُعيد خط الأساس
+        // **فتمحو التحرير نفسه** وتضمن ألّا يقع تغيير أبدًا — وهو نصّ ما يراه المستخدم: «رفض
+        // العتاد التغيير وتمت استعادة الحالة السابقة». والحكم الصحيح هو حكم التحرير نفسه الذي
+        // يحكم به مسار per-app ([GpuCeilingPolicy.releaseVerdict]): كل قناة نملكها مفتوحة
+        // وسقفٌ أدنى من المنصّة يُقاس ويُعلن برقمه في الشاشة، لا يُحوَّل فشلًا مدمِّرًا.
+        // وأما طلبُ **خفض** السقف فيبقى محكومًا بالقراءة نفسها: لا نجاح إن قرأ السقف أعلى من
+        // المطلوب (كتبنا ولم يُقبل)، ونجاحٌ إن قرأ عند المطلوب أو دونه.
+        if (wrote && pinnedHz == null && request.maxFreq != null) {
+            if (rangeRequestSatisfied(live, actual, request, io)) {
+                return TransactionResult(request, actual, true, true)
+            }
+        }
 
+        // ولماذا يُسمّى السبب هنا: «تعذّر تنفيذ الطلب بأمان» عامّ لا يقول للمستخدم أن سقفًا
+        // حراريًّا أو قفل OPP هو ما منع الطلب. والرمز يُقرأ من القراءة **قبل** التراجع، لأن
+        // التراجع نفسه يُعيد السقف فتمحى الحالة التي فُشل بسببها.
+        val heldCap = if (wrote && pinnedHz == null && request.maxFreq != null) {
+            GpuCeilingPolicy.releaseVerdict(ceilingReading(actual ?: live, io), request.maxFreq)
+                .takeUnless { it.satisfied }?.token
+        } else null
         val rollbackVerified = restoreTouchedBaseline(baseline, request, io)
         // وبعد التراجع يُعاد الوضع الطبيعي للسلطة: طلب تثبيت فشل كان قد أوقف DVFS في GED، وإبقاؤه
         // موقوفًا يُثبّت التردد الذي صادف وجوده — أي يُنتج العطب الذي جاء التراجع لإلغائه.
@@ -1016,6 +1049,7 @@ object GpuHardwareBackend {
             error = when {
                 !rollbackVerified -> "apply-and-rollback-failed"
                 clockMismatch -> "pin-clock-mismatch"
+                heldCap != null -> heldCap
                 else -> "apply-not-verified-baseline-restored"
             },
         )
@@ -1025,9 +1059,44 @@ object GpuHardwareBackend {
      * هل توافق الساعة المقيسة ترددًا مثبَّتًا؟ التسامح ٢٪ أو ٥ MHz (أيّهما أكبر): قراءة الساعة
      * تتأخّر عن الكتابة بقليل، ومقارنة تامة كانت سترفض تثبيتًا صحيحًا عند 519.7 مقابل 520.
      */
-    private fun clockAgrees(pinnedHz: Long, measuredHz: Long): Boolean {
+    fun clockAgrees(pinnedHz: Long, measuredHz: Long): Boolean {
         val tolerance = maxOf(5_000_000L, pinnedHz / 50L)
         return kotlin.math.abs(measuredHz - pinnedHz) <= tolerance
+    }
+
+    /**
+     * هل طلبُ **المدى** مُلبّى بالمعنى لا بالحرف؟
+     *
+     * والقاعدة الواحدة التي يحكم بها هذا المشروع على السقف منذ مسار per-app: طلبٌ عند قدرة الجهاز
+     * (أو فوق السقف الحيّ) هو **تحرير** لا كتابة، ويُحكم عليه بـ[GpuCeilingPolicy.releaseVerdict]:
+     * كل قناة نملكها مفتوحة ⇒ مُلبّى ولو بقي سقفٌ حراريّ أدنى يُعلن برقمه. والمساواة الحرفية كانت
+     * تقرأ ذلك فشلًا فتُعيد خط الأساس فتمحو التحرير نفسه — وهو نصّ شكوى المالك
+     * (`apply-not-verified-baseline-restored` على كل تغيير تردد).
+     *
+     * واتجاهان لا واحد: **الرفع** يحكمه التحرير، و**الخفض** يحكمه السقف المقروء نفسه (`node ≤
+     * المطلوب`)، فلا يُدّعى نجاحُ كتابةٍ رفضها العتاد. والقاع يبقى مقارنة صريحة بالقراءة.
+     *
+     * وتُستدعى من موضعين فقط — محرّك الكتابة ([applyDevfreq]) ومراجعة شاشة GPU — فلا سياسة ثانية.
+     */
+    fun rangeRequestSatisfied(
+        liveBefore: Device?,
+        actual: Device?,
+        request: Request,
+        io: Io = SystemIo,
+    ): Boolean {
+        val requestedMax = request.maxFreq
+            ?: return request.minFreq == null || actual?.minFreq == request.minFreq
+        val reading = ceilingReading(actual ?: liveBefore ?: return false, io)
+        val node = reading.nodeCeilingHz
+        val raising = requestedMax >= (liveBefore?.maxFreq ?: 0L)
+        val ceilingHonored = if (raising) {
+            GpuCeilingPolicy.releaseVerdict(reading, requestedMax).satisfied &&
+                node != null && node <= requestedMax
+        } else {
+            node != null && node <= requestedMax
+        }
+        val floorHonored = request.minFreq == null || actual?.minFreq == request.minFreq
+        return ceilingHonored && floorHonored
     }
 
     private fun restoreTouchedBaseline(baseline: Baseline, request: Request, io: Io): Boolean {
