@@ -6138,3 +6138,21 @@ ls /vendor/lib64/ | grep -i 'libc++_shared\|libbinder_ndk'   # شرطان لتح
 4. RTL واللمس على منزلق القفل بعد تقييده بالسقف الحيّ.
 
 **LIMITS:** لا جهاز (`adb 192.168.1.10:39527` منقطع)، فلم يُقَس سلوك العتاد. حكم Actions يثبت الترجمة واختبارات release فقط.
+
+## PATCH-SH-AUDIT-01 — حكم `patch.sh` في الجذر: لم يُعتمد، وأُخذ منه إصلاح واحد (2026-11-24)
+
+**الحالة: DONE/مغلق.** الملف **غير متتبَّع** (`?? patch.sh`، 1762 سطرًا، 11 قسمًا) وفُحص سطرًا سطرًا. **لم يُشغَّل** ولم يُضف إلى الشجرة. المأخوذ منه: حذف ملفَي `Task` و`There` (كانا متتبَّعين و0 بايت، لا مرجع لهما) في التزام مستقلّ.
+
+**المرفوض بقرار صريح، وبسببه المقيس:**
+1. **`android/kernelsu/bootloop_guard.sh`** — سكربت جذر يعمل عند الإقلاع من `/data/adb/maxmanager` ⇒ بند §0.8 «مدير سكربتات جذر: صفر ذكر وصفر بناء».
+2. **`.github/workflows/build-modular.yml`** + الأربعة `_reusable-*.yml` — خطّ بناء ثانٍ موازٍ لـ`build.yml` ⇒ حكمان لشجرة واحدة، ويخالف §0.9/§0.10.
+3. **تسع وحدات C جديدة** (`SysfsDirect` · `ThermalBypass` · `MemoryGuard` · `ProfileRollback` · `DiagnosticsBundle` · `MaxUpgrades` وجميعها `include/`+`src/`) مقابل نظائر قائمة (`FileUtility/FileHandler.c` · `BypassCharge/Charging*` · `GamePreload/GamePreload.c` · `ConfigHandler/*`) ⇒ §0.5: يُحسَّن القائم ولا يُبنى مسار ثانٍ.
+4. **`archdaemon/jni/Android.mk`** لا يحتاج تعديلًا: `LOCAL_SRC_FILES := Main.c $(wildcard $(LOCAL_PATH)/src/*/*.c)` ⇒ الملفات تدخل تلقائيًّا؛ والأهم أنها تُصرَّف بـ`-Werror -pedantic-errors -std=c23` فتسعة ملفات جديدة دفعة واحدة = خطر إسقاط البناء بلا مُصرّف محلي (§0.10).
+5. **طبقة Kotlin في `app/src/main/java/com/maxmanager/control/`** — هذه `MaxControlCenter` (تطبيق المالك، `control-center.yml`)، لا تطبيق المستخدمين `manager/app` (`nd.max`) ⇒ ليست حيث يظنّها من يقرأ الاسم.
+6. **`.github/scripts/sepolicy_gate.sh`** غير موصول بأي workflow ⇒ ملف لا بوابة.
+7. **`git rm -r --cached .opencode/skills/`** — الـ255 ملفًا في `.opencode/` متتبَّعة بقصد؛ إخراجها قرار سياسة لا تنظيف.
+8. **`PROJECT_DIR="/storage/emulated/0/…"`** بينما الشجرة العاملة `/mnt/sdcard/…` ⇒ مسار مختلف على هذا الجهاز.
+
+**ما يستحق الاحتفاظ منه كفكرة (بلا كود):** نسخ كل ملف إلى `backup_full_<ts>` قبل دهسه؛ وكتابة ملفات كاملة بدل `sed` هشّ. **والباقي لا يُعاد اقتراحه بلا سبب جديد مكتوب.**
+
+**ونُقل الملف نفسه من الجذر إلى `build/patch.sh`** (مُستبعَد من Git، و`build/` لا يفحصه حارس الجذر): بقاؤه في الجذر أسقط بوابة `code_health` فعلًا بـ`stray_root_file: 1` — قياس لا رأي. فلم يُحذف الملف (يبقى مرجعًا للمالك) ولم يُتجاهل الفشل.
