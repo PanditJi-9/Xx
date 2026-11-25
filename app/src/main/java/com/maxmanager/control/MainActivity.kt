@@ -52,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
@@ -67,6 +68,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import com.maxmanager.control.ui.UxHaptics
 
 /**
  * لوحة Max Control — مركز تحكّم المالك، وإعادة تصميمها في هذه الجولة قائمة على أربعة تبويبات.
@@ -262,6 +264,9 @@ private fun DashboardScreen(session: Session, onLogout: (String) -> Unit) {
     val draft = remember { Draft() }
     val keys = remember { KeysState() }
     var tab by remember { mutableStateOf(Tab.Keys) }
+    // الجذر يُقرأ في التركيب لا داخل الـlambda: `LocalView.current` داخل `onClick` يقرأ تركيبًا
+    // خارج نطاقه، وهذا موضع النقر الحقيقي الذي يمرّره النظام إلى التغذية الراجعة.
+    val hapticView = LocalView.current
 
     var stats by remember { mutableStateOf<List<CountryStat>>(emptyList()) }
     var statsError by remember { mutableStateOf("") }
@@ -455,7 +460,12 @@ private fun DashboardScreen(session: Session, onLogout: (String) -> Unit) {
                 Tab.values().forEach { t ->
                     FilterChip(
                         selected = tab == t,
-                        onClick = { tab = t },
+                        onClick = {
+                            // النقرة قبل تغيير الحالة: التغذية الراجعة تصف الفعل الذي وقع للتوّ،
+                            // ولا تتأخّر خلف إعادة التركيب.
+                            UxHaptics.tap(hapticView)
+                            tab = t
+                        },
                         label = { Text(t.label, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                         modifier = Modifier.weight(1f)
                     )
