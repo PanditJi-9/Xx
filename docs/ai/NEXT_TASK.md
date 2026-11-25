@@ -6175,3 +6175,17 @@ ls /vendor/lib64/ | grep -i 'libc++_shared\|libbinder_ndk'   # شرطان لتح
 5. لا قياس حيّ: الجهاز `192.168.1.10:39527` منقطع. `gcc -fsyntax-only` تحليل نصّي، وحكم CI يثبت الترجمة والاختبارات فقط.
 
 **NEXT:** (أ) مهمة وصل واحدة: `Main.c` + `service.sh` لوحدة واحدة فقط (المُرجَّح `AtlasDiscovery` لأنها تقرأ ولا تكتب سلوكًا) مع تحقّق قراءة مرتجعة وسجلّ رمز؛ (ب) مراجعة سلامة مستقلة قبل أي وحدة تكتب (cgroup/netlink/خصائص)؛ (ج) توثيق كل وحدة بجدول: ماذا تقرأ، ماذا تكتب، ما الذي يحدث لو فشلت.
+
+## UIUX-PATCH-01 — `patch_maxmanager_ui_ux.sh`: أُخذ الاهتزاز فقط، ورُفض نظام التصميم الثاني (2026-11-25)
+
+**الحالة: DONE_WITH_CONCERNS.** التفصيل الكامل في `HANDOFF.md` تكملة ٣١٣. الالتزام `37339d84` مدفوع إلى `main`.
+
+**أين كان سيَكتب:** كله في **`app/`** = `MaxControlCenter` (`com.maxmanager.control`) **لا** `manager/app` (`nd.max`) تطبيق MaxManager ⇒ لا يُصلح شاشاته، وهذه أوّل حقيقة تُقال.
+
+**المأخوذ (مقيس ومستهلك):** `app/src/main/java/com/maxmanager/control/ui/UxHaptics.kt` — `performHapticFeedback(CLOCK_TICK)` مع سقوط إلى `VIRTUAL_KEY`، **بلا إذن `VIBRATE`** (غير موجود في البيان؛ فاحتياط `Vibrator` في السكربت كان يفشل بصمت). ووُصل بنقر تبويبات `FilterChip` في `MainActivity` عبر `LocalView.current` المقروء في التركيب.
+
+**المرفوض (٨) وأسبابه المقيسة:** نظام تصميم ثانٍ (لوحة AMOLED/ثيم/توكنز/مكوّنات/لوحة تحكّم غير موصولة) فوق هوية زرقاء قائمة في `MainActivity.kt:~123` ومكوّنات `Widgets.kt` · `UxEdgeToEdge` يكرّر `enableEdgeToEdge` (السطر ٩٧) · `UxTelemetryCardModel` يكرّر `MicroHudFrame` بلا مستهلك · نصوص إنجليزية مثبَّتة في تطبيق عربي RTL إجباري (ADR-14) · `UxMotionHaptics` باحتياط vibrator لا يعمل · Maestro بأحد سيناريوهيه `assertVisible: text: ".*"` · `supportsRtl` موجود أصلًا · ادّعاء «WCAG AAA» غير صحيح (`#65728A` على `#0B0E14` = ٣٫٩٧:١).
+
+**حكم CI:** `Control center APK` `45567614695` = **success** (١د٢٩ث). و`MaxManager` `45567614631` شُغّل تلقائيًّا لأن `app/**` في `paths` — تعديل مركز التحكّم يكلّف بناء كاملًا، وهذا قياس لا شكوى.
+
+**CONCERNS / NEXT:** (١) الاهتزاز لا يُقاس إلا على جهاز (`adb 192.168.1.10:39527` منقطع). (٢) المرفوضات تُعاد فقط بمواصفة هوية مقيسة أو عند وصل تيليمتري حقيقي. (٣) إن أراد المالك عملًا بصريًّا على **MaxManager نفسه** فالمسار `manager/app` ونظام تصميمه (`ui/design/`, MaxTokens/MaxMotion) — لا `app/`. (٤) الملف محفوظ في `build/patch_maxmanager_ui_ux.sh` (غير متتبَّع) ولا يُعاد تشغيله بلا سبب جديد مكتوب.

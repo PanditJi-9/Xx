@@ -27,6 +27,7 @@
     <string name="max_gpu_live_frequency">Live frequency</string>
     <string name="max_gpu_load">Load</string>
     <string name="max_gpu_range_label">Hardware capability</string>
+    <string name="max_gpu_max_available">Max available</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamic</string>
     <string name="max_gpu_dynamic_max">Maximum · dynamic</string>
     <string name="max_gpu_governor_label">Governor</string>

@@ -851,17 +851,20 @@ private fun CpuFrequencyControlGroup(
                     onValueChange = { selected -> pinSelection = selected }
                 )
             } else {
-                FrequencyStepRow(
-                    title = stringResource(R.string.cpu_freq_min_label),
-                    value = activeMin,
-                    options = allowed.filter { it <= activeMax },
-                    onValueChange = { selected -> editMin = selected.coerceAtMost(editMax) }
-                )
+                // **السقف أولًا** لأنه ما يطلبه المستخدم عادةً («أريد تحديد أقصى تردد»)،
+                // ولأن تعديله وحده كافٍ: الأرضية تبقى كما هي حيّةً فلا يُرفع استهلاك الخمول
+                // بلا طلب. والترتيب في الشاشة يتبع ترتيب القرار لا ترتيب الأرقام.
                 FrequencyStepRow(
                     title = stringResource(R.string.cpu_freq_max_label),
                     value = activeMax,
                     options = allowed.filter { it >= activeMin },
                     onValueChange = { selected -> editMax = selected.coerceAtLeast(editMin) }
+                )
+                FrequencyStepRow(
+                    title = stringResource(R.string.cpu_freq_min_label),
+                    value = activeMin,
+                    options = allowed.filter { it <= activeMax },
+                    onValueChange = { selected -> editMin = selected.coerceAtMost(editMax) }
                 )
             }
         }

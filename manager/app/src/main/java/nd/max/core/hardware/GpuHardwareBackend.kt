@@ -17,6 +17,9 @@ object GpuHardwareBackend {
     /** تردد الGPU الجاري كما تبلّغ به عقدة GED — أداة قياس لا مرجع كتابة. */
     private const val GED_CURRENT_FREQUENCY = "/sys/kernel/ged/hal/current_freqency"
 
+    /** مهلة إعادة قياس الساعة بعد تثبيت — انتقال `devfreq` قد يتأخّر عنها بقليل. */
+    private const val PIN_CLOCK_RETRY_MS = 70L
+
     // شكل صيغة قيمة مفتاح gpu_frequency — انظر explanation في encodeRequest.
     private const val SCHEMA_SEPARATOR = "|"
     private const val UNTOUCHED = "-"
@@ -249,6 +252,21 @@ object GpuHardwareBackend {
         val mtkLockWritable: Boolean = false,
         val mtkOppIndexByFrequency: Map<Long, String> = emptyMap(),
         val evidence: List<String> = emptyList(),
+        /**
+         * الدرجات التي تنشرها **عقدة الكتابة** نفسها (`available_frequencies` للعقدة)، بلغة
+         * [frequencies] نفسها.
+         *
+         * ولماذا حقلٌ ثانٍ غير [frequencies]: هذة الأخيرة **كتالوج قدرة مدمج** — جدول OPP
+         * الموقّع من MediaTek يُضاف إليه سلّم `devfreq`، فقد يحمل درجةً يستطيعها العتاد ولا
+         * تنشرها عقدة الكتابة. وكتابة هذه الدرجة على `min_freq`/`max_freq` تُقرَّب عند السائق
+         * إلى أقرب درجة معلنة، فيقرأ التحقّق قيمةً غير المطلوبة ويحكم بالفشل ويعيد خط الأساس —
+         * وهو نصّ ما يراه المستخدم: `apply-not-verified-baseline-restored`.
+         *
+         * فالمدى والتثبيت عبر `devfreq` يُطلبان **من هذا السلّم وحده**، وكتالوج القدرة يبقى
+         * لقراءة «أقصى متاح» وعرض القدرة. `emptyList()` تعني «لم يُقرأ سلّم مستقلّ» — فيُستعمل
+         * [frequencies] احتياطًا، فلا يتغيّر سلوك أي مزوّد لا ينشر سلّمه.
+         */
+        val nodeFrequencies: List<Long> = emptyList(),
     ) {
         /**
          * دور هذه العقدة — **مشتقّ من اسمها ومسارها** لا محفوظًا معها.
@@ -285,6 +303,19 @@ object GpuHardwareBackend {
             (mtkFixedIndexPath != null && mtkLockWritable && mtkOppIndexByFrequency.isNotEmpty() && unitTrusted)
         val provenMinFreq: Long? get() = frequencies.firstOrNull()
         val provenMaxFreq: Long? get() = frequencies.lastOrNull()
+
+        /** أعلى درجة يعلنها المزوّد — **قدرة العتاد**، لا السقف الحيّ الذي قد يكتبه التطبيق. */
+        val capabilityMaxFreq: Long? get() = frequencies.filter { it > 0L }.maxOrNull()
+
+        /**
+         * الدرجات التي يقبلها مسار الكتابة القائم: سلّم العقدة إن نُشر، وإلا الكتالوج المدمج.
+         *
+         * ولا تُستعمل هذه القائمة لعرض «أقصى متاح»: ذاك من [frequencies]. هي **مقبض تحقّق**
+         * فقط — الطلب الذي لا يقبله السائق لا يُقال إنه فشل بعد كتابته، بل يُصحَّح قبله.
+         */
+        val writeableFrequencies: List<Long>
+            get() = nodeFrequencies.filter { it > 0L }.distinct().sorted()
+                .ifEmpty { frequencies.filter { it > 0L }.distinct().sorted() }
     }
 
     data class Selection(
@@ -804,7 +835,10 @@ object GpuHardwareBackend {
     )
 
     fun requestForMode(device: Device, mode: IntentMode): Request? {
-        val advertised = device.frequencies.filter { it > 0L }.distinct().sorted()
+        // مسار المدى يُطلب من سلّم العقدة وحده (انظر [Device.writeableFrequencies])، ومسار
+        // الفهرس يبقى على الكتالوج لأنه يكتب فهرسًا لا يمرّ بعقدة التردد.
+        val advertised = (if (device.devfreqCeilingWritable) device.writeableFrequencies else device.frequencies)
+            .filter { it > 0L }.distinct().sorted()
         if (advertised.isEmpty()) return null
         // والسقف الحيّ **لا** يُقيَّد به التخطيط هنا، وهو تغيير مقصود لا إسقاط سهو.
         //
@@ -857,7 +891,11 @@ object GpuHardwareBackend {
         if (request.minFreq != null || request.maxFreq != null) {
             if (request.minFreq == null || request.maxFreq == null) return "incomplete-range"
             if (request.minFreq > request.maxFreq) return "invalid-range"
-            if (request.minFreq !in device.frequencies || request.maxFreq !in device.frequencies) return "unsupported-frequency"
+            // ومسار المدى يحكم عليه **سلّم العقدة** لا كتالوج القدرة المدمج: درجة موجودة في
+            // جدول OPP ولا تنشرها عقدة الكتابة يقصّها السائق إلى أقرب درجة، فتنجح الكتابة
+            // ويفشل التحقّق ويعود خط الأساس بلا سبب مفهوم للمستخدم.
+            val acceptedSteps = if (device.devfreqCeilingWritable) device.writeableFrequencies else device.frequencies
+            if (request.minFreq !in acceptedSteps || request.maxFreq !in acceptedSteps) return "unsupported-frequency"
             val exact = request.minFreq == request.maxFreq
             if (exact && !device.exactLockWritable) return "exact-lock-read-only-or-unproven"
             if (!exact && !device.devfreqCeilingWritable) return "range-read-only-or-unproven"
@@ -1006,7 +1044,11 @@ object GpuHardwareBackend {
         // السبب مجهولًا وتظهر رسالة عامة لا تقول شيئًا. والقياس المسبق يفصل «العقدة لم تُطابق»
         // عن «الساعة لم تتحرك»، ويسمح بالنجاح حين تثبت الساعة على الطلب رغم اختلاف صدى العقدة —
         // فالساعة هي حقيقة المستخدم، والصدى وصفٌ لها.
-        val measured = pinnedHz?.let { actual?.let { live -> measuredFrequency(live, io) } }
+        // **والساعة تُقاس بعد الكتابة لا في لحظتها وحدها.** انتقال `devfreq` قد يتأخّر جزءًا
+        // من الثانية، فقراءة واحدة فورية كانت ترى التردد القديم فترفض تثبيتًا نجح فعلًا. وعلى
+        // المسار الحقيقي وحده (لا في الاختبارات ذات القارئ الوهمي) تُعاد ثلاثة قياسات قصيرة
+        // حتى يوافق أحدها الهدف؛ وما لا يوافق يُعلن فشلًا كما كان.
+        val measured = pinnedHz?.let { actual?.let { live -> measurePinnedClock(it, live, io) } }
         val clockVerified = pinnedHz != null && measured != null && clockAgrees(pinnedHz, measured.hz)
         val clockMismatch = pinnedHz != null && measured != null && !clockVerified
         if (wrote && (clockVerified || (nodeSatisfied && !clockMismatch))) {
@@ -1062,6 +1104,26 @@ object GpuHardwareBackend {
     fun clockAgrees(pinnedHz: Long, measuredHz: Long): Boolean {
         val tolerance = maxOf(5_000_000L, pinnedHz / 50L)
         return kotlin.math.abs(measuredHz - pinnedHz) <= tolerance
+    }
+
+    /**
+     * قياس ساعة المزوّد بعد كتابة تثبيت — بمحاولات قصيرة على المسار الحقيقي وحده.
+     *
+     * والقياس الواحد كان يكفي حين يكون الانتقال متزامنًا، ولا يكفي حين يؤجّله السائق. ولا
+     * تُضاف المحاولات على قارئ وهميّ: اختبارات العتاد تبني سلوكها من قراءات مرقّمة، وإعادة
+     * قراءة صامتة كانت ستُبدّل تسلسلها بلا سبب. وما لا يوافق بعد المحاولات يُعاد كما هو،
+     * فيحكم عليه `clockMismatch` بالرمز المسمّى.
+     */
+    private fun measurePinnedClock(targetHz: Long, device: Device, io: Io): MeasuredFrequency? {
+        val first = measuredFrequency(device, io) ?: return null
+        if (io !== SystemIo || clockAgrees(targetHz, first.hz)) return first
+        var last = first
+        repeat(2) {
+            runCatching { Thread.sleep(PIN_CLOCK_RETRY_MS) }
+            last = measuredFrequency(device, io) ?: return@repeat
+            if (clockAgrees(targetHz, last.hz)) return last
+        }
+        return last
     }
 
     /**
@@ -1310,6 +1372,8 @@ object GpuHardwareBackend {
                     surface.maxKey == "max_freq",
                 governorWritable = governor != null && io.writable("${surface.base}/governor"),
                 evidence = evidence,
+                // السطح البديل نفسه هو مصدر السلّم، فلا كتالوج ثانٍ هنا.
+                nodeFrequencies = frequencies,
             )
             return Candidate(device, candidateScore(100, frequencies, current, null))
         }
@@ -1507,6 +1571,12 @@ object GpuHardwareBackend {
             if (current != null) add("current-frequency")
             if (unit != FrequencyUnit.AMBIGUOUS) add("consistent-${unit.name.lowercase()}-unit")
         }
+        // سلّم الدرجات **الذي تنشره عقدة الكتابة** — لا قدرة الجدول الموّقع المدمجة. ولا يُقبل
+        // إلا إذا كان بلغة الوحدة نفسها التي حُفظت بها بقية الحقول؛ خلط وحدتين في سلّم واحد
+        // أسوأ من الاستعانة بالكتالوج احتياطًا.
+        val nodeFrequencies = if (mtkLockPath != null) {
+            if (mtkScaleIsHertz) rawFrequencies else emptyList()
+        } else rawFrequencies
         val device = Device(
             path = path,
             name = deviceName.ifBlank { name },
@@ -1527,6 +1597,7 @@ object GpuHardwareBackend {
             mtkLockWritable = mtkLockPath?.let(io::writable) == true,
             mtkOppIndexByFrequency = mtkMap,
             evidence = evidence,
+            nodeFrequencies = nodeFrequencies,
         )
         val score = candidateScore(identityScore, frequencies, current, mtkLockPath)
         return Candidate(device, score)
@@ -1598,7 +1669,8 @@ object GpuHardwareBackend {
     }
 
     private fun writeRange(device: Device, min: Long, max: Long, io: Io): Boolean {
-        if (min !in device.frequencies || max !in device.frequencies || min > max) return false
+        val steps = if (device.devfreqCeilingWritable) device.writeableFrequencies else device.frequencies
+        if (min !in steps || max !in steps || min > max) return false
         return writeRangeRaw(device, min, max, io)
     }
 

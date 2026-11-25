@@ -1040,6 +1040,7 @@
     <string name="home_sensor_unavailable">الحساس غير متاح</string>
     <string name="home_temperature_short">الحرارة</string>
     <string name="home_gpu_max_freq">السقف</string>
+    <string name="home_gpu_max_supported">أقصى متاح</string>
     <string name="home_freq_now">الآن</string>
     <string name="home_freq_min_label">الأدنى</string>
     <string name="home_freq_max_label">الأقصى</string>

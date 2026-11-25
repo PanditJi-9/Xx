@@ -400,12 +400,14 @@ private fun GpuPulseCard(
         floorMhz = dashboard.gpuMinMhz,
         samples = dashboard.loadSamples,
         isGpu = true,
-        // **بطاقة GPU تعرض السقف لا التردد الجاري** (بأمر المالك: أُزيل التغيير السابق).
-        // والرقم الجاري يُقرأ في شاشة GPU من نفس قارئ البطاقة (`measuredFrequency`)، فلا
-        // تتناقض الشاشتان. وإضافة رقم ثانٍ في الصدر جعلت البطاقة تقرأ كقراءتين متنافستين.
-        topMhz = dashboard.gpuCeilingMhz?.takeIf { it > 0 },
-        topLabel = stringResource(R.string.home_gpu_max_freq),
-        rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
+        // **قدرة العتاد في الصدر، والسقف الحيّ في سطر المدى.** طلب المالك: الرقم الأعلى
+        // المعروض يجب أن يكون أقصى تردد **فعليًّا ومتاحًا** للرسّام، لا سقفًا كتبه التطبيق
+        // أو قصّته المنصّة. فيُقرأ من كتالوج OPP (`gpuMaxSupportedMhz`)، ويبقى السقف الحيّ
+        // (`gpuCeilingMhz`) ظاهرًا موسومًا في سطره فلا يُخفى قيدٌ عن المستخدم.
+        topMhz = dashboard.gpuMaxSupportedMhz?.takeIf { it > 0 },
+        topLabel = stringResource(R.string.home_gpu_max_supported),
+        rangeMaxMhz = dashboard.gpuCeilingMhz,
+        rangeMaxLabel = stringResource(R.string.home_gpu_max_freq),
         accent = neuralPalette().accentAlt,
         onClick = onClick,
         modifier = modifier,
@@ -429,6 +431,10 @@ private fun CpuPulseCard(
         // «الآن» تسمية التردد الجاري لأنويتها العليا — كان رقمًا عاريًا يُقرأ كأنه سقف.
         topMhz = dashboard.cpuTopCoreMhz.takeIf { it > 0 },
         topLabel = stringResource(R.string.home_freq_now),
+        // والأقصى في الطرف الآخر هو **السقف الحيّ المثبَّت** (`scaling_max_freq`) لا قدرة
+        // الشريحة: هذا ما يقصّ المعالج الآن، وهو ما يغيّره المستخدم من شاشة الأنوية التي
+        // تُفتح بلمسة البطاقة. وغيابه يُعرض شرطة لا رقمًا من `cpuinfo_max_freq`.
+        rangeMaxMhz = dashboard.cpuMaxMhz,
         accent = neuralPalette().accent,
         onClick = onClick,
         modifier = modifier,
@@ -450,6 +456,7 @@ private fun FrequencyMetricCard(
     topMhz: Int? = null,
     topLabel: String? = null,
     rangeMaxMhz: Int? = null,
+    rangeMaxLabel: String? = null,
 ) {
     val p = neuralPalette()
     val current = frequencyMhz?.takeIf { it > 0 }
@@ -470,7 +477,9 @@ private fun FrequencyMetricCard(
     } else emptyList()
     val floor = floorMhz?.takeIf { it > 0 }
     val floorFraction = floor?.toFloat()?.div(rangeCeiling)?.takeIf { it.isFinite() }?.coerceIn(0f, 1f)
-    val rangeMax = rangeMaxMhz?.takeIf { it > 0 } ?: ceilingMhz?.takeIf { it > 0 }
+    // ولا سقوط إلى `ceilingMhz` (قدرة الشريحة) عند غياب السقف الحيّ: ذاك يسمّي رقمًا آخر
+    // باسم «الأقصى المثبَّت». الغياب يُعرض شرطة كما في بقية قراءات الجهاز (ADR-07).
+    val rangeMax = rangeMaxMhz?.takeIf { it > 0 }
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     val unknown = "\u2014"
 
@@ -535,8 +544,10 @@ private fun FrequencyMetricCard(
                 )
                 Spacer(Modifier.width(MaxSpace.xs))
             }
+            // ولا سقوط إلى «الجاري» حين يغيب الصدر الموسوم: GPU بلا كتالوج كان سيعرض
+            // التردد الجاري بوسم «أقصى متاح»، وهو وعد لم يُقس. المجهول شرطة (ADR-07).
             NeuralValue(
-                formatHardwareFrequency(topMhz?.takeIf { it > 0 } ?: current),
+                formatHardwareFrequency(topMhz?.takeIf { it > 0 }),
                 style = MonoValueStyleFrequency,
                 color = p.text,
                 maxLines = 1,
@@ -558,8 +569,11 @@ private fun FrequencyMetricCard(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             // الأقصى في جهة البداية (يمين في العربية) والأدنى في الطرف المقابل — الأرقام تُقرأ
             // تصاعديًّا من اليسار، فيبقى الأدنى يسارًا في الاتجاهين كما في الرسم نفسه.
+            // وتسمية الأقصى تتبع بطاقته: GPU يعرض السقف الحيّ («السقف»)، وCPU يعرض الأقصى
+            // المثبَّت («الأقصى») — فلا يتّحد نصّان لمعنيين مختلفين.
+            val maxLabel = rangeMaxLabel ?: stringResource(R.string.home_freq_max_label)
             RangeEnd(
-                label = stringResource(R.string.home_freq_max_label),
+                label = maxLabel,
                 value = formatHardwareFrequency(rangeMax),
                 horizontalAlignment = Alignment.Start,
             )

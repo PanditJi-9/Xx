@@ -29747,3 +29747,39 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 - `45471631628` **Control center APK** = **success** (قرئ من `gh run view`)، فملفات Kotlin المولَّدة تُصرَّف واختباراتها تمرّ.
 - **`45471631720` MaxManager = success** (19:34:24Z → 19:53:43Z، المهمّة الوحيدة `Build MaxManager`) — أي أن الوحدات الاثنتي عشرة تُصرَّف في NDK الحقيقي بـ`-Werror -pedantic-errors -std=c23`، والاختبارات وبناء الأصليّ والتغليف والتوقيع تمرّ. والأثرات: **`MaxManager-V5.2.zip` id `14958927404` (30646907 بايت)** · `MaxManager-developer-bundle.zip` id `14958678053` · `MaxManager-checksums` id `14958463753`.
 - **حدّ هذا الحكم:** يثبت الترجمة والاختبارات والتغليف، **لا** أن الوحدات تعمل: لا استدعاء لها من `Main.c` بعد. والفحص النحوي المحلي كشف عطب `cn_msg` قبل CI، وهذا هو الدليل على أن الفحص المسبق يُغني عن دورة بناء فاشلة.
+
+## تكملة ٣١٣ — جولة `patch_maxmanager_ui_ux.sh`: ما أُخذ (اهتزاز التبويبات) وما رُفض بأسبابه المقيسة (2026-11-25)
+
+**أمر المالك (نصّه):** «patch_maxmanager_ui_ux.sh» — اسم الملف وحده، على نمط الجولتين السابقتين: فحص الدفعة ثم تنفيذ ما هو جيد منها.
+
+**١. هوية الملف.** `patch_maxmanager_ui_ux.sh` كان في الجذر، **غير متتبَّع**، ٥٦٤١٥ بايت، **١٤٥٩ سطرًا**، **٩ أقسام** (`[n/9]`)، `#!/usr/bin/env bash` + `set -euo pipefail`، و`PROJECT_DIR="/storage/emulated/0/MaxManger/optmize-main"` (نفس شجرتنا، وقد ثبت سابقًا بتطابق inode `41:2100814`)، و`BACKUP_DIR=".../backup_ui_ux_<ts>"`، ودالة `backup_file()` تنسخ كل ملف قبل دهسه. ولا عملية مدمِّرة فيه: لا `git` ولا `rm` ولا `chmod` — العملية الوحيدة غير الإنشائية `mv` لملف مؤقت على `AndroidManifest.xml` بعد `awk` (ولم تكن ستُنفَّذ: `android:supportsRtl="true"` موجود أصلًا في البيان).
+
+**٢. الحقيقة التي تحكم الحكم كلّه — ومكان الكتابة.** كل كتابات السكربت في **`app/`** أي مشروع **`MaxControlCenter`** (حزمة `com.maxmanager.control`، يُبنى بـ`control-center.yml`)، **لا** في تطبيق MaxManager `manager/app` (حزمة `nd.max`) الذي يرسل المالك لقطاته (الرئيسية وGPU). فالسكربت لا يمسّ الشاشات التي يشتكي منها، وأي «تحسين» فيه لا يُصلح MaxManager. وهذا يُقال أولًا لأنه يحسم ما إذا كان العمل يستحقّ أصلًا.
+
+**٣. ما يكتبه السكربت (٩ أقسام).** `values/colors_max_ux.xml` + `values-night/` (لوحة True AMOLED: canvas `#FF000000` · surface `#FF0B0E14` · primary إيمرالد `#FF00E5A0` · سيان `#FF38BDF8` · بنفسجي `#FFA78BFA` …) · `values/themes_max_ux.xml` (`Theme.MaxManager.AmoledUx`) · `values/strings_max_ux.xml` + `values-ar/` (~٢١ مفتاحًا) · ٥ drawables · `UxDesignTokens.kt` · `UxScreenState.kt` + `UxTelemetryFormatter` · `UxMotionHaptics.kt` · `UxEdgeToEdge.kt` · `MaxAmoledTheme.kt` + `MaxUxComponents.kt` + `MaxUxDashboardOverlay.kt` · `MaxUxUnitTest.kt` · سيناريوهات Maestro. وكل ما هو Compose كان سيُكتب فعلًا (`HAS_COMPOSE=1` بحسب كشف السكربت)، وفرع Views (`MaxViewUxKit.kt`) لن يُكتب.
+
+**٤. المقيس في `app/` قبل أي كتابة (أساس الرفض لا رأي).**
+- الهوية القائمة زرقاء ومعلنة: `MainActivity.kt` سطر ~١٢٣ `Palette = darkColorScheme(primary #8AB4FF, primaryContainer #1B3A73, background/surface #0C0F14, onSurfaceVariant #A9B0BF, error #FF8A80)`، والثيم `Theme.MaxControl` وأبوه `android:Theme.Material.NoActionBar`، و`window_background #0C0F14`.
+- التطبيق **عربي RTL إجباريًا**: `CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl)` في `AppTheme` (سطر ١٤٢). و`enableEdgeToEdge(...)` مُستدعى أصلًا في السطر ٩٧. و`Widgets.kt` (١٧١ سطرًا) فيه مكوّنات مشتركة و`enum Tone { Info, Ok, Error }`. و`ui/MicroHudEngine.kt` فيه **`MicroHudFrame`** بنفس حقول `UxTelemetryCardModel` تقريبًا (واتس · SOC · حرارة · RAM · ping · jitter · خيوط · تطبيقات مجمّدة · bypass · qos) و`formatCompactStrip`.
+- البيان: **`INTERNET` فقط** — لا `VIBRATE`. و`compileSdk=37 · minSdk=26 · targetSdk=37`. والاعتماديات: `ui 1.11.0` · `foundation 1.11.0` · `material3 1.5.0-alpha14` · `activity-compose 1.13.0` · `core-ktx 1.18.0` · `coroutines 1.9.0` · `junit 4.13.2` (لا اعتماد `compose.animation` صريحًا).
+- **تباين محسوب:** `TextMuted #65728A` على `SurfacePrimary #0B0E14` = **٣٫٩٧:١** (يرسب AA 4.5)، وعلى `SurfaceElevated #131924` ≈ ٤٫٠:١؛ و`TextSecondary #9AA6BC` ≈ ٨٫٥٥:١ على الأسود و٧٫١٧:١ على المرتفع (يمرّ). ⇒ تعليق التوكنز الذي ادّعى «WCAG AAA» **غير صحيح للمكتوم**.
+
+**٥. المأخوذ: قدرة الاهتزاز اللمسي وحدها — لأنها الوحيدة التي (أ) تعمل، (ب) ولها مستهلك حقيقي.** `performHapticFeedback` يمرّرها النظام بوصفها تغذية راجعة للواجهة **ولا تحتاج إذنًا**، بينما `Vibrator` تحتاج `VIBRATE` — وهو غائب، فاحتياط السكربت كان يفشل بصمت داخل `runCatching` ويُوهم بأن الاهتزاز يعمل. فكُتب `app/src/main/java/com/maxmanager/control/ui/UxHaptics.kt` (٢٧ سطرًا): `object UxHaptics { fun tap(view: View?) }` يستعمل `HapticFeedbackConstants.CLOCK_TICK` أهدأ ما يعرّفه النظام، وإن أعاد `false` (رفض مُصنّع) سقط إلى `VIRTUAL_KEY`. و**وُصل** في `MainActivity.DashboardScreen`: `val hapticView = LocalView.current` في التركيب (لا داخل الـlambda)، ثم `UxHaptics.tap(hapticView)` قبل `tab = t` في `FilterChip.onClick` — أي نقرة خفيفة عند تبديل التبويبات الأربعة. تغيير محسوس، بلا إذن جديد، وبلا نظام تصميم ثانٍ.
+
+**٦. المرفوض — ثمانية بأسبابها المقيسة (لا «جمالًا» بل ازدواجًا وانتهاكًا لعقد):**
+1. **اللوحة والثيم والتوكنز والمكوّنات ولوحة التحكّم** (`UxDesignTokens` · `MaxAmoledTheme` · `MaxUxComponents` · `MaxUxDashboardOverlay` · `colors_max_ux.xml` · `themes_max_ux.xml` · الـdrawables) — **نظام تصميم ثانٍ** فوق هوية زرقاء قائمة ومكوّنات `Widgets.kt`، واللوحة الجديدة نيون عامّ لا هوية (§0.4/4 و§0.5). والـdrawables لا يستعملها أي مكوّن (الأشكال تُرسم في Kotlin)، والثيم لا يُشار إليه من البيان.
+2. **`UxEdgeToEdge`** — يكرّر `enableEdgeToEdge` المستدعى في `MainActivity.kt:97`.
+3. **`UxTelemetryCardModel` + `UxTelemetryFormatter`** — يكرّران `MicroHudFrame` ونمط تنسيقه في الوحدة نفسها، **بلا مستهلك** اليوم؛ ولا يُضاف كود بلا مستهلك (يُعاد النظر عند وصل تيليمتري حقيقي).
+4. **`MaxUxControlDashboard`** — غير موصول بأي شاشة، ووصله ببيانات وهمية ممنوع (ADR-07) ولا مصدر تيليمتري حقيقي يغذّيه.
+5. **النصوص الإنجليزية المثبَّتة في الكود** (`"Live Telemetry"` · `"SAFE MODE"` · `"BYPASS ON"` · `"ACTION REQUIRED"` · `"Retry"` · `"Export Diagnostics"` …) داخل تطبيق **عربي RTL إجباري** — تخالف ADR-14، و`strings_max_ux.xml` يبقى غير مستعمل أصلًا.
+6. **`UxMotionHaptics` كما كُتب** — احتياط الـvibrator لا يعمل بلا `VIBRATE`؛ أُخذ منه نمط `performHapticFeedback` وحده في ملف أصغر.
+7. **سيناريوهات Maestro** — أحدها `assertVisible: text: ".*"` أي تأكيد بلا معنى؛ لا تُضاف بوابتان لا تقيسان شيئًا.
+8. **`android:supportsRtl`** — موجود في البيان أصلًا؛ تعديل `awk` كان سيتخطّاه.
+
+**٧. البوابات (خضراء على الشجرة الملتَزمة).** `kt_balance --assert` **٣٨٢١ ملفًا · عوائق ٠** · `code_health --assert` **exit 0** («الحصيلة: صحّة نظيفة»؛ الدَّين كما هو: oversized ٢٢ · wildcards ٢٦ · inline_ui_copy ٣ · hardcoded ٣ · presentation_hw_writes ٠ · ١٥٢٣ ملف Kotlin · ٣٤٤٢٣٨ سطرًا) — و**قبل** نقل السكربت من الجذر إلى `build/` كان يُسقطها بـ`stray_root_file`، فنُقل وبقي محليًّا غير متتبَّع · `i18n_coverage --assert` ٨٤ مجلد values-* + en · ٨٥ كودًا · `locales_config` ٨٥ · عوائق ٠ · `design_tokens --assert` ٢٤٥/٣٠٠ · `git diff --check` نظيف. ولا Gradle محلي (§0.10).
+
+**٨. الالتزام والدفع.** **`37339d84`** «feat(control-center): add a light haptic tick on tab switches» — ملفان، +٣٨/−١ (`MainActivity.kt` و`ui/UxHaptics.kt`)، مدفوع إلى `main`.
+
+**٩. حكم CI.** **`45567614695` Control center APK = success** (١د٢٩ث: `Unit tests` ✓ · `Build debug APK` ✓ · رفع الأثر ✓) ⇒ الملف الجديد والوصل يُصرَّفان فعلًا. و**`45567614631` MaxManager** شُغّل أيضًا لأن `app/**` داخل `paths` في `build.yml` — أي أن تعديل مركز التحكّم وحده يكلّف بناء MaxManager كاملًا (~١٩ دقيقة)؛ يُسجَّل قياسًا لا شكوى. حكمه يُقرأ ويُلحق بهذه التكملة قبل التسليم.
+
+**١٠. حدّ يُقال:** الاهتزاز لا يُقاس إلا على جهاز (لا جهاز: `adb 192.168.1.10:39527` منقطع)، ونجاح CI يثبت الترجمة والاختبارات لا الإحساس الفعلي. وما لم يُؤخذ من السكربت أُعلن رفضه بسبب مقيس، لا أُهمل صامتًا.

@@ -19,6 +19,7 @@
     <string name="max_gpu_live_frequency">التردد الحالي</string>
     <string name="max_gpu_load">الحِمل</string>
     <string name="max_gpu_range_label">قدرة العتاد</string>
+    <string name="max_gpu_max_available">أقصى تردد متاح</string>
     <string name="max_gpu_dynamic_min">الحد الأدنى · ديناميكي</string>
     <string name="max_gpu_dynamic_max">الحد الأقصى · ديناميكي</string>
     <string name="max_gpu_governor_label">الحاكم</string>

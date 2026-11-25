@@ -352,6 +352,18 @@ private fun GpuHero(
 
         MaxGroupDivider()
         Column {
+            // **أقصى تردد متاح** سطرٌ مستقلّ موسوم: قدرة العتاد كما يعلنها كتالوج OPP، لا
+            // السقف الحيّ الذي يقرأه السطر التالي. وكان الرقمان في سطر واحد «قدرة العتاد
+            // 260 – 1300» فيُقرأ الأقصى جزءًا من المدى ولا يُرى جوابًا مباشرًا لسؤال المستخدم.
+            MaxMetricLine(
+                MaxMetric(
+                    label = stringResource(R.string.max_gpu_max_available),
+                    value = window.capabilityMaxMhz?.toString(),
+                    unit = "MHz",
+                    trust = if (window.capabilityMaxMhz != null) MaxDataTrust.Snapshot else MaxDataTrust.Unreadable,
+                    source = device.path,
+                )
+            )
             MaxMetricLine(
                 MaxMetric(
                     label = stringResource(R.string.max_gpu_range_label),
@@ -790,7 +802,12 @@ private fun GpuRangeControls(
     vm: GpuStudioViewModel,
     device: GpuHardwareBackend.Device,
 ) {
-    val frequencies = device.frequencies
+    // سلّم **العقدة القابلة للكتابة** لا كتالوج القدرة المدمج: درجةٌ في جدول OPP لا ينشرها
+    // `devfreq` يقصّها السائق إلى أقرب درجة معلنة، فيقرأ التحقّق قيمةً غير المطلوبة ويعيد خط
+    // الأساس — وهو نصّ `apply-not-verified-baseline-restored`. أما قراءة «أقصى متاح» فتبقى
+    // من الكتالوج (`gpuMaxSupportedMhz` في الرئيسية و`capabilityMaxMhz` هنا)، فلا يُخلط ما
+    // يُعرض بما يُكتب.
+    val frequencies = if (device.devfreqCeilingWritable) device.writeableFrequencies else device.frequencies
     if (frequencies.isEmpty()) return
 
     val pendingMin = state.pending?.minFreq
