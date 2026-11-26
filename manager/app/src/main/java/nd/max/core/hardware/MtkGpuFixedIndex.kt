@@ -103,9 +103,10 @@ internal object MtkGpuFixedIndex {
         // على هذا الجهاز بقي الفهرس على ٨٣٢ بينما الساعة الحقيقية ٢٦/٧٥٤، وكان التطبيق يعلن
         // النجاح لأن قراءة الفهرس تطابق ما كتبناه. وحين لا يُقاس التردد يبقى الحكم `BY_INDEX`
         // كما هو مصرَّح به، ولا يُدَّعى قياس لم يقع.
-        val measuredHz = actual?.let { GpuHardwareBackend.currentFrequencyHz(it, io) }
-        val clockMismatch = measuredHz != null &&
-            GpuCeilingPolicy.pinVerdict(frequency, measuredHz) == GpuCeilingPolicy.PinVerdict.CLOCK_MISMATCH
+        // قياس GED (لا `cur_freq` الواجهة) بمحاولات قصيرة، وبتسامح ٢٪ أو ٥ MHz كمسار devfreq:
+        // المساواة التامة كانت سترفض تثبيتًا صحيحًا لقراءة تتأخّر أو تُقرَّب.
+        val measuredHz = actual?.let { GpuHardwareBackend.measurePinnedClock(frequency, it, io)?.hz }
+        val clockMismatch = measuredHz != null && !GpuHardwareBackend.clockAgrees(frequency, measuredHz)
         val verified = wroteLock && wroteGovernor && !clockMismatch &&
             io.read(path)?.let(MtkGpuOppTable::parseIndex) == MtkGpuOppTable.parseIndex(targetIndex) &&
             (request.governor == null || actual?.governor.equals(request.governor, true))

@@ -1,3 +1,21 @@
+## GPU-PIN-03 — التثبيت على MediaTek عبر فهرس OPP والتحقق بـGED — 2026-11-26
+
+**البلاغ:** التثبيت من شريط «التردد المثبَّت» يُرفض دائمًا بـ`apply-not-verified-baseline-restored`، والشريط كان يُقصّ عند السقف الديناميكي (1040) لا عند قدرة العتاد (1300).
+
+**المقيس على الجهاز (rodin · MT6899، أمر `su` من المالك):** بعد `echo 30 > /proc/gpufreqv2/fix_target_opp_index` بقي `devfreq/13000000.mali/cur_freq` على 260000000 بينما `/sys/kernel/ged/hal/current_freqency` قرأ `30 520000` والنواة أعلنت `fix GPU/STACK OPP index: 30/30`. فـ`cur_freq` واجهة لا تتبع الساعة، وGED هو الساعة الحقيقية. وصيغة GED سطر `<فهرس OPP> <kHz>`.
+
+**السبب:** `measuredFrequency` كان يقرأ `cur_freq` أولًا ويُسقط GED دائمًا (`toLongOrNull()` على سطر من رقمين)، و`applyValidated` يوجّه `min == max` إلى devfreq ما دام مدى devfreq قابلًا للكتابة. فكل تثبيت غير 260 كان يُقاس على ساعة عالقة ويُرفض (في `verify` الخاص بالاستوديو ثم في المحرّك).
+
+**المنجز (غير مُلتزم بعد):**
+- `GpuHardwareBackend.measuredFrequency`: GED أولًا ثم `cur_freq` ثم `gpuclk`؛ وقيمة GED هي **آخر رقم** في السطر.
+- `GpuHardwareBackend.applyValidated`: التثبيت `min == max` يمرّ بفهرس OPP (`MtkGpuFixedIndex.pin`) متى كان `mtkLockWritable` والتردد مفهرَسًا؛ ويبقى devfreq لما سواه.
+- `MtkGpuFixedIndex.pin`: قياس الساعة بـ`measurePinnedClock` (محاولات قصيرة) وبتسامح `clockAgrees` بدل المساواة التامة.
+- `GpuStudioScreen`: شريط التثبيت يمتدّ إلى آخر السلّم (قدرة العتاد) ويبدأ من الدرجة المثبَّتة فعلًا إن وُجدت؛ والرقم الكبير تحت «التردد الحالي» يعرض الحدّ الأقصى الديناميكي بطلب المالك.
+- رسالة الرفض تحمل سطرًا تقنيًا `req=… MHz · clock=… MHz @…` (`GpuNotice.clockNote`) كي يُعرف سبب الرفض من اللقطة وحدها.
+- الاختبارات: `mtkExactFrequencyPinsThroughTheOppIndexAndIsVerifiedAgainstGed` و`gedLineWithIndexAndKilohertzIsTheMeasuredClock` (تفشلان على الكود القديم وتنجحان على الجديد)، وحلّت الأولى محلّ `mtkExactFrequencyUsesEqualDevfreqBoundsInsteadOfTheOppLock` التي افترضت أن `cur_freq` يتبع devfreq. شُغّلت `GpuControlModelTest` كاملة (٤٨ اختبارًا) خارج Gradle بمُصرِّف Kotlin 2.3.10: كلها نجحت.
+
+**الباقي المفتوح — يحتاج جهازًا:** (١) تثبيت 520 ثم رقم فوق السقف الحيّ (مثل 1300 والسقف 936) من الشريط، والتأكد أن GED يقرأ المطلوب أو أن الرسالة تعرض `req/clock`؛ (٢) الشاشة المرئية لم تُجرَّب: تغييرات `GpuStudioViewModel`/`GpuStudioScreen` لم تُبنَ بعد (تعتمد Compose/Android).
+
 ## GPU-FIXED-02 مُغلق (ترجمةً) — التردد الثابت بمسار devfreq وتحقق الساعة، و«الآن» في الرئيسية — 2026-11-23
 
 **البلاغ:** «لا ينجح التغيير … في وضع التردد الثابت … وينجح عند إطفائه وإظهار حد أدنى وأقصى»، و«الخارج والداخل لا يعرضان نفس رقم التردد الجاري».

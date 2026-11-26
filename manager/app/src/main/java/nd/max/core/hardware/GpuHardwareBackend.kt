@@ -677,12 +677,16 @@ object GpuHardwareBackend {
     /**
      * تردد GPU الجاري **ومصدره** — لا ما نظنّ أننا كتبناه.
      *
-     * المصدر الأول `cur_freq` على عقدة devfreq، ثم `gpuclk`، ثم GED أخيرًا.
+     * المصدر الأول GED (`/sys/kernel/ged/hal/current_freqency`)، ثم `cur_freq` على عقدة devfreq، ثم `gpuclk`.
      *
-     * **والترتيب مقصود ومقيس:** GED (`/sys/kernel/ged/hal/current_freqency`) يبلّغ قيمة مقرّبة/
-     * متأخرة (قِيست 250 MHz على rodin) بينما درجات devfreq نفسها 260، فكانت شاشة GPU تعرض رقمًا
-     * لا يطابق مدى البطاقة في الرئيسية. والعقدة التي تُعلن المدى هي التي تُعلن الجاري.
-     * وGED يبقى احتياطًا على جهاز لا ينشر `cur_freq`. والوحدة تُستنتج من المقدار
+     * **GED أولًا لأن `cur_freq` على MediaTek واجهة لا تتبع الساعة.** قِيس على rodin (MT6899):
+     * بعد `fix_target_opp_index = 30` بقي `cur_freq` على 260000000 بينما GED قرأ `30 520000` والنواة
+     * أعلنت «fix GPU/STACK OPP index: 30/30». فكان التحقق من التثبيت يقرأ ساعة عالقة على الحدّ
+     * الأدنى ويرفض كل تثبيت صحيح (`apply-not-verified-baseline-restored`). وصيغة GED سطر
+     * `<فهرس OPP> <kHz>` — فالقراءة القديمة `toLongOrNull()` على السطر كله كانت تُسقطه دائمًا.
+     * والقيمة هي **آخر رقم** في السطر (الأول فهرس لا تردد). وإن غاب GED سقطنا إلى `cur_freq`.
+     *
+     * والوحدة تُستنتج من المقدار
      * ([magnitudeToHz]) لأن العقد نفسها لا تعلنها، ولأن `frequencyUnit` المعلنة للجهاز تصف
      * **المدى المُطبَّع** لا العقدة الخام: على MTK `cur_freq` بالكيلوهرتز بينما `frequencyUnit = HZ`.
      *
@@ -699,13 +703,24 @@ object GpuHardwareBackend {
             device.frequencies.filter { it > 0L }.maxOrNull()?.times(device.frequencyUnit.hzMultiplier) ?: 0L
         }
         val upperHz = capabilityMaxHz.takeIf { it > 0L }?.times(2L) ?: 10_000_000_000L
-        for (path in listOf("${device.path}/cur_freq", "${device.path}/gpuclk", GED_CURRENT_FREQUENCY)) {
-            val raw = io.read(path)?.trim()?.toLongOrNull() ?: continue
+        for (path in listOf(GED_CURRENT_FREQUENCY, "${device.path}/cur_freq", "${device.path}/gpuclk")) {
+            val raw = readClockRaw(path, io) ?: continue
             if (raw <= 0L) continue
             val hz = magnitudeToHz(raw)
             if (hz in 1_000_000L..upperHz) return MeasuredFrequency(hz, path)
         }
         return null
+    }
+
+    /**
+     * الرقم الخام من عقدة ساعة. GED يكتب `<فهرس> <kHz>` فيُؤخذ **آخر** رقم؛ والعقد الأخرى رقم واحد.
+     * ولا يُقبل نصّ لا ينتهي برقم: `null` لا صفر.
+     */
+    private fun readClockRaw(path: String, io: Io): Long? {
+        val text = io.read(path)?.trim().orEmpty()
+        if (text.isEmpty()) return null
+        if (path != GED_CURRENT_FREQUENCY) return text.toLongOrNull()
+        return text.split(Regex("\\s+")).lastOrNull()?.toLongOrNull()
     }
 
     /** التردد الجاري بالهرتز — غلاف رقمي لـ[measuredFrequency] عند من لا يحتاج المصدر. */
@@ -933,12 +948,14 @@ object GpuHardwareBackend {
             // مسارا القفل الثابت يسكنان `MtkGpuFixedIndex` (فصل ملف بحجم الحدّ وبكائنه الأصلي):
             // تحرير الفهرس، أو تثبيت درجة واحدة بفهرسها.
             request.releaseLock -> MtkGpuFixedIndex.release(live, request, io)
-            // **التردد الثابت يمرّ بمسار المدى حين يكون مدى devfreq قابلًا للكتابة.** رصَد المالك
-            // الفرق بنفسه: المدى (min..max) يعمل، والثابت لا. وسببه أن `min == max` كان يُوجَّه
-            // دائمًا إلى فهرس OPP المزوّد، وفشلُه المقيس (`apply-not-verified-baseline-restored`)
-            // موثَّق في لقطته. فيبقى مسار الفهرس لجهاز لا يقبل مدى devfreq أصلًا.
+            // **التثبيت على MediaTek يمرّ بفهرس OPP متى كان مكتوبًا ومفهرَسًا.** قياس المالك على
+            // rodin (٢٠٢٦-١١-٢٦): `fix_target_opp_index = 30` ثبّت الساعة فعلًا (GED: `30 520000`)
+            // بينما `cur_freq` على عقدة devfreq بقي 260000000 — فهي واجهة لا تتبع الساعة. وكان
+            // التثبيت يُوجَّه إلى `min == max` على devfreq ويُتحقَّق منه بـ`cur_freq` العالق فيُرفض دائمًا.
+            // ويبقى devfreq لجهاز بلا قفل فهرس أو بتردد لا فهرس له.
             request.minFreq != null && request.minFreq == request.maxFreq &&
-                live.mtkFixedIndexPath != null && !live.devfreqCeilingWritable ->
+                live.mtkFixedIndexPath != null && live.mtkLockWritable && live.unitTrusted &&
+                live.mtkOppIndexByFrequency.containsKey(request.minFreq) ->
                 MtkGpuFixedIndex.pin(live, request, io)
             else -> applyDevfreq(live, request, io)
         }
@@ -1114,7 +1131,7 @@ object GpuHardwareBackend {
      * قراءة صامتة كانت ستُبدّل تسلسلها بلا سبب. وما لا يوافق بعد المحاولات يُعاد كما هو،
      * فيحكم عليه `clockMismatch` بالرمز المسمّى.
      */
-    private fun measurePinnedClock(targetHz: Long, device: Device, io: Io): MeasuredFrequency? {
+    internal fun measurePinnedClock(targetHz: Long, device: Device, io: Io): MeasuredFrequency? {
         val first = measuredFrequency(device, io) ?: return null
         if (io !== SystemIo || clockAgrees(targetHz, first.hz)) return first
         var last = first

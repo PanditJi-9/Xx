@@ -274,19 +274,19 @@ private fun GpuHero(
         // المستخدم جوابًا فوريًا عن «ماذا يفعل GPU الآن؟» بدل ستة أسطر متساوية الأهمية.
         // الحدّان الديناميكيان مُسمّيان صراحةً تحت التردد الحيّ: ما يُسمح به الرسّام الآن.
         val window = GpuFrequencyWindow.of(device)
-        // التردد الحالي = **المقاس الجاري** (GED ثم `cur_freq`) لا السقف ولا فهرس القفل.
-        // القفل يصف ما طلبناه، والسقف يصف ما يُسمح به، والقياس يصف ما يجري — والخلط بينها
-        // هو ما جعل الشاشة تعرض ٨٣٢ «حاليًّا» بينما النواة تعمل على ٢٦/٧٥٤.
-        val shownMhz = state.liveMhz
+        // طلب المالك (٢٠٢٦-١١-٢٦): الرقم الكبير تحت «التردد الحالي» يعرض **الحد الأقصى
+        // الديناميكي** (`scaling_max_freq`/`max_freq`) لا القراءة اللحظية التي كانت تهبط
+        // إلى أدنى درجة عند الخمول فتُقرأ كأنها الحد الأدنى. المقاس اللحظي ما زال في
+        // `state.liveMhz` ولم يُحذف. وغياب الحد يُعرض شرطة لا رقمًا بديلًا (ADR-07).
+        val shownMhz = window.dynamicMaxMhz
         MaxMetricReadout(
             metric = MaxMetric(
                 label = stringResource(R.string.max_gpu_live_frequency),
                 value = shownMhz?.toString(),
                 unit = "MHz",
                 trust = if (shownMhz != null) MaxDataTrust.Live else MaxDataTrust.Unreadable,
-                // العقدة التي قِيست فعلًا (GED أو `cur_freq` أو `gpuclk`)، لا مسار المزوّد:
-                // نسبة قراءةٍ إلى عقدة لم تُقرأ ادّعاءُ مصدرٍ كاذب.
-                source = state.liveSource,
+                // العقدة التي قُرئ منها الحد الديناميكي فعلًا، لا عقدة القياس اللحظي.
+                source = device.path,
             ),
             size = MaxMetricSize.Large,
         )
@@ -819,20 +819,20 @@ private fun GpuRangeControls(
     var fixedFrequency by remember(device.path) { mutableStateOf(!device.rangeWritable) }
     var minIndex by remember(device.path, liveMinIndex) { mutableIntStateOf(liveMinIndex) }
     var maxIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
-    var lockIndex by remember(device.path, liveMaxIndex) { mutableIntStateOf(liveMaxIndex) }
-    // **التثبيت لا يُعرض فوق السقف الحيّ.** كانت القائمة تمتدّ إلى قدرة الجهاز (1300) بينما
-    // المنصّة تقصّ عند السقف الديناميكي (قِيست 520)، فيختار المستخدم درجة لا يمكن للعتاد أن
-    // يقبلها ثم يرى «رفض العتاد التغيير» بلا سبب مفهوم. المدى يبقى قادرًا على طلب سقف أعلى
-    // (فهو الذي يحرّر السقف)، وأما التثبيت فيقتصر على ما يمكن الوفاء به الآن.
-    // ويُقاس بـ«أعلى درجة لا تتجاوز السقف» لا بمطابقة السقف حرفيًّا: السقف قد يكون رقمًا لا
-    // تقف عليه درجة معلنة (يقصّه مُحكِّم حراري بين درجتين)، والمطابقة الحرفية كانت تُسقط إلى
-    // آخر عنصر فتُعيد فتح ما أُغلق.
-    val liveCap = device.maxFreq
-    val lockCeilingIndex = if (liveCap != null) {
-        frequencies.indexOfLast { it <= liveCap }.takeIf { it >= 0 } ?: 0
-    } else {
-        frequencies.lastIndex
-    }
+    // **مقبض التثبيت يبدأ من الواقع لا من السقف الحيّ.** إن كان العتاد مثبَّتًا الآن (أدنى = أعلى)
+    // فالمقبض على الدرجة المثبَّتة فعلًا؛ وإلا فعلى **أعلى درجة فعليّة للعتاد** (آخر السلّم، مثل
+    // ١٣٠٠)، لا على السقف الديناميكي الذي قد تكون المنصّة قصّته (مثل ١٠٤٠). طلب المالك
+    // (٢٠٢٦-١١-٢٦): عرض السقف الديناميكي هنا خطأ في التجربة.
+    val currentMin = pendingMin ?: device.minFreq
+    val currentMax = pendingMax ?: device.maxFreq
+    val lockedNow = currentMin != null && currentMin == currentMax
+    val initialLockIndex = if (lockedNow) liveMaxIndex else frequencies.lastIndex
+    var lockIndex by remember(device.path, initialLockIndex) { mutableIntStateOf(initialLockIndex) }
+    // **التثبيت يمتدّ إلى أعلى درجة فعليّة للعتاد** (آخر السلّم)، لا إلى السقف الديناميكي.
+    // كان الشريط يُقصّ عند السقف الحيّ (مثل ١٠٤٠) فيبدو أنه أقصى ما يملكه الرسّام وهو دون
+    // قدرته (١٣٠٠). الكتابة فوق السقف الحيّ تُكتب فعلًا ثم يُقاس ما أبقته المنصّة ويُعلَن
+    // برقمه (`gpu-ceiling-open-below-request`)، فلا يُخفى قصّ المنصّة عن المستخدم.
+    val lockCeilingIndex = frequencies.lastIndex
     // لا كتابة حالة داخل التركيب: القيمة الفعّالة تُشتقّ، والمخزّن يبقى كما هو حتى يُحرَّك المقبض.
     val effectiveLockIndex = lockIndex.coerceIn(0, lockCeilingIndex)
 
@@ -1050,7 +1050,11 @@ private fun noticeCondition(notice: GpuNotice): MaxCondition {
         title = stringResource(titleRes),
         detail = detail,
         // كود السبب كما هو من الطبقة الخلفية: حقيقة تقنية لا جملة، ولا تُترجم.
-        technicalDetail = notice.reason?.let { "${stringResource(R.string.max_gpu_reason_technical)}: $it" },
+        technicalDetail = notice.reason?.let { code ->
+            // سطر الساعة (المطلوب/المقيس) تقني غير مترجَم، يُلحق بكود السبب حين يوجد.
+            val head = "${stringResource(R.string.max_gpu_reason_technical)}: $code"
+            notice.clockNote?.let { "$head\n$it" } ?: head
+        },
     )
 }
 

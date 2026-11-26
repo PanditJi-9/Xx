@@ -2101,7 +2101,7 @@
     <string name="home_sensor_unavailable">Sensor unavailable</string>
     <string name="home_temperature_short">TEMP</string>
     <string name="home_gpu_max_freq">Cap</string>
-    <string name="home_gpu_max_supported">Max available</string>
+    <string name="home_gpu_max_supported">Max</string>
     <string name="home_freq_now">Now</string>
     <string name="home_freq_min_label">Min</string>
     <string name="home_freq_max_label">Max</string>

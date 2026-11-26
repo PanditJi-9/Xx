@@ -400,14 +400,14 @@ private fun GpuPulseCard(
         floorMhz = dashboard.gpuMinMhz,
         samples = dashboard.loadSamples,
         isGpu = true,
-        // **قدرة العتاد في الصدر، والسقف الحيّ في سطر المدى.** طلب المالك: الرقم الأعلى
-        // المعروض يجب أن يكون أقصى تردد **فعليًّا ومتاحًا** للرسّام، لا سقفًا كتبه التطبيق
-        // أو قصّته المنصّة. فيُقرأ من كتالوج OPP (`gpuMaxSupportedMhz`)، ويبقى السقف الحيّ
-        // (`gpuCeilingMhz`) ظاهرًا موسومًا في سطره فلا يُخفى قيدٌ عن المستخدم.
-        topMhz = dashboard.gpuMaxSupportedMhz?.takeIf { it > 0 },
-        topLabel = stringResource(R.string.home_gpu_max_supported),
-        rangeMaxMhz = dashboard.gpuCeilingMhz,
-        rangeMaxLabel = stringResource(R.string.home_gpu_max_freq),
+        // **السقف الحيّ في الصدر، وقدرة العتاد في سطر المدى.** طلب المالك (٢٠٢٦-١١-٢٦): «السقف»
+        // فوق و«أقصى» تحت. السقف الحيّ (`gpuCeilingMhz`) هو الحدّ المثبَّت الآن، والأقصى
+        // (`gpuMaxSupportedMhz`) أعلى تردد فعليّ ومتاح للرسّام من كتالوج OPP — لا سقفًا كتبه
+        // التطبيق أو قصّته المنصّة. كلاهما ظاهر موسوم فلا يُخفى قيدٌ عن المستخدم.
+        topMhz = dashboard.gpuCeilingMhz?.takeIf { it > 0 },
+        topLabel = stringResource(R.string.home_gpu_max_freq),
+        rangeMaxMhz = dashboard.gpuMaxSupportedMhz?.takeIf { it > 0 },
+        rangeMaxLabel = stringResource(R.string.home_gpu_max_supported),
         accent = neuralPalette().accentAlt,
         onClick = onClick,
         modifier = modifier,
@@ -544,8 +544,8 @@ private fun FrequencyMetricCard(
                 )
                 Spacer(Modifier.width(MaxSpace.xs))
             }
-            // ولا سقوط إلى «الجاري» حين يغيب الصدر الموسوم: GPU بلا كتالوج كان سيعرض
-            // التردد الجاري بوسم «أقصى متاح»، وهو وعد لم يُقس. المجهول شرطة (ADR-07).
+            // ولا سقوط إلى «الجاري» حين يغيب الصدر الموسوم: GPU بلا سقف حيّ كان سيعرض
+            // التردد الجاري بوسم «السقف»، وهو وعد لم يُقس. المجهول شرطة (ADR-07).
             NeuralValue(
                 formatHardwareFrequency(topMhz?.takeIf { it > 0 }),
                 style = MonoValueStyleFrequency,
@@ -569,7 +569,7 @@ private fun FrequencyMetricCard(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             // الأقصى في جهة البداية (يمين في العربية) والأدنى في الطرف المقابل — الأرقام تُقرأ
             // تصاعديًّا من اليسار، فيبقى الأدنى يسارًا في الاتجاهين كما في الرسم نفسه.
-            // وتسمية الأقصى تتبع بطاقته: GPU يعرض السقف الحيّ («السقف»)، وCPU يعرض الأقصى
+            // وتسمية الأقصى تتبع بطاقته: GPU يعرض أقصى تردد متاح («أقصى»)، وCPU يعرض الأقصى
             // المثبَّت («الأقصى») — فلا يتّحد نصّان لمعنيين مختلفين.
             val maxLabel = rangeMaxLabel ?: stringResource(R.string.home_freq_max_label)
             RangeEnd(

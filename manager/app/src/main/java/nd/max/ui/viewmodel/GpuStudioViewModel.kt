@@ -60,6 +60,12 @@ data class GpuNotice(
     /** Machine code straight from the backend (e.g. `unsupported-frequency`), or null. */
     val reason: String? = null,
     val intent: GpuHardwareBackend.IntentMode? = null,
+    /**
+     * سطر تقني غير مترجَم يشرح **لماذا** رُفض التثبيت: المطلوب والساعة المقيسة ومصدرها
+     * (مثل `req=520 MHz · clock=260 MHz @current_freqency`). بلا هذا السطر كان الرفض يصل
+     * برمزٍ وحده فلا يُعرف أكان العتاد لم يقبل الكتابة أم أن الساعة المقيسة لا تتبعها.
+     */
+    val clockNote: String? = null,
 )
 
 data class GpuStudioUiState(
@@ -347,6 +353,7 @@ class GpuStudioViewModel @Inject constructor(
                 realized = { _, actual -> actual != null && actual == desired },
             )
             val refreshed = GpuHardwareBackend.selection()
+            val failureClockNote = if (arbiterResult.verified) null else clockNote(refreshed.device ?: device, pending)
             val result = GpuHardwareBackend.TransactionResult(
                 requested = pending,
                 actual = refreshed.device,
@@ -367,12 +374,33 @@ class GpuStudioViewModel @Inject constructor(
                 stagedIntent = state.stagedIntent.takeIf { result.verified },
                 notice = when {
                     result.verified -> GpuNotice(GpuNoticeKind.VERIFIED, reason = result.error)
-                    result.rollbackVerified == true -> GpuNotice(GpuNoticeKind.ROLLED_BACK, reason = result.error)
-                    result.rollbackAttempted -> GpuNotice(GpuNoticeKind.ROLLBACK_FAILED, reason = result.error)
-                    else -> GpuNotice(GpuNoticeKind.REFUSED, reason = result.error)
+                    result.rollbackVerified == true ->
+                        GpuNotice(GpuNoticeKind.ROLLED_BACK, reason = result.error, clockNote = failureClockNote)
+                    result.rollbackAttempted ->
+                        GpuNotice(GpuNoticeKind.ROLLBACK_FAILED, reason = result.error, clockNote = failureClockNote)
+                    else -> GpuNotice(GpuNoticeKind.REFUSED, reason = result.error, clockNote = failureClockNote)
                 },
             )
         }
+    }
+
+    /**
+     * المطلوب والساعة المقيسة بعد رفض — للتشخيص لا للترجمة. يُقرأ على خيط الإدخال والإخراج
+     * وحده (يُستدعى من داخل `Dispatchers.IO`).
+     */
+    private fun clockNote(device: GpuHardwareBackend.Device, request: GpuHardwareBackend.Request): String? {
+        val target = request.minFreq?.takeIf { it == request.maxFreq }
+            ?.let { GpuHardwareBackend.frequencyMHz(device, it) }
+        val measured = GpuHardwareBackend.measuredFrequency(device)
+        if (target == null && measured == null) return null
+        val parts = buildList {
+            target?.let { add("req=$it MHz") }
+            add(
+                measured?.let { "clock=${it.hz / 1_000_000L} MHz @${it.source.substringAfterLast('/')}" }
+                    ?: "clock=unread",
+            )
+        }
+        return parts.joinToString(" · ")
     }
 
     fun restoreSession() {

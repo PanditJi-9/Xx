@@ -552,20 +552,31 @@ class GpuControlModelTest {
         assertEquals(listOf(false to true), fake.vendorCeilingCalls)
     }
 
-    @Test fun mtkExactFrequencyUsesEqualDevfreqBoundsInsteadOfTheOppLock() {
-        // الشكل المقيس على rodin: مدى devfreq قابل للكتابة **و** مسار قفل OPP موجود. الطلب المتساوي
-        // كان يذهب إلى الفهرس فيفشل (`apply-not-verified-baseline-restored`)؛ والمدى نفسه يعمل.
+    @Test fun mtkExactFrequencyPinsThroughTheOppIndexAndIsVerifiedAgainstGed() {
+        // الشكل المقيس على rodin (٢٠٢٦-١١-٢٦): مدى devfreq قابل للكتابة **و** مسار قفل OPP موجود،
+        // و`cur_freq` على devfreq واجهة لا تتبع الساعة (بقي 260000000 بعد تثبيت 520) بينما GED
+        // (`<فهرس> <kHz>`) يقرأ الساعة الحقيقية. فالتثبيت يمرّ بالفهرس ويُتحقَّق منه بـGED.
         val fake = mtkCeilingIo()
-        val base = "/sys/class/devfreq/mali0"
         val lock = "/proc/gpufreqv2/fix_target_opp_index"
+        fake.put("/sys/kernel/ged/hal/current_freqency", "2 650000")
         val device = GpuHardwareBackend.selection(fake).device!!
         val request = GpuHardwareBackend.Request(650_000_000L, 650_000_000L)
-        assertTrue(GpuHardwareBackend.apply(device, request, fake).verified)
-        assertEquals("650000000", fake.value("$base/min_freq"))
-        assertEquals("650000000", fake.value("$base/max_freq"))
-        assertTrue("لا تُكتب عقدة الفهرس في مسار المدى", fake.writes.none { it.first == lock })
-        assertEquals(listOf(false to true), fake.vendorCeilingCalls)
+        val result = GpuHardwareBackend.apply(device, request, fake)
+        assertTrue(result.verified)
+        assertEquals("2", fake.value(lock))
+        assertTrue("تُكتب عقدة الفهرس لا حدّا devfreq", fake.writes.any { it.first == lock })
         assertFalse(fake.invariantViolated)
+    }
+
+    @Test fun gedLineWithIndexAndKilohertzIsTheMeasuredClock() {
+        // `cur_freq` الواجهة عالق على 260 بينما GED يقول `30 520000`: المقيس هو GED.
+        val fake = mtkCeilingIo()
+        fake.put("/sys/class/devfreq/mali0/cur_freq", "260000000")
+        fake.put("/sys/kernel/ged/hal/current_freqency", "30 520000")
+        val device = GpuHardwareBackend.selection(fake).device!!
+        val measured = GpuHardwareBackend.measuredFrequency(device, fake)!!
+        assertEquals(520_000_000L, measured.hz)
+        assertEquals("/sys/kernel/ged/hal/current_freqency", measured.source)
     }
 
     @Test fun anExactFrequencyWhoseClockDoesNotMoveIsRejected() {
